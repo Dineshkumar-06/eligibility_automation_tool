@@ -11,6 +11,7 @@
   var emitArr = App.emitArr;
   var getAllRadios = App.getAllRadios;
   var getStreamData = App.getStreamData;
+  var postAxisOrder = App.postAxisOrder;
   var STREAM_AXIS = App.STREAM_AXIS;
   var DEGREE_AXIS = App.DEGREE_AXIS;
   var ind = App.ind;
@@ -60,6 +61,15 @@ function sortCombos(combos){
     }
     return 0;
   });
+}
+// Post whose dimension combination equals `combo` (first match, deterministic).
+// Legacy combos are [postcode] and dimVals of a legacy post is [postcode], so
+// this works for both the legacy and N-dim paths.
+function postForCombo(posts, combo){
+  var ck=comboKey(combo);
+  for(var pi=0;pi<posts.length;pi++)
+    if(comboKey(dimVals(posts[pi]))===ck) return posts[pi];
+  return null;
 }
 
 function genEduConfig(posts){
@@ -138,8 +148,12 @@ function emitAxisArrays(posts,AX,single,suffix){
           if(!found) mGroups.push({mnk:mnk,sm:msm,order:mergedOrder(mySl),pcs:[pc]});
         }
         mGroups.sort(function(a,b){return +a.pcs[0] - +b.pcs[0];});
-        for(var j=0;j<mGroups.length;j++)
-          o+=emitForCombos(base, mGroups[j].pcs.map(function(p){return [p];}), mGroups[j].sm, single, mGroups[j].order);
+        for(var j=0;j<mGroups.length;j++){
+          var lowPc=mGroups[j].pcs.slice().sort(function(a,b){return +a-+b;})[0];
+          var lp=postForCombo(posts,[lowPc]);
+          var ord=lp?postAxisOrder(lp,lvl,AX):mGroups[j].order;
+          o+=emitForCombos(base, mGroups[j].pcs.map(function(p){return [p];}), mGroups[j].sm, single, ord);
+        }
       } else {
         // N-dimensional path — collect combinations in slot order, then sort each
         // merged group for deterministic nested output.
@@ -160,8 +174,11 @@ function emitAxisArrays(posts,AX,single,suffix){
         }
         for(var j=0;j<mGroups.length;j++) mGroups[j].combos=sortCombos(mGroups[j].combos);
         mGroups.sort(function(a,b){return cmpCombo(a.combos[0],b.combos[0]);});
-        for(var j=0;j<mGroups.length;j++)
-          o+=emitForCombos(base, mGroups[j].combos, mGroups[j].sm, single, mGroups[j].order);
+        for(var j=0;j<mGroups.length;j++){
+          var np=postForCombo(posts, mGroups[j].combos[0]);
+          var ord=np?postAxisOrder(np,lvl,AX):mGroups[j].order;
+          o+=emitForCombos(base, mGroups[j].combos, mGroups[j].sm, single, ord);
+        }
       }
     }
 

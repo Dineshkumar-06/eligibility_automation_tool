@@ -97,6 +97,30 @@ console.log('\n===================== Eligibility Criteria_ap_diff_2d_null.xlsx =
   ok('AP off ⇒ generated output has no _appeared', !/_appeared/.test(App.genEligibility(posts)));
 }
 
+// ── checkDOPassing: gates on Passed only, never Appeared-OR-Passed ──────────
+// checkDOPassing picks a branch's date cutoff, not eligibility acceptance — an
+// Appeared-only candidate (result pending) must NOT match here, so it must fall
+// through to the today's-date default instead of getting this branch's cutoff.
+console.log('\n===================== checkDOPassing Passed-only gate =====================');
+{
+  const posts = parse('Eligibility Criteria_ap_diff_2d_null.xlsx');
+  App.S.appearedPassed = { enabled: true, fields: { Graduation: 'grad_appeared', 'Post Graduation': 'pg_appeared' } };
+  App.genEligibility(posts); // annotates cond names before eduval generation
+
+  const eduval = App.genEduValidations(posts);
+  ok('checkDOPassing: PG gated on Passed (contains pg_appeared==\'P\')', /pg_appeared'\]==\s*'P'/.test(eduval));
+  ok('checkDOPassing: no Appeared alternative anywhere (no _appeared==\'A\')', !/_appeared'\]==\s*'A'/.test(eduval), eduval.match(/.*_appeared'\]==\s*'A'.*/)?.[0]);
+
+  // The real eligibility validation must still accept Appeared candidates —
+  // only checkDOPassing's date-cutoff gate changes.
+  const eli = App.genEligibility(posts);
+  ok('genEligibility unaffected: still gates PG on Appeared-OR-Passed', /pg_appeared'\]==\s*'A'/.test(eli) && /pg_appeared'\]==\s*'P'/.test(eli));
+
+  // Backward compat: AP off ⇒ checkDOPassing still has no _appeared at all.
+  App.S.appearedPassed = { enabled: false, fields: {} };
+  ok('AP off ⇒ checkDOPassing has no _appeared', !/_appeared/.test(App.genEduValidations(posts)));
+}
+
 // ── End-to-end: revised sheet with Grad+PG and Grad+PG-Diploma OR-branches ──
 console.log('\n===================== Revised_Eligibility Criteria_red_ap_diff.xlsx =====================');
 {

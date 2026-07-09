@@ -102,12 +102,6 @@
 	);
 	$arrGraduation_Stream['01']['02']
 		= $arrGraduation_Stream['02']['02'] = array(
-		'03' => 'Arts',
-		'04' => 'Science',
-		'05' => 'Commerce',
-		'06' => 'Agriculture',
-		'07' => 'Management',
-		'02' => 'Engineering',
 		'08' => 'B.E. in Civil Engineering',
 		'09' => 'B. Tech. in Civil Engineering',
 		'10' => 'B.E. in Chemical Engineering',
@@ -130,15 +124,15 @@
 		'27' => 'B. Tech. in Metallurgy Engineering',
 		'28' => 'B.E. in Textile Engineering',
 		'29' => 'B. Tech. in Textile Engineering',
-		'01' => 'Others',
-	);
-	$arrGraduation_Stream['03']['02'] = array(
 		'03' => 'Arts',
 		'04' => 'Science',
 		'05' => 'Commerce',
 		'06' => 'Agriculture',
 		'07' => 'Management',
 		'02' => 'Engineering',
+		'01' => 'Others',
+	);
+	$arrGraduation_Stream['03']['02'] = array(
 		'08' => 'B.E. in Civil Engineering',
 		'09' => 'B. Tech. in Civil Engineering',
 		'10' => 'B.E. in Chemical Engineering',
@@ -163,6 +157,12 @@
 		'29' => 'B. Tech. in Textile Engineering',
 		'30' => 'B.E. in Instrumentation Engineering',
 		'31' => 'B. Tech. in Instrumentation Engineering',
+		'03' => 'Arts',
+		'04' => 'Science',
+		'05' => 'Commerce',
+		'06' => 'Agriculture',
+		'07' => 'Management',
+		'02' => 'Engineering',
 		'01' => 'Others',
 	);
 	$arrGraduation_Stream['09']['01']

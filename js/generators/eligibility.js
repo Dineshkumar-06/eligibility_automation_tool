@@ -169,6 +169,7 @@ function buildCondLine(cond,post,single,opts){
   if(gc)      markGrade.push(gc);
 
   var apf=opts&&opts.apField;
+  var apPassedOnly=opts&&opts.apPassedOnly;
   // AP-active: build the P-branch gate using only requirements that are actually
   // present in the eligibility sheet for this condition.
   //   - Mark: included only when a mark threshold is specified (cat or mo).
@@ -181,6 +182,13 @@ function buildCondLine(cond,post,single,opts){
     if(cat)     apMarkGrade.push("$_POST['"+def.sm+"'] >=$GradeMarkPer");
     else if(mo) apMarkGrade.push("$_POST['"+def.sm+"'] "+mo.php);
     if(gc)      apMarkGrade.push(gc);
+    if(apPassedOnly){
+      // checkDOPassing: only a candidate who has actually Passed (not merely
+      // Appeared) should get this branch's date cutoff; others fall through to
+      // the caller's today's-date default. No 'Appeared' alternative here.
+      var pGate="($_POST['"+apf+"']=='P'"+(apMarkGrade.length?(' && '+apMarkGrade.join(' && ')):'')+")";
+      return '('+structural.concat([pGate]).join(' && ')+')';
+    }
     if(apMarkGrade.length){
       var apGate="( ($_POST['"+apf+"']=='A') || ($_POST['"+apf+"']=='P' && "+apMarkGrade.join(' && ')+") )";
       return '('+structural.concat([apGate]).join(' && ')+')';
@@ -245,11 +253,12 @@ function lowerAppearedFields(groupConds,C){
 // `extraOpts` (optional) — additional opts forwarded to buildCondLine (e.g. arrSuffix).
 function buildCondGroupLine(cond,post,single,groupConds,extraOpts){
   var sfx=extraOpts&&extraOpts.arrSuffix;
+  var passedOnly=extraOpts&&extraOpts.apPassedOnly;
   if(!apEnabled()) return buildCondLine(cond,post,single,sfx?{arrSuffix:sfx}:undefined);
-  var opts=(cond.type==='edu')?{apField:effectiveApField(cond,groupConds),arrSuffix:sfx}:{arrSuffix:sfx};
+  var opts=(cond.type==='edu')?{apField:effectiveApField(cond,groupConds),arrSuffix:sfx,apPassedOnly:passedOnly}:{arrSuffix:sfx};
   if(!sfx && cond.type!=='edu') opts=undefined;
   var line=buildCondLine(cond,post,single,opts);
-  if(cond.type==='edu'){
+  if(cond.type==='edu' && !passedOnly){
     var lf=lowerAppearedFields(groupConds,cond);
     if(lf.length){
       var appeared=lf.map(function(f){return "$_POST['"+f+"']=='A'";}).join(' || ');

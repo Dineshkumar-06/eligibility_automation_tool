@@ -127,6 +127,28 @@ function getStreamData(posts, axis){
   return out;
 }
 
+// First-seen subject/degree VALUE order for ONE post's OR-groups at a given
+// level+axis, walked in parsed sheet order. Used to order the merged base
+// array independently of any other post's ordering. 'Others'/'Equivalent'
+// need not be included — sortEnts forces them last.
+function postAxisOrder(post, level, axis){
+  var AX=axisOf(axis);
+  var order=[], seen={};
+  if(!post) return order;
+  for(var gi=0;gi<post.orGroups.length;gi++){
+    var conds=post.orGroups[gi].conditions;
+    for(var ci=0;ci<conds.length;ci++){
+      var c=conds[ci];
+      if(c.type!=='edu'||c.level!==level) continue;
+      var vals=c[AX.vals];
+      if(!vals) continue;
+      for(var si=0;si<vals.length;si++)
+        if(!seen[vals[si]]){seen[vals[si]]=true; order.push(vals[si]);}
+    }
+  }
+  return order;
+}
+
 function annotateCondNames(posts,sd,axis){
   var AX=axisOf(axis);
   for(var pi=0;pi<posts.length;pi++){
@@ -210,4 +232,5 @@ function getCatValues(post){
   App.getAllRadios = getAllRadios;
   App.getCatValues = getCatValues;
   App.getStreamData = getStreamData;
+  App.postAxisOrder = postAxisOrder;
 })(window.App = window.App || {});
