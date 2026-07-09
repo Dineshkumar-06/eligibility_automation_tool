@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eligibility Code Generator</title>
+<link rel="stylesheet" id="hljs-dark" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<link rel="stylesheet" id="hljs-light" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" disabled>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<link rel="stylesheet" href="css/styles.css">
+<script>
+  // Apply the saved theme as early as possible to avoid a flash of the wrong theme.
+  (function(){
+    try{
+      var t=localStorage.getItem('ecg-theme');
+      if(!t) t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+      document.documentElement.setAttribute('data-theme',t);
+    }catch(e){document.documentElement.setAttribute('data-theme','dark');}
+  })();
+</script>
+</head>
+<body>
+<button class="theme-toggle" id="theme-toggle" type="button" title="Toggle light / dark theme" aria-label="Toggle theme"></button>
+<div class="app">
+  <div class="header">
+    <h1>Eligibility Code Generator <span class="phase-tag">Final Phase</span></h1>
+    <p>Generate all eligibility related code from Eligibility Criteria Excel</p>
+  </div>
+  <div class="steps">
+    <div class="step-item active" id="si-1"><div class="step-num">1</div><div class="step-label">Upload &amp; Parse</div></div>
+    <span class="step-sep">›</span>
+    <div class="step-item" id="si-2"><div class="step-num">2</div><div class="step-label">Configure &amp; Review</div></div>
+    <span class="step-sep">›</span>
+    <div class="step-item" id="si-3"><div class="step-num">3</div><div class="step-label">Generate &amp; Export</div></div>
+  </div>
+  <div id="step-1">
+    <div class="upload-wrap" id="upload-area" role="button" tabindex="0" aria-label="Upload Excel file: click or press Enter to browse, or drag and drop" onclick="document.getElementById('file-in').click()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('file-in').click();}">
+      <div class="upload-icon">📊</div>
+      <h3>Upload Eligibility Criteria Excel</h3>
+      <p>Click to browse or drag &amp; drop your .xlsx / .xls file</p>
+      <div class="upload-hint">Auto-detects column layout from header row</div>
+      <input type="file" id="file-in" accept=".xlsx,.xls">
+      <div class="upload-overlay hidden" id="upload-overlay" aria-live="polite">
+        <div class="spinner" role="status" aria-label="Parsing file"></div>
+        <h3 id="upload-overlay-title" style="margin-top:14px">Parsing…</h3>
+        <p>Reading rows and detecting columns</p>
+      </div>
+    </div>
+    <div id="s1-results" class="hidden">
+      <div id="file-name" class="file-name hidden"></div>
+      <div id="alerts-box" style="margin-top:12px"></div>
+      <div class="stats" id="stats-row"></div>
+      <div class="sec-title" style="margin-top:4px">Parsed Condition Tree</div>
+      <div class="tbl-wrap">
+        <table class="ptbl">
+          <thead><tr><th>Post</th><th>Code</th><th>OR Grp</th><th>Type</th><th>Level / Question</th><th class="col-degree" style="display:none">Degree</th><th>Subjects</th><th>Mark</th><th>Grade</th><th>Work Exp</th><th>Status</th></tr></thead>
+          <tbody id="ptbl-body"></tbody>
+        </table>
+      </div>
+      <div class="action-bar"><button class="btn btn-p" id="btn-s2" onclick="goStep(2)">Configure &amp; Review</button></div>
+    </div>
+  </div>
+  <div id="step-2" class="hidden">
+    <div id="dim-cfg"></div>
+    <div id="radio-cfg"></div>
+    <div id="ap-cfg"></div>
+    <div id="int-cfg"></div>
+    <div style="margin-top:16px">
+      <div class="sec-title">Language Options</div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;margin-top:8px">
+        <input type="checkbox" id="bilingual-chk" onchange="updBilingual(this)">
+        Marathi / Hindi content present — use bilingual radio prompts (Should be YES / होय …)
+      </label>
+    </div>
+    <div style="margin-top:20px">
+      <div class="sec-title">Live Code Preview</div>
+      <div class="tabs">
+        <div class="tab on" id="tab-edu" onclick="switchTab('edu')">edu_config.php</div>
+        <div class="tab" id="tab-eli" onclick="switchTab('eli')">eligibity_validation.php</div>
+        <div class="tab" id="tab-eduval" onclick="switchTab('eduval')">edu_validations.php</div>
+        <div class="tab" id="tab-workexp" onclick="switchTab('workexp')">work_exp_details_validations.php</div>
+        <div class="tab" id="tab-qrysql" onclick="switchTab('qrysql')">eligibility_radio_fields.sql</div>
+      </div>
+      <div class="preview-panel" id="pv-edu"><div class="cp-body"><pre><code id="pv-edu-code" class="language-php"></code></pre></div></div>
+      <div class="preview-panel hidden" id="pv-eli"><div class="cp-body"><pre><code id="pv-eli-code" class="language-php"></code></pre></div></div>
+      <div class="preview-panel hidden" id="pv-eduval"><div class="cp-body"><pre><code id="pv-eduval-code" class="language-php"></code></pre></div></div>
+      <div class="preview-panel hidden" id="pv-workexp"><div class="cp-body"><pre><code id="pv-workexp-code" class="language-php"></code></pre></div></div>
+      <div class="preview-panel hidden" id="pv-qrysql"><div class="cp-body"><pre><code id="pv-qrysql-code" class="language-sql"></code></pre></div></div>
+    </div>
+    <div class="action-bar">
+      <button class="btn btn-s" onclick="goStep(1)">Back</button>
+      <button class="btn btn-p" onclick="goStep(3)">Generate &amp; Export</button>
+    </div>
+  </div>
+  <div id="step-3" class="hidden">
+    <div class="sec-title">Generated Files</div>
+    <div class="code-panel">
+      <div class="cp-hdr"><span class="cp-title">edu_config.php</span><div class="cp-acts"><button class="btn btn-s" onclick="copyCode('edu',this)">Copy</button><button class="btn btn-g" onclick="dlFile('edu')">Download</button></div></div>
+      <div class="cp-body"><pre><code id="out-edu" class="language-php"></code></pre></div>
+    </div>
+    <div class="code-panel">
+      <div class="cp-hdr"><span class="cp-title">eligibity_validation.php</span><div class="cp-acts"><button class="btn btn-s" onclick="copyCode('eli',this)">Copy</button><button class="btn btn-g" onclick="dlFile('eli')">Download</button></div></div>
+      <div class="cp-body"><pre><code id="out-eli" class="language-php"></code></pre></div>
+    </div>
+    <div class="code-panel" style="margin-top:14px">
+        <div class="cp-hdr"><span class="cp-title">edu_details_lang.php</span><div class="cp-acts"><button class="btn btn-s" onclick="copyCode('lang',this)">Copy</button><button class="btn btn-g" onclick="dlFile('lang')">Download</button></div></div>
+        <div class="cp-body"><pre><code id="out-lang" class="language-php"></code></pre></div>
+      </div>
+    <div class="code-panel" style="margin-top:14px">
+        <div class="cp-hdr"><span class="cp-title">edu_validations.php</span><div class="cp-acts"><button class="btn btn-s" onclick="copyCode('eduval',this)">Copy</button><button class="btn btn-g" onclick="dlFile('eduval')">Download</button></div></div>
+        <div class="cp-body"><pre><code id="out-eduval" class="language-php"></code></pre></div>
+      </div>
+    <div class="code-panel" style="margin-top:14px">
+        <div class="cp-hdr"><span class="cp-title">work_exp_details_validations.php</span><div class="cp-acts"><button class="btn btn-s" onclick="copyCode('workexp',this)">Copy</button><button class="btn btn-g" onclick="dlFile('workexp')">Download</button></div></div>
+        <div class="cp-body"><pre><code id="out-workexp" class="language-php"></code></pre></div>
+      </div>
+    <div class="code-panel" style="margin-top:14px">
+        <div class="cp-hdr"><span class="cp-title">eligibility_radio_fields.sql</span><div class="cp-acts"><button class="btn btn-s" onclick="copyCode('qrysql',this)">Copy</button><button class="btn btn-g" onclick="dlFile('qrysql')">Download</button></div></div>
+        <div class="cp-body"><pre><code id="out-qrysql" class="language-sql"></code></pre></div>
+      </div>
+    <div class="action-bar">
+      <button class="btn btn-s" onclick="goStep(2)">Back</button>
+      <button class="btn btn-p" onclick="dlZip()">Download All as ZIP</button>
+    </div>
+  </div>
+</div>
+<!-- Application modules (load order matters: dependencies first) -->
+<script src="js/core/constants.js"></script>
+<script src="js/core/state.js"></script>
+<script src="js/core/dimensions.js"></script>
+<script src="js/parsing/helpers.js"></script>
+<script src="js/parsing/colorFilter.js"></script>
+<script src="js/parsing/buildPosts.js"></script>
+<script src="js/parsing/streams.js"></script>
+<script src="js/generators/emit.js"></script>
+<script src="js/generators/eduQryArrays.js"></script>
+<script src="js/generators/eduConfig.js"></script>
+<script src="js/generators/eligibility.js"></script>
+<script src="js/generators/eduValidations.js"></script>
+<script src="js/generators/workExp.js"></script>
+<script src="js/generators/internalBranch.js"></script>
+<script src="js/ui/ui.js"></script>
+<script src="js/main.js"></script>
+<script>
+  // ── Light / dark theme toggle ──────────────────────────────────────────────
+  (function(){
+    var btn=document.getElementById('theme-toggle');
+    var dark=document.getElementById('hljs-dark');
+    var light=document.getElementById('hljs-light');
+    function apply(theme){
+      document.documentElement.setAttribute('data-theme',theme);
+      // swap the highlight.js code theme to match
+      if(dark) dark.disabled=theme!=='dark';
+      if(light) light.disabled=theme!=='light';
+      // button shows the icon for the theme you'd switch TO (SVG, not emoji)
+      var sun='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>';
+      var moon='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+      btn.innerHTML=theme==='dark'?sun:moon;
+      btn.setAttribute('aria-label',theme==='dark'?'Switch to light theme':'Switch to dark theme');
+      try{localStorage.setItem('ecg-theme',theme);}catch(e){}
+    }
+    apply(document.documentElement.getAttribute('data-theme')||'dark');
+    btn.addEventListener('click',function(){
+      apply(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
+    });
+  })();
+</script>
+</body>
+</html>

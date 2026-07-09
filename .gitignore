@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+package-lock.json
+package.json
+
+# Claude Code local settings
+.claude/
+
+# Personal dev journal (not versioned; use git log instead)
+LOG.md
+resources/
+prompts.txt
+test.html
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
