@@ -20,22 +20,25 @@ attaches its functions to a shared global `App` object.
 ├── js/
 │   ├── core/
 │   │   ├── constants.js     # EDU levels, mark/grade ops, post-qual timestamp map
-│   │   └── state.js         # shared state object `S` + tiny utils (ind/escH/getOv…)
+│   │   ├── state.js         # shared state object `S` + tiny utils (ind/escH/getOv…)
+│   │   └── dimensions.js    # dimension/axis descriptors (Stream, Degree, …)
 │   ├── parsing/
 │   │   ├── helpers.js       # column detection, level/mark/grade/subject parsing
 │   │   ├── buildPosts.js    # rows -> post/condition tree (parseFile, buildPosts)
-│   │   └── streams.js       # stream-key registry, condition-name annotation
+│   │   ├── streams.js       # stream-key registry, condition-name annotation
+│   │   └── colorFilter.js   # cell-color based row filtering
 │   ├── generators/
 │   │   ├── emit.js          # array-emit helpers + edu_details_lang.php
 │   │   ├── eduConfig.js     # edu_config.php
 │   │   ├── eligibility.js   # eligibity_validation.php + cond/error builders
 │   │   ├── eduValidations.js# edu_validations.php
+│   │   ├── eduQryArrays.js  # SQL query array generation
+│   │   ├── internalBranch.js# internal-candidate branch logic
 │   │   └── workExp.js       # work_exp_details_validations.php
 │   ├── ui/
 │   │   └── ui.js            # steps 1-3 rendering, preview, download, navigation
 │   ├── main.js              # bootstrap: window.* handlers + event listeners (load last)
 │   └── app.legacy.js        # pre-split single-IIFE version (reference only, not loaded)
-└── test.html               # Original single-file version (kept for reference)
 ```
 
 ### How the modules fit together
