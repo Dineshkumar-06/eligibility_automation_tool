@@ -32,6 +32,7 @@
   var genEduConfigBranched = App.genEduConfigBranched;
   var genLangFileBranched = App.genLangFileBranched;
   var genEduQrySqlBranched = App.genEduQrySqlBranched;
+  var detectClarifications = App.detectClarifications;
 
 function onFileChange(e){
   var inp=e.target;
@@ -119,6 +120,7 @@ function parseRows(rows){
     S.internalCandidate.posts=[];
     S.internalCandidate.ctx=null;
   }
+  S.clarifications=detectClarifications(S.posts,S.internalCandidate.posts);
 }
 
 // Re-parse using the already-loaded rawRows (e.g. when the toggle changes).
@@ -151,6 +153,22 @@ function renderS1(){
     ac.innerHTML='<div class="alert alert-ok">Parsed — '+S.posts.length+' post(s), no issues.</div>';
   } else if(!S.errors.length){
     ac.innerHTML+='<div class="alert alert-ok">No blocking errors — proceed.</div>';
+  }
+  var cb=document.getElementById('clarify-box');
+  if(cb){
+    cb.innerHTML='';
+    var cl=S.clarifications||{stream:[],degree:[]};
+    var renderGroups=function(label,groups){
+      if(!groups||!groups.length) return '';
+      var items=groups.map(function(g){
+        return '• '+g.map(function(v){return '"'+escH(v)+'"';}).join(' ↔ ');
+      }).join('<br>');
+      return '<strong>Possible duplicate '+label+' values detected:</strong><br>'+items+'<br>';
+    };
+    var clHtml=renderGroups('Subject/Stream',cl.stream)+renderGroups('Degree',cl.degree);
+    if(clHtml) cb.innerHTML='<div class="alert alert-info">'+clHtml+
+      '<br><span class="dim">These values may represent the same qualification. '+
+      'Please review before generating code.</span></div>';
   }
   var totalC=S.posts.reduce(function(s,p){return s+p.orGroups.reduce(function(s2,g){return s2+g.conditions.length;},0);},0);
   document.getElementById('stats-row').innerHTML=

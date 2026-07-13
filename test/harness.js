@@ -12,6 +12,7 @@ const files = [
   'js/parsing/helpers.js',
   'js/parsing/buildPosts.js',
   'js/parsing/streams.js',
+  'js/parsing/validate.js',
   'js/generators/emit.js',
   'js/generators/eduQryArrays.js',
   'js/generators/eduConfig.js',

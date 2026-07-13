@@ -12,7 +12,7 @@
 //   non-empty field name (see apField below).
 var S = {posts:[], errors:[], warnings:[], rawRows:[], colMap:{}, dimensions:[], radioOv:{}, bilingual:false, redRemovedCount:0, appearedPassed:{enabled:false, fields:{}},
          internalCandidate:{enabled:false, field:'internal_candidate', posts:[], ctx:null},
-         _normalCtx:null,
+         _normalCtx:null, clarifications:{stream:[], degree:[]},
          _edu:'', _eli:'', _eduval:'', _workexp:'', _qrysql:''};
 
 // Derive a sane default PHP POST-variable name from a dimension column header.

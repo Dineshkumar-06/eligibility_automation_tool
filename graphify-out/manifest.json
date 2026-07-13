@@ -1,0 +1,202 @@
+{
+  "js/app.legacy.js": {
+    "mtime": 1782206242.0,
+    "ast_hash": "84d593b4e9cafb1f5104e1f43e633252",
+    "semantic_hash": "84d593b4e9cafb1f5104e1f43e633252"
+  },
+  "js/core/constants.js": {
+    "mtime": 1782206240.0,
+    "ast_hash": "c27a87cd433fb5f0801d1ac0292e910a",
+    "semantic_hash": "c27a87cd433fb5f0801d1ac0292e910a"
+  },
+  "js/core/dimensions.js": {
+    "mtime": 1782814274.0,
+    "ast_hash": "e71b380519a74ed4c2c763066a85d1bb",
+    "semantic_hash": "e71b380519a74ed4c2c763066a85d1bb"
+  },
+  "js/core/state.js": {
+    "mtime": 1782985757.9396224,
+    "ast_hash": "fedde24677e0f72ff56727e83d0ccbf0",
+    "semantic_hash": "fedde24677e0f72ff56727e83d0ccbf0"
+  },
+  "js/generators/eduConfig.js": {
+    "mtime": 1783598484.9686544,
+    "ast_hash": "06e14e2312359c4d63446aabdad6deb9",
+    "semantic_hash": "06e14e2312359c4d63446aabdad6deb9"
+  },
+  "js/generators/eduQryArrays.js": {
+    "mtime": 1782124030.0,
+    "ast_hash": "a183ba89a5a9793992ee39fe9feebe25",
+    "semantic_hash": "a183ba89a5a9793992ee39fe9feebe25"
+  },
+  "js/generators/eduValidations.js": {
+    "mtime": 1783598433.3798862,
+    "ast_hash": "05c3971d3f04b41f7a708e9ba6270bfe",
+    "semantic_hash": "05c3971d3f04b41f7a708e9ba6270bfe"
+  },
+  "js/generators/eligibility.js": {
+    "mtime": 1783598426.1574686,
+    "ast_hash": "43112c33ca35864d425fe712bbed5737",
+    "semantic_hash": "43112c33ca35864d425fe712bbed5737"
+  },
+  "js/generators/emit.js": {
+    "mtime": 1781864306.0,
+    "ast_hash": "f1c97cd531425ca462b07b56f8b5a89d",
+    "semantic_hash": "f1c97cd531425ca462b07b56f8b5a89d"
+  },
+  "js/generators/internalBranch.js": {
+    "mtime": 1782368862.0,
+    "ast_hash": "68ea4d0095642d5184978ccca8633fe5",
+    "semantic_hash": "68ea4d0095642d5184978ccca8633fe5"
+  },
+  "js/generators/workExp.js": {
+    "mtime": 1782368808.0,
+    "ast_hash": "e142dbf57b1557ffa624cca0928ae89d",
+    "semantic_hash": "e142dbf57b1557ffa624cca0928ae89d"
+  },
+  "js/main.js": {
+    "mtime": 1782299398.0,
+    "ast_hash": "85a099184f29605ddd581d60d4d5a1f2",
+    "semantic_hash": "85a099184f29605ddd581d60d4d5a1f2"
+  },
+  "js/parsing/buildPosts.js": {
+    "mtime": 1782296456.0,
+    "ast_hash": "54f0b3a013924d79477b1be089802631",
+    "semantic_hash": "54f0b3a013924d79477b1be089802631"
+  },
+  "js/parsing/colorFilter.js": {
+    "mtime": 1782986399.4656942,
+    "ast_hash": "38a103f5d5302297f70e33f5eb493a73",
+    "semantic_hash": "38a103f5d5302297f70e33f5eb493a73"
+  },
+  "js/parsing/helpers.js": {
+    "mtime": 1782370770.0,
+    "ast_hash": "dd78dce070d1fbb9270269b89a50a6c5",
+    "semantic_hash": "dd78dce070d1fbb9270269b89a50a6c5"
+  },
+  "js/parsing/streams.js": {
+    "mtime": 1783598447.2523046,
+    "ast_hash": "ae1f96881dad2a982e3fe10ab551098f",
+    "semantic_hash": "ae1f96881dad2a982e3fe10ab551098f"
+  },
+  "js/ui/ui.js": {
+    "mtime": 1782985881.7793784,
+    "ast_hash": "be1714e21fe054881e8ffaabef79c45d",
+    "semantic_hash": "be1714e21fe054881e8ffaabef79c45d"
+  },
+  "test/compat.js": {
+    "mtime": 1781695778.0,
+    "ast_hash": "66b5a567d9e22dffb45a14ee0619a943",
+    "semantic_hash": "66b5a567d9e22dffb45a14ee0619a943"
+  },
+  "test/harness.js": {
+    "mtime": 1782299426.0,
+    "ast_hash": "e8461bded5d94b82b9a99250b8862614",
+    "semantic_hash": "e8461bded5d94b82b9a99250b8862614"
+  },
+  "test/harness.legacy.js": {
+    "mtime": 1781695760.0,
+    "ast_hash": "e39413dafa245b410f4ba7c90485ec58",
+    "semantic_hash": "e39413dafa245b410f4ba7c90485ec58"
+  },
+  "test/out_edu.php": {
+    "mtime": 1783598560.8879118,
+    "ast_hash": "27cfe255f02e6ccb9e9ede85659528bf",
+    "semantic_hash": "27cfe255f02e6ccb9e9ede85659528bf"
+  },
+  "test/out_eduval.php": {
+    "mtime": 1783598558.546685,
+    "ast_hash": "ddb13d9acc94e4e0b93de5c6289c0fa9",
+    "semantic_hash": "ddb13d9acc94e4e0b93de5c6289c0fa9"
+  },
+  "test/out_eli.php": {
+    "mtime": 1783598558.5446866,
+    "ast_hash": "c8febf27496bd89b1323ccaa789852f3",
+    "semantic_hash": "c8febf27496bd89b1323ccaa789852f3"
+  },
+  "test/out_qry.sql": {
+    "mtime": 1783598560.8879118,
+    "ast_hash": "c16d666ad2dac33d97b07ab4fc5b49e3",
+    "semantic_hash": "c16d666ad2dac33d97b07ab4fc5b49e3"
+  },
+  "test/out_workexp.php": {
+    "mtime": 1783598558.5486867,
+    "ast_hash": "291b26c00a2c37813360e8b808d45b0a",
+    "semantic_hash": "291b26c00a2c37813360e8b808d45b0a"
+  },
+  "test/rows.json": {
+    "mtime": 1781695010.0,
+    "ast_hash": "fecaf5034e700d2c200bdb451cf79539",
+    "semantic_hash": "fecaf5034e700d2c200bdb451cf79539"
+  },
+  "test/run.js": {
+    "mtime": 1781695042.0,
+    "ast_hash": "e3b1d1a359ea129e7bd5c94d49873c36",
+    "semantic_hash": "e3b1d1a359ea129e7bd5c94d49873c36"
+  },
+  "test/run3d.js": {
+    "mtime": 1781695838.0,
+    "ast_hash": "df6b0d3b6e733f4526403c287f6a54e7",
+    "semantic_hash": "df6b0d3b6e733f4526403c287f6a54e7"
+  },
+  "test/run_ap.js": {
+    "mtime": 1783598539.9109347,
+    "ast_hash": "7118b95fbd8aaf836064dca4da05621b",
+    "semantic_hash": "7118b95fbd8aaf836064dca4da05621b"
+  },
+  "test/run_color.js": {
+    "mtime": 1782986414.2258816,
+    "ast_hash": "f14db38e13a4b97e46c42ebc83194ead",
+    "semantic_hash": "f14db38e13a4b97e46c42ebc83194ead"
+  },
+  "test/run_degree.js": {
+    "mtime": 1782111884.0,
+    "ast_hash": "0e371bc37c29d896d5781d3274f021cf",
+    "semantic_hash": "0e371bc37c29d896d5781d3274f021cf"
+  },
+  "test/run_internal.js": {
+    "mtime": 1782368914.0,
+    "ast_hash": "add81b5236eaefbd9368d4857906b7ba",
+    "semantic_hash": "add81b5236eaefbd9368d4857906b7ba"
+  },
+  "test/run_issues.js": {
+    "mtime": 1781864408.0,
+    "ast_hash": "7400aac8c2b4bc8917e6ec692ffeda06",
+    "semantic_hash": "7400aac8c2b4bc8917e6ec692ffeda06"
+  },
+  "test/run_marks.js": {
+    "mtime": 1781873174.0,
+    "ast_hash": "5ae6e9281555fd9398b1a5e75583e37a",
+    "semantic_hash": "5ae6e9281555fd9398b1a5e75583e37a"
+  },
+  "test/run_qry.js": {
+    "mtime": 1782124150.0,
+    "ast_hash": "f654f3246d088162ba3f6ac89e81aad0",
+    "semantic_hash": "f654f3246d088162ba3f6ac89e81aad0"
+  },
+  "test/run_radio.js": {
+    "mtime": 1782120234.0,
+    "ast_hash": "cff23e52aa9029efb128516ee3a4ffba",
+    "semantic_hash": "cff23e52aa9029efb128516ee3a4ffba"
+  },
+  "DEBUGGING.md": {
+    "mtime": 1782986495.3657775,
+    "ast_hash": "2f95496e0eca8f263233a66f6bbeb3ae",
+    "semantic_hash": "2f95496e0eca8f263233a66f6bbeb3ae"
+  },
+  "README.md": {
+    "mtime": 1783593869.0731466,
+    "ast_hash": "f9f09913c83854480a087489bf2c6e98",
+    "semantic_hash": "f9f09913c83854480a087489bf2c6e98"
+  },
+  "context.md": {
+    "mtime": 1781093772.0,
+    "ast_hash": "9b0fdae24a370b7806e4a19b2d6db9b6",
+    "semantic_hash": "9b0fdae24a370b7806e4a19b2d6db9b6"
+  },
+  "index.html": {
+    "mtime": 1782985903.1769361,
+    "ast_hash": "f452eb6349d514137bead6bcac1df25b",
+    "semantic_hash": "f452eb6349d514137bead6bcac1df25b"
+  }
+}
