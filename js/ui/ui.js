@@ -157,7 +157,7 @@ function renderS1(){
   var cb=document.getElementById('clarify-box');
   if(cb){
     cb.innerHTML='';
-    var cl=S.clarifications||{stream:[],degree:[]};
+    var cl=S.clarifications||{stream:[],degree:[],radio:[]};
     var renderGroups=function(label,groups){
       if(!groups||!groups.length) return '';
       var items=groups.map(function(g){
@@ -165,10 +165,27 @@ function renderS1(){
       }).join('<br>');
       return '<strong>Possible duplicate '+label+' values detected:</strong><br>'+items+'<br>';
     };
-    var clHtml=renderGroups('Subject/Stream',cl.stream)+renderGroups('Degree',cl.degree);
-    if(clHtml) cb.innerHTML='<div class="alert alert-info">'+clHtml+
-      '<br><span class="dim">These values may represent the same qualification. '+
-      'Please review before generating code.</span></div>';
+    var boxes='';
+    // Subject/Stream + Degree: values that LOOK like duplicates but were left as-is —
+    // purely a "please review" flag, kept in the original blue info box.
+    var axisHtml=renderGroups('Subject/Stream',cl.stream)+renderGroups('Degree',cl.degree);
+    if(axisHtml) boxes+='<div class="alert alert-info"><span class="bd bd-b">VALUES</span> '+axisHtml+
+      '<br><span class="dim">These may represent the same values. '+
+      'This is informational only and does not block code generation — please review.</span></div>';
+    // Radio-button duplicates get their own visually distinct box (amber, RADIO badge):
+    // unlike the values above, these were ACTIVELY merged into ONE field name during
+    // parsing (see disambiguateRadioNames), so the note reads as a resolution, not just
+    // a heads-up, and must not be mistaken for the Subject/Stream/Degree review notice.
+    if(cl.radio&&cl.radio.length){
+      var radioBody=cl.radio.map(function(g){
+        var bullets=g.texts.map(function(v){return '• "'+escH(v)+'"';}).join('<br>');
+        return bullets+'<br><span class="dim">These were treated as the same question and assigned a single field name: <code>'+escH(g.fieldName)+'</code></span>';
+      }).join('<br><br>');
+      boxes+='<div class="alert alert-warn"><span class="bd bd-o">RADIO</span> <strong>Duplicate radio button question(s) detected:</strong><br>'+radioBody+'<br>'+
+        '<br><span class="dim">These are formatting-only variants of the same question — merged automatically. '+
+        'This is informational only and does not block code generation.</span></div>';
+    }
+    if(boxes) cb.innerHTML=boxes;
   }
   var totalC=S.posts.reduce(function(s,p){return s+p.orGroups.reduce(function(s2,g){return s2+g.conditions.length;},0);},0);
   document.getElementById('stats-row').innerHTML=

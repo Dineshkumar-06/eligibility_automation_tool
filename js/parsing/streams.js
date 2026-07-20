@@ -209,7 +209,11 @@ function getAllRadios(post){
     var conds=post.orGroups[gi].conditions;
     for(var ci=0;ci<conds.length;ci++){
       var c=conds[ci];
-      if(c.type==='radio'&&!seen[c.question]){seen[c.question]=true;out.push(c);}
+      // De-dupe by fieldName (the generation identity), not raw question text —
+      // duplicate questions that differ only in spacing/punctuation share one
+      // fieldName (see disambiguateRadioNames) and must collapse to a single entry
+      // here too, so downstream generators never emit them twice.
+      if(c.type==='radio'&&!seen[c.fieldName]){seen[c.fieldName]=true;out.push(c);}
     }
   }
   return out;

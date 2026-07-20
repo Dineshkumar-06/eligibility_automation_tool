@@ -6,6 +6,13 @@ COLLATE latin1_swedish_ci
 NULL DEFAULT NULL;
 
 ALTER TABLE `educational_details`
+ADD `minimum_five`
+ENUM('Y','N')
+CHARACTER SET latin1
+COLLATE latin1_swedish_ci
+NULL DEFAULT NULL;
+
+ALTER TABLE `educational_details`
 ADD `minimum_three_years_regular`
 ENUM('Y','N')
 CHARACTER SET latin1
@@ -13,7 +20,21 @@ COLLATE latin1_swedish_ci
 NULL DEFAULT NULL;
 
 ALTER TABLE `educational_details`
+ADD `minimum_three`
+ENUM('Y','N')
+CHARACTER SET latin1
+COLLATE latin1_swedish_ci
+NULL DEFAULT NULL;
+
+ALTER TABLE `educational_details`
 ADD `not_less_than_five`
+ENUM('Y','N')
+CHARACTER SET latin1
+COLLATE latin1_swedish_ci
+NULL DEFAULT NULL;
+
+ALTER TABLE `educational_details`
+ADD `not_less`
 ENUM('Y','N')
 CHARACTER SET latin1
 COLLATE latin1_swedish_ci
@@ -91,13 +112,6 @@ NULL DEFAULT NULL;
 
 ALTER TABLE `educational_details`
 ADD `minimum_seven_years_regular_2`
-ENUM('Y','N')
-CHARACTER SET latin1
-COLLATE latin1_swedish_ci
-NULL DEFAULT NULL;
-
-ALTER TABLE `educational_details`
-ADD `not_less`
 ENUM('Y','N')
 CHARACTER SET latin1
 COLLATE latin1_swedish_ci
@@ -182,13 +196,6 @@ NULL DEFAULT NULL;
 
 ALTER TABLE `educational_details`
 ADD `minimum_three_years_regular_9`
-ENUM('Y','N')
-CHARACTER SET latin1
-COLLATE latin1_swedish_ci
-NULL DEFAULT NULL;
-
-ALTER TABLE `educational_details`
-ADD `minimum_five`
 ENUM('Y','N')
 CHARACTER SET latin1
 COLLATE latin1_swedish_ci

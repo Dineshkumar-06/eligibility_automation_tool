@@ -55,13 +55,48 @@ function findDupGroups(values){
   return groups;
 }
 
-// Top-level entry: detect possible duplicate Subject/Stream and Degree values across the
+// Gather every radio condition across all posts/OR-groups.
+function collectRadioConds(posts){
+  var out=[];
+  if(!posts) return out;
+  for(var pi=0;pi<posts.length;pi++){
+    var orGroups=posts[pi].orGroups||[];
+    for(var gi=0;gi<orGroups.length;gi++){
+      var conds=orGroups[gi].conditions||[];
+      for(var ci=0;ci<conds.length;ci++)
+        if(conds[ci].type==='radio') out.push(conds[ci]);
+    }
+  }
+  return out;
+}
+
+// Group radio conditions by normalized question text (App.normRadioQuestion); return
+// only groups with 2+ distinct raw spellings, each carrying the fieldName they share
+// (disambiguateRadioNames guarantees identical-normalized questions keep one fieldName).
+function findRadioDupGroups(conds){
+  var normRadioQuestion=App.normRadioQuestion;
+  var map=new Map();
+  for(var i=0;i<conds.length;i++){
+    var c=conds[i], key=normRadioQuestion(c.question);
+    if(!key) continue;
+    if(!map.has(key)) map.set(key,{texts:[],fieldName:c.fieldName});
+    var entry=map.get(key);
+    if(entry.texts.indexOf(c.question)===-1) entry.texts.push(c.question);
+  }
+  var groups=[];
+  map.forEach(function(entry){ if(entry.texts.length>=2) groups.push(entry); });
+  return groups;
+}
+
+// Top-level entry: detect possible duplicate Subject/Stream and Degree values, and
+// duplicate radio-button questions (formatting-only variants), across the
 // normal-candidate posts and (if present) the internal-candidate posts.
 function detectClarifications(posts,internalPosts){
   var allPosts=(posts||[]).concat(internalPosts||[]);
   return {
     stream: findDupGroups(collectAxisValues(allPosts,'subjects')),
-    degree: findDupGroups(collectAxisValues(allPosts,'degrees'))
+    degree: findDupGroups(collectAxisValues(allPosts,'degrees')),
+    radio: findRadioDupGroups(collectRadioConds(allPosts))
   };
 }
 

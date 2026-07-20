@@ -497,6 +497,21 @@ function isRadioQuestion(text){
   return false;
 }
 
+// Normalizes a radio question for duplicate-identity comparison: lowercase, drop
+// dots/commas (handles a trailing "?." / "? ." variant), collapse whitespace, then
+// drop a trailing question mark (with any space before it). Pure formatting variants
+// ("...experience?", "...experience ?", "...experience?.", "...experience") all
+// collapse to the same key. Word content — including numbers — is left intact, so
+// "3 years" and "5 years" stay distinct (deriveField() already converts digits to
+// words, so this only needs to neutralize punctuation/spacing noise).
+function normRadioQuestion(q){
+  var t=String(q||'').toLowerCase();
+  t=t.replace(/[.,]/g,'');
+  t=t.replace(/\s+/g,' ').trim();
+  t=t.replace(/\s*\?\s*$/,'');
+  return t.trim();
+}
+
 function deriveField(q){
   var stops={do:1,you:1,have:1,a:1,an:1,the:1,is:1,are:1,be:1,of:1,in:1,at:1,to:1,for:1,with:1,your:1,any:1,should:1,whether:1,that:1,this:1};
   var nums={0:'zero',1:'one',2:'two',3:'three',4:'four',5:'five',6:'six',7:'seven',8:'eight',9:'nine',
@@ -529,7 +544,12 @@ function disambiguateRadioNames(posts){
     var words=c.words||[];
     var used=2; // deriveField already used 2 words
     var maxIter=MAX_WORDS+4; // safety cap
-    while(owners[c.fieldName]&&owners[c.fieldName].question!==c.question&&maxIter-->0){
+    // Identity for collision detection is the NORMALIZED question, not the raw text —
+    // two conditions whose questions differ only in spacing/punctuation/case (e.g.
+    // "...experience?" vs "...experience ?") are the SAME question and must keep
+    // sharing one field name, not get split apart into "_2"/extra-word variants.
+    var cNormQ=normRadioQuestion(c.question);
+    while(owners[c.fieldName]&&owners[c.fieldName].normQ!==cNormQ&&maxIter-->0){
       var owner=owners[c.fieldName];
       var ownerWordCount=owner.cond.fieldName.split('_').length;
       var ownerNext=(ownerWordCount<MAX_WORDS)?owner.words[owner.usedWords]||null:null;
@@ -539,7 +559,7 @@ function disambiguateRadioNames(posts){
         owner.cond.fieldName=newOwnerFn;
         owner.cond.langKey='edu_'+newOwnerFn;
         owner.usedWords++;
-        owners[newOwnerFn]={question:owner.question,cond:owner.cond,words:owner.words,usedWords:owner.usedWords};
+        owners[newOwnerFn]={normQ:owner.normQ,cond:owner.cond,words:owner.words,usedWords:owner.usedWords};
       } else {
         delete owners[owner.cond.fieldName];
       }
@@ -559,7 +579,7 @@ function disambiguateRadioNames(posts){
       }
     }
     if(!owners[c.fieldName])
-      owners[c.fieldName]={question:c.question,cond:c,words:words,usedWords:used};
+      owners[c.fieldName]={normQ:cNormQ,cond:c,words:words,usedWords:used};
   }
 }
 
@@ -607,6 +627,7 @@ function findInternalSeparator(rows){
   App.parseMarkClauses = parseMarkClauses;
   App.deriveField = deriveField;
   App.isRadioQuestion = isRadioQuestion;
+  App.normRadioQuestion = normRadioQuestion;
   App.disambiguateRadioNames = disambiguateRadioNames;
   App.detectCols = detectCols;
   App.detectDims = detectDims;

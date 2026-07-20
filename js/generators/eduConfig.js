@@ -278,9 +278,12 @@ function emitDependentsAndRadios(posts,single,suffix){
       // depends on which OR branch the candidate satisfies. Radios present in all
       // groups stay mandatory ('Y' / 'Should be Yes').
       var grpsWithConds=post.orGroups.filter(function(g){return g.conditions.length>0;});
-      function radioInEveryGroup(q){
+      // Matched by fieldName, not raw question text — duplicate questions that differ
+      // only in spacing/punctuation share one fieldName (disambiguateRadioNames) and
+      // must still be recognised as "the same radio" in every OR-group.
+      function radioInEveryGroup(fn){
         return grpsWithConds.every(function(g){
-          return g.conditions.some(function(c){return c.type==='radio'&&c.question===q;});
+          return g.conditions.some(function(c){return c.type==='radio'&&c.fieldName===fn;});
         });
       }
       return getAllRadios(post).map(function(r){
@@ -289,7 +292,7 @@ function emitDependentsAndRadios(posts,single,suffix){
           // Explicit "Should be No" — must be answered N (overrides the optional path).
           shouldbe='N'; msg=sbNo();
         } else {
-          var optional=grpsWithConds.length>1&&!radioInEveryGroup(r.question);
+          var optional=grpsWithConds.length>1&&!radioInEveryGroup(r.fieldName);
           shouldbe=optional?'Y,N':'Y';
           msg=optional?sbYesNo():sbYes();
         }
