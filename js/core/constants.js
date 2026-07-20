@@ -21,7 +21,7 @@ var EDU = {
   'Certification':                   {idx:7,  stream:'arrCert_Stream',       ss:'selstream7', degree:'arrCert_Degree',       sd:'seldegree7', sm:'selmark7', sg:'selgrade7', lang:'edu_lbl_certif',     hasStream:true,  hasDegree:true},
   'Diploma':                         {idx:8,  stream:'arrDiploma_Stream',    ss:'selstream8', degree:'arrDiploma_Degree',    sd:'seldegree8', sm:'selmark8', sg:'selgrade8', lang:'edu_lbl_diploma',    hasStream:true,  hasDegree:true},
   'Ph.D':                            {idx:9,  stream:'arrPhD_Stream',        ss:'selstream9', degree:'arrPhD_Degree',        sd:'seldegree9', sm:'selmark9', sg:'selgrade9', lang:'edu_lbl_phd',        hasStream:true,  hasDegree:true},
-  'Integrated Post Graduate Diploma':{idx:10, stream:'arrIDD_Stream', ss:'selstream10', degree:'arrIDD_Degree', sd:'seldegree10', sm:'selmark10',sg:'selgrade10',lang:'edu_lbl_idd',  hasStream:true,  hasDegree:true},
+  'Integrated Dual Degree':          {idx:10, stream:'arrIDD_Stream', ss:'selstream10', degree:'arrIDD_Degree', sd:'seldegree10', sm:'selmark10',sg:'selgrade10',lang:'edu_lbl_idd',  hasStream:true,  hasDegree:true},
   'Others':                          {idx:11, stream:'arrOthers_Stream',     ss:'selstream11', degree:'arrOthers_Degree', sd:'seldegree11', sm:'selmark11',sg:'selgrade11',lang:'edu_lbl_others',     hasStream:true,  hasDegree:true}
 };
 var EDU_ALIASES = {
@@ -29,7 +29,7 @@ var EDU_ALIASES = {
   'pgd':'Post Graduation Diploma','graduation degree':'Graduation','ug degree':'Graduation',
   'post graduation degree':'Post Graduation','pg degree':'Post Graduation',
   'post graduate diploma':'Post Graduation Diploma','p.g. diploma':'Post Graduation Diploma',
-  'integrated dual degree':'Integrated Post Graduate Diploma',
+  'idd':'Integrated Dual Degree',
   'certificate':'Certification','certificate course':'Certification',
   'phd':'Ph.D','ph.d.':'Ph.D','doctorate':'Ph.D',
   'ssc':'SSC/10th','10th':'SSC/10th','10th std':'SSC/10th',
@@ -37,7 +37,7 @@ var EDU_ALIASES = {
 };
 // keyword-contains rules, most specific first
 var EDU_KW = [
-  {level:'Integrated Post Graduate Diploma', kw:['integrated post graduate','integrated pg','integrated dual']},
+  {level:'Integrated Dual Degree',           kw:['integrated post graduate','integrated pg','integrated dual']},
   {level:'Post Graduation Diploma',          kw:['post graduation diploma','post graduate diploma','pg diploma','pgd']},
   {level:'Post Graduation',                  kw:['post graduation','post graduate','p.g.','m.tech','m.e.','m.b.a','mba','m.c.a','mca','m.sc','msc','m.com','mcom','m.a.']},
   {level:'Professional Qualification',       kw:['professional qualification','professional']},
@@ -49,7 +49,7 @@ var EDU_KW = [
   {level:'SSC/10th',                         kw:['ssc','10th','class x','class 10','matriculation','secondary school']}
 ];
 var EDU_ORDER = ['SSC/10th','HSC/12th','Diploma','Graduation','Post Graduation',
-  'Post Graduation Diploma','Integrated Post Graduate Diploma','Certification',
+  'Post Graduation Diploma','Integrated Dual Degree','Certification',
   'Professional Qualification','Ph.D','Others'];
 var MARK_OPS = {
   '>0%':   {php:'> 0',   err:'> 0 %'},

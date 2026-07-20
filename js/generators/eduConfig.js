@@ -227,7 +227,7 @@ function emitDependentsAndRadios(posts,single,suffix){
     'Certification':                    'cert',
     'Diploma':                          'diploma',
     'Ph.D':                             'phd',
-    'Integrated Post Graduate Diploma': 'idd',
+    'Integrated Dual Degree':           'idd',
     'Others':                           'others'
   };
   var depVars=['postcode'];

@@ -507,12 +507,14 @@ function updatePreview(){
     var n=S.posts, ic=S.internalCandidate.posts, cN=S._normalCtx, cI=S.internalCandidate.ctx;
     setCode('pv-edu-code',   genEduConfigBranched(n,ic,cN,cI,f));
     setCode('pv-eli-code',   genEligibilityBranched(n,ic,cN,cI,f));
+    setCode('pv-lang-code',  genLangFileBranched(n,ic));
     setCode('pv-eduval-code',genEduValidationsBranched(n,ic,cN,cI,f));
     setCode('pv-workexp-code',genWorkExpBranched(n,ic,cN,cI,f)||weNone());
     setCode('pv-qrysql-code',genEduQrySqlBranched(n,ic)||qrySqlNone());
   } else {
     setCode('pv-edu-code',genEduConfig(S.posts));
     setCode('pv-eli-code',genEligibility(S.posts));
+    setCode('pv-lang-code',genLangFile(S.posts));
     setCode('pv-eduval-code',genEduValidations(S.posts));
     setCode('pv-workexp-code',genWorkExpDetails(S.posts)||weNone());
     setCode('pv-qrysql-code',genEduQrySql(S.posts)||qrySqlNone());
@@ -520,7 +522,7 @@ function updatePreview(){
 }
 function setCode(id,code){var el=document.getElementById(id);el.textContent=code;delete el.dataset.highlighted;try{hljs.highlightElement(el);}catch(e){}}
 function switchTab(t){
-  var tabs=['edu','eli','eduval','workexp','qrysql'];
+  var tabs=['edu','eli','lang','eduval','workexp','qrysql'];
   for(var i=0;i<tabs.length;i++){
     document.getElementById('tab-'+tabs[i]).classList.toggle('on',t===tabs[i]);
     document.getElementById('pv-'+tabs[i]).classList.toggle('hidden',t!==tabs[i]);
@@ -536,7 +538,8 @@ function fileInfo(which){
     case 'eduval':  return {code:S._eduval,  file:'edu_validations.php'};
     case 'workexp': return {code:S._workexp, file:'work_exp_details_validations.php'};
     case 'qrysql': return {code:S._qrysql,  file:'eligibility_radio_fields.sql'};
-    default:        return {code:S._lang,    file:'edu_details_lang.php'};
+    default:        // 'lang' falls here — same file returned either way
+                    return {code:S._lang,    file:'edu_details_lang.php'};
   }
 }
 function renderS3(){
