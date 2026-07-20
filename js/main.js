@@ -18,11 +18,15 @@
   var dlFile = App.dlFile;
   var dlZip = App.dlZip;
   var onFileChange = App.onFileChange;
+  var openPostCompare = App.openPostCompare;
+  var closePostCompare = App.closePostCompare;
+  var runPostCompare = App.runPostCompare;
 
 window.goStep=goStep;window.updOv=updOv;window.updDimVar=updDimVar;window.updBilingual=updBilingual;window.switchTab=switchTab;
 window.updApEnable=updApEnable;window.updApLevel=updApLevel;window.updApField=updApField;
 window.updIntEnable=updIntEnable;window.updIntField=updIntField;
 window.copyCode=copyCode;window.dlFile=dlFile;window.dlZip=dlZip;
+window.openPostCompare=openPostCompare;window.closePostCompare=closePostCompare;window.runPostCompare=runPostCompare;
 
 document.getElementById('file-in').addEventListener('change',onFileChange);
 hljs.configure({ignoreUnescapedHTML:true});

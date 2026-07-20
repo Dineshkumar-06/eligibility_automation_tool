@@ -132,6 +132,67 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .spinner{display:inline-block;width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:ecg-spin .7s linear infinite}
 @keyframes ecg-spin{to{transform:rotate(360deg)}}
 
+/* ── Post Order Comparison utility ───────────────────────────────────────── */
+.pc-btn{position:fixed;top:16px;right:64px;z-index:50;height:38px;padding:0 14px;border-radius:19px;border:1px solid var(--border);background:var(--bg-elev);color:var(--text-strong);cursor:pointer;font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px;transition:all .15s}
+.pc-btn:hover{background:var(--btn-s-hover);border-color:var(--accent)}
+.pc-overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:24px}
+.pc-panel{background:var(--bg-elev);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.35);width:100%;max-width:900px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+.pc-hdr{padding:14px 18px;background:var(--bg-elev2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.pc-hdr h3{font-size:15px;color:var(--text-strong)}
+.pc-close{background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;line-height:1;padding:4px}
+.pc-close:hover{color:var(--text-strong)}
+.pc-body{padding:16px 18px;overflow-y:auto}
+.pc-panes{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:640px){.pc-panes{grid-template-columns:1fr}}
+.pc-pane label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
+.pc-pane textarea{width:100%;height:220px;resize:vertical;background:var(--bg-inset);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:5px;font-size:12px;font-family:Consolas,Monaco,monospace}
+.pc-pane textarea:focus{outline:none;border-color:var(--accent)}
+.pc-acts{display:flex;justify-content:flex-end;margin-top:14px}
+#pc-result{margin-top:16px}
+
+/* Summary chips: totals + per-category counts, at a glance before reading rows */
+.pc-summary{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.pc-chip{display:flex;align-items:baseline;gap:6px;padding:6px 12px;border-radius:8px;background:var(--bg-elev2);border:1px solid var(--border)}
+.pc-chip-n{font-size:16px;font-weight:700;color:var(--text-strong)}
+.pc-chip-l{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px}
+.pc-chip-neutral .pc-chip-n{color:var(--text-strong)}
+.pc-chip-g{border-color:rgba(35,134,54,.35)}
+.pc-chip-g .pc-chip-n{color:#3fb950}
+.pc-chip-r{border-color:rgba(248,81,73,.35)}
+.pc-chip-r .pc-chip-n{color:#f85149}
+.pc-chip-o{border-color:rgba(210,153,34,.35)}
+.pc-chip-o .pc-chip-n{color:#e3b341}
+.pc-chip-b{border-color:rgba(31,111,235,.35)}
+.pc-chip-b .pc-chip-n{color:#79c0ff}
+
+.pc-identical{display:flex;align-items:center;gap:8px;padding:14px;border-radius:8px;background:rgba(35,134,54,.1);border:1px solid rgba(35,134,54,.3);color:#3fb950;font-size:14px;font-weight:500}
+
+/* Row list: one card per diff entry, colored left border + icon carry the same
+   meaning as the text label, so status is never conveyed by color alone. */
+.pc-rowlist{max-height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+.pc-row{display:flex;gap:10px;padding:9px 12px;border-radius:6px;background:var(--bg-elev2);border-left:3px solid var(--border)}
+.pc-row-icon{flex-shrink:0;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-top:1px}
+.pc-row-body{flex:1;min-width:0}
+.pc-row-title{font-size:13px;color:var(--text);line-height:1.5}
+.pc-pos{color:var(--text-muted);font-size:11.5px;font-family:Consolas,Monaco,monospace;margin-right:4px}
+.pc-row-diff{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+@media (max-width:520px){.pc-row-diff{grid-template-columns:1fr}}
+.pc-diff-old,.pc-diff-new{padding:6px 8px;border-radius:5px;font-size:12.5px;font-family:Consolas,Monaco,monospace;background:var(--bg-inset)}
+.pc-diff-old{border-left:2px solid #f85149;color:var(--text)}
+.pc-diff-new{border-left:2px solid #3fb950;color:var(--text)}
+.pc-diff-tag{display:block;font-size:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;text-transform:uppercase;letter-spacing:.4px;color:var(--text-muted);margin-bottom:2px}
+
+.pc-row-match{border-left-color:rgba(63,185,80,.5);opacity:.75}
+.pc-row-match .pc-row-icon{background:rgba(35,134,54,.2);color:#3fb950}
+.pc-row-mismatch{border-left-color:#f85149}
+.pc-row-mismatch .pc-row-icon{background:rgba(248,81,73,.2);color:#f85149}
+.pc-row-moved{border-left-color:#1f6feb}
+.pc-row-moved .pc-row-icon{background:rgba(31,111,235,.2);color:#79c0ff}
+.pc-row-missing{border-left-color:#e3b341}
+.pc-row-missing .pc-row-icon{background:rgba(210,153,34,.2);color:#e3b341}
+.pc-row-extra{border-left-color:#e3b341}
+.pc-row-extra .pc-row-icon{background:rgba(210,153,34,.2);color:#e3b341}
+
 /* ── Respect reduced-motion preference ───────────────────────────────────── */
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{

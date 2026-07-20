@@ -23,6 +23,7 @@
 </head>
 <body>
 <button class="theme-toggle" id="theme-toggle" type="button" title="Toggle light / dark theme" aria-label="Toggle theme"></button>
+<button class="pc-btn" id="pc-open" type="button" onclick="openPostCompare()" title="Post Order Comparison">⇅ Post Order Comparison</button>
 <div class="app">
   <div class="header">
     <h1>Eligibility Code Generator <span class="phase-tag">Final Phase</span></h1>
@@ -127,6 +128,28 @@
     </div>
   </div>
 </div>
+<div class="pc-overlay hidden" id="pc-overlay" role="dialog" aria-modal="true" aria-labelledby="pc-title">
+  <div class="pc-panel">
+    <div class="pc-hdr">
+      <h3 id="pc-title">Post Order Comparison</h3>
+      <button class="pc-close" type="button" onclick="closePostCompare()" aria-label="Close">✕</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panes">
+        <div class="pc-pane">
+          <label for="pc-sow">SOW Posts</label>
+          <textarea id="pc-sow" placeholder="Paste post rows copied from the SOW sheet..."></textarea>
+        </div>
+        <div class="pc-pane">
+          <label for="pc-eli">Eligibility Sheet Posts</label>
+          <textarea id="pc-eli" placeholder="Paste post rows copied from the Eligibility Criteria sheet..."></textarea>
+        </div>
+      </div>
+      <div class="pc-acts"><button class="btn btn-p" type="button" onclick="runPostCompare()">Compare</button></div>
+      <div id="pc-result"></div>
+    </div>
+  </div>
+</div>
 <!-- Application modules (load order matters: dependencies first) -->
 <script src="js/core/constants.js"></script>
 <script src="js/core/state.js"></script>
@@ -144,6 +167,7 @@
 <script src="js/generators/workExp.js"></script>
 <script src="js/generators/internalBranch.js"></script>
 <script src="js/ui/ui.js"></script>
+<script src="js/ui/postCompare.js"></script>
 <script src="js/main.js"></script>
 <script>
   // ── Light / dark theme toggle ──────────────────────────────────────────────
