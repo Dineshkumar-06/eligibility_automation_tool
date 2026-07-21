@@ -541,19 +541,31 @@ function disambiguateRadioNames(posts){
         var c=posts[pi].orGroups[gi].conditions[ci];
         if(c.type==='radio') allConds.push(c);
       }
+  // Collapse to one representative condition per normalized question BEFORE running
+  // the collision walk below. Feeding every duplicate occurrence through the walk
+  // made a duplicate's final fieldName depend on which unrelated collisions happened
+  // to fall between it and its twin (each occurrence could get renamed down a
+  // different path), so two identical questions could end up split into two field
+  // names. Resolving only representatives — then propagating each result to its
+  // duplicates afterward — keeps identical questions on one name regardless of
+  // processing order.
+  var repByNormQ={};
+  var uniqueConds=[];
+  for(var i=0;i<allConds.length;i++){
+    var c=allConds[i];
+    var cNormQ=normRadioQuestion(c.question);
+    c._normQ=cNormQ;
+    if(!repByNormQ[cNormQ]){ repByNormQ[cNormQ]=c; uniqueConds.push(c); }
+  }
   // Count how many times each base-4-word name is used, for numeric suffix fallback.
   var MAX_WORDS=4;
   var numericCounters={};
-  for(var i=0;i<allConds.length;i++){
-    var c=allConds[i];
+  for(var i=0;i<uniqueConds.length;i++){
+    var c=uniqueConds[i];
     var words=c.words||[];
     var used=2; // deriveField already used 2 words
     var maxIter=MAX_WORDS+4; // safety cap
-    // Identity for collision detection is the NORMALIZED question, not the raw text —
-    // two conditions whose questions differ only in spacing/punctuation/case (e.g.
-    // "...experience?" vs "...experience ?") are the SAME question and must keep
-    // sharing one field name, not get split apart into "_2"/extra-word variants.
-    var cNormQ=normRadioQuestion(c.question);
+    var cNormQ=c._normQ;
     while(owners[c.fieldName]&&owners[c.fieldName].normQ!==cNormQ&&maxIter-->0){
       var owner=owners[c.fieldName];
       var ownerWordCount=owner.cond.fieldName.split('_').length;
@@ -585,6 +597,16 @@ function disambiguateRadioNames(posts){
     }
     if(!owners[c.fieldName])
       owners[c.fieldName]={normQ:cNormQ,cond:c,words:words,usedWords:used};
+  }
+  // Propagate each representative's final (possibly renamed) fieldName to its duplicates.
+  for(var i=0;i<allConds.length;i++){
+    var c=allConds[i];
+    var rep=repByNormQ[c._normQ];
+    if(c!==rep){
+      c.fieldName=rep.fieldName;
+      c.langKey=rep.langKey;
+    }
+    delete c._normQ;
   }
 }
 
