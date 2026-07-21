@@ -401,6 +401,11 @@ function normGrade(s){
   for(var k in GRADE_OPS) if(k.toLowerCase()===t.toLowerCase()) return k;
   return t;
 }
+// Collapses any run of whitespace (leading, trailing, or in-between) to a single space.
+// Values that differ only in spacing are not meaningfully different subjects/degrees —
+// unlike case or wording differences, which may be genuine — so this normalization is
+// applied unconditionally at parse time rather than merely flagged for review.
+function collapseWs(s){ return String(s||'').replace(/\s+/g,' ').trim(); }
 function parseSubs(s){
   // A blank cell, or one that is only dashes/whitespace ("-", "----", "—"), is the
   // "no value" placeholder (common in the Degree column for SSC/HSC rows) and yields
@@ -416,7 +421,7 @@ function parseSubs(s){
     if(qi===-1){
       // no more quoted sections — split remainder on "/"
       var parts=rest.split('/');
-      for(var i=0;i<parts.length;i++){var v=parts[i].trim();if(v&&v!=='-')tokens.push(v);}
+      for(var i=0;i<parts.length;i++){var v=collapseWs(parts[i]);if(v&&v!=='-')tokens.push(v);}
       break;
     }
     // handle unquoted segment before the opening quote
@@ -425,14 +430,14 @@ function parseSubs(s){
       var bparts=before.split('/');
       for(var i=0;i<bparts.length;i++){
         // last segment before the quote may be empty (trailing "/") — skip
-        var v=bparts[i].trim();
+        var v=collapseWs(bparts[i]);
         if(v&&v!=='-') tokens.push(v);
       }
     }
     // find closing quote
     var closeQ=rest.indexOf('"',qi+1);
     if(closeQ===-1) closeQ=rest.length-1; // unterminated quote — treat rest as quoted
-    var quoted=rest.slice(qi+1,closeQ).trim();
+    var quoted=collapseWs(rest.slice(qi+1,closeQ));
     if(quoted&&quoted!=='-') tokens.push(quoted);
     // advance past closing quote; skip an immediately following "/"
     rest=rest.slice(closeQ+1);

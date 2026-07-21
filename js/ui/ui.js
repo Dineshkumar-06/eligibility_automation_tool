@@ -158,32 +158,48 @@ function renderS1(){
   if(cb){
     cb.innerHTML='';
     var cl=S.clarifications||{stream:[],degree:[],radio:[]};
-    var renderGroups=function(label,groups){
-      if(!groups||!groups.length) return '';
-      var items=groups.map(function(g){
-        return '• '+g.map(function(v){return '"'+escH(v)+'"';}).join(' ↔ ');
-      }).join('<br>');
-      return '<strong>Possible duplicate '+label+' values detected:</strong><br>'+items+'<br>';
+    // One card per duplicate group: a small axis tag, then the competing spellings as
+    // chips (each carrying the postcode(s) it was found under, so the user can jump
+    // straight to that post in the table instead of hunting through the sheet).
+    var axisCard=function(axisTag,g){
+      var chips=g.map(function(v){
+        var pcs=(g.postcodes&&g.postcodes[v])||[];
+        var pcTags=pcs.map(function(pc){return '<span class="clarify-chip-pc">'+escH(pc)+'</span>';}).join('');
+        return '<span class="clarify-chip">"'+escH(v)+'"'+pcTags+'</span>';
+      }).join('<span class="clarify-chip-sep">≈</span>');
+      return '<div class="clarify-card"><span class="bd bd-grey clarify-axis-tag">'+axisTag+'</span>'+
+        '<div class="clarify-chipset">'+chips+'</div></div>';
     };
     var boxes='';
     // Subject/Stream + Degree: values that LOOK like duplicates but were left as-is —
     // purely a "please review" flag, kept in the original blue info box.
-    var axisHtml=renderGroups('Subject/Stream',cl.stream)+renderGroups('Degree',cl.degree);
-    if(axisHtml) boxes+='<div class="alert alert-info"><span class="bd bd-b">VALUES</span> '+axisHtml+
-      '<br><span class="dim">These may represent the same values. '+
-      'This is informational only and does not block code generation — please review.</span></div>';
+    var axisCards=(cl.stream||[]).map(function(g){return axisCard('Stream',g);}).join('')+
+      (cl.degree||[]).map(function(g){return axisCard('Degree',g);}).join('');
+    if(axisCards){
+      var axisCount=(cl.stream||[]).length+(cl.degree||[]).length;
+      boxes+='<div class="alert alert-info clarify-panel">'+
+        '<div class="clarify-panel-hdr"><span class="bd bd-b">VALUES</span> <strong>Possible duplicate Subject/Stream &amp; Degree values</strong> '+
+        '<span class="clarify-count">'+axisCount+'</span></div>'+
+        '<div class="clarify-cards">'+axisCards+'</div>'+
+        '<div class="clarify-hint">These may be the same value spelled differently. This is informational only and does not block code generation — review and align spelling in the sheet if intentional.</div>'+
+        '</div>';
+    }
     // Radio-button duplicates get their own visually distinct box (amber, RADIO badge):
     // unlike the values above, these were ACTIVELY merged into ONE field name during
     // parsing (see disambiguateRadioNames), so the note reads as a resolution, not just
     // a heads-up, and must not be mistaken for the Subject/Stream/Degree review notice.
     if(cl.radio&&cl.radio.length){
-      var radioBody=cl.radio.map(function(g){
-        var bullets=g.texts.map(function(v){return '• "'+escH(v)+'"';}).join('<br>');
-        return bullets+'<br><span class="dim">These were treated as the same question and assigned a single field name: <code>'+escH(g.fieldName)+'</code></span>';
-      }).join('<br><br>');
-      boxes+='<div class="alert alert-warn"><span class="bd bd-o">RADIO</span> <strong>Duplicate radio button question(s) detected:</strong><br>'+radioBody+'<br>'+
-        '<br><span class="dim">These are formatting-only variants of the same question — merged automatically. '+
-        'This is informational only and does not block code generation.</span></div>';
+      var radioCards=cl.radio.map(function(g){
+        var chips=g.texts.map(function(v){return '<span class="clarify-chip">"'+escH(v)+'"</span>';}).join('<span class="clarify-chip-sep">≈</span>');
+        return '<div class="clarify-card"><div class="clarify-chipset">'+chips+'</div>'+
+          '<div class="clarify-hint">Merged into one field: <code>'+escH(g.fieldName)+'</code></div></div>';
+      }).join('');
+      boxes+='<div class="alert alert-warn clarify-panel">'+
+        '<div class="clarify-panel-hdr"><span class="bd bd-o">RADIO</span> <strong>Duplicate radio button question(s) detected</strong> '+
+        '<span class="clarify-count">'+cl.radio.length+'</span></div>'+
+        '<div class="clarify-cards">'+radioCards+'</div>'+
+        '<div class="clarify-hint">These are formatting-only variants of the same question — merged automatically. This is informational only and does not block code generation.</div>'+
+        '</div>';
     }
     if(boxes) cb.innerHTML=boxes;
   }

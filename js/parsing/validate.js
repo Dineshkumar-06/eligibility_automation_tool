@@ -17,12 +17,15 @@ function normText(s){
 }
 
 // Gather every raw value for one axis ('subjects' or 'degrees') from all edu conditions
-// across all posts. Skips empties and dash-only placeholders (mirrors parseSubs' guard).
+// across all posts, paired with the postcode of the post it came from (so the UI can point
+// the user back at where each value lives on the sheet). Skips empties and dash-only
+// placeholders (mirrors parseSubs' guard).
 function collectAxisValues(posts,axisKey){
   var out=[];
   if(!posts) return out;
   for(var pi=0;pi<posts.length;pi++){
-    var orGroups=posts[pi].orGroups||[];
+    var post=posts[pi];
+    var orGroups=post.orGroups||[];
     for(var gi=0;gi<orGroups.length;gi++){
       var conds=orGroups[gi].conditions||[];
       for(var ci=0;ci<conds.length;ci++){
@@ -32,7 +35,7 @@ function collectAxisValues(posts,axisKey){
         for(var vi=0;vi<vals.length;vi++){
           var v=vals[vi];
           if(!v||/^[\s\-–—]+$/.test(v)) continue;
-          out.push(v);
+          out.push({value:v,postcode:post.postcode});
         }
       }
     }
@@ -41,17 +44,27 @@ function collectAxisValues(posts,axisKey){
 }
 
 // Group raw values by normalized form; return only groups with 2+ distinct raw spellings.
-function findDupGroups(values){
+// Each returned group is a plain array of the raw strings (unchanged shape, so existing
+// consumers/tests using indexOf/length keep working) with an extra `.postcodes` property —
+// a map of raw value -> the distinct postcodes it was seen under — for the UI to display.
+function findDupGroups(entries){
   var map=new Map();
-  for(var i=0;i<values.length;i++){
-    var v=values[i], key=normText(v);
+  for(var i=0;i<entries.length;i++){
+    var v=entries[i].value, pc=entries[i].postcode, key=normText(v);
     if(!key) continue;
-    if(!map.has(key)) map.set(key,[]);
-    var arr=map.get(key);
-    if(arr.indexOf(v)===-1) arr.push(v);
+    if(!map.has(key)) map.set(key,{order:[],postcodes:{}});
+    var g=map.get(key);
+    if(g.order.indexOf(v)===-1){ g.order.push(v); g.postcodes[v]=[]; }
+    if(pc!==undefined&&pc!==null&&g.postcodes[v].indexOf(pc)===-1) g.postcodes[v].push(pc);
   }
   var groups=[];
-  map.forEach(function(arr){ if(arr.length>=2) groups.push(arr); });
+  map.forEach(function(g){
+    if(g.order.length>=2){
+      var arr=g.order.slice();
+      arr.postcodes=g.postcodes;
+      groups.push(arr);
+    }
+  });
   return groups;
 }
 
