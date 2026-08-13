@@ -34,6 +34,96 @@ POS.forEach(s => { if (!App.isRadioQuestion(s)) { unitBad++; console.log('    MI
 NEG.forEach(s => { if (App.isRadioQuestion(s)) { unitBad++; console.log('    FALSE POS: ' + s); } });
 ok('all ' + POS.length + ' positives detected, all ' + NEG.length + ' negatives rejected', unitBad === 0, unitBad + ' wrong');
 
+// ── Unit: content-derived field names ───────────────────────────────────────
+// deriveField() + disambiguateRadioNames() must produce readable, unique names from
+// the question text — never a bare "_2"-style sequential name when the questions
+// actually differ in a meaningful word.
+console.log('\n===================== field name derivation =====================');
+function names(questions) {
+  const posts = questions.map((q, i) => {
+    const fd = App.deriveField(q);
+    return {
+      postcode: String(i + 1),
+      orGroups: [{ conditions: [{ type: 'radio', question: q, fieldName: fd.fn, langKey: fd.lk,
+                                  shouldBe: fd.shouldBe, words: fd.words, status: 'ok' }] }]
+    };
+  });
+  App.disambiguateRadioNames(posts);
+  return posts.map(p => p.orGroups[0].conditions[0]);
+}
+{
+  // A long question whose opening words are pure boilerplate: the name must come from
+  // the domain words further in, not from "Do you have minimum 08 years …".
+  const c = names(['Do you have minimum 08 years post basic qualification experience in IT Industry/ ' +
+    'BFSI or IT Vertical of an Organization out of which 04 years of experience in the field of ' +
+    'cloud architecture, cloud engineering, or DevOps roles? Should be YES']);
+  ok('boilerplate-heavy question gets a content-derived name',
+    c[0].fieldName === 'min_eight_it_bfsi', c[0].fieldName);
+  ok('"Should be YES" contributes no name material', !/_yes$/.test(c[0].fieldName), c[0].fieldName);
+}
+{
+  // A large family sharing one 4-word base, several pairs needing a 5th word to
+  // separate — reproduces a real regression where a condition stuck at the NAME_MAX
+  // cap was dropped from the collision registry instead of tombstoned, letting a
+  // later, unrelated question silently reuse its name.
+  const fn = names([
+    'Do you have a minimum 3 years regular service in Sub Regional Officers post ? Yes/No Should be Yes',
+    'Do you have a minimum 3 years of regular service in Field Officer post ? Yes/No Should be Yes',
+    'Do you have a minimum 3 years regular service in Assistant Systems Officer post ? Yes/No Should be Yes',
+    'Do you have a minimum 3 years of regular service in Scientific Officers post ? Yes/No Should be Yes',
+    'Do you have a minimum 3 years of regular service in Junior Scientific Officer post ? Yes/No Should be Yes',
+    'Do you have a minimum 3 years of regular service in Junior Scientific Assistant post ? Yes/No Should be Yes',
+    'Do you have a minimum 3 years of regular service in Laboratory Assistant post ? Yes/No Should be Yes',
+    'Do you have a minimum 3 years of regular service in Assistant Law Officer post ? Yes/No Should be Yes',
+    'Do you have a minimum 3 years of regular service in Legal Assistant post ? Yes/No Should be Yes',
+    'Do you have a minimum 3 years of regular service in Junior Stenographer post ? Yes/No Should be Yes',
+    'Do you have a minimum 3 years of regular service in Assistant Accounts Officer post ? Yes/No Should be Yes',
+  ]).map(x => x.fieldName);
+  ok('a large same-base family resolves to all-unique names', fn.length === new Set(fn).size,
+    JSON.stringify(fn));
+}
+{
+  // Similar questions: each keeps the word that actually distinguishes it.
+  const c = names([
+    'Minimum 5 years experience in IT projects',
+    'Minimum 5 years experience in Banking projects',
+    'Minimum 5 years experience in IT projects .',   // punctuation-only duplicate
+    'Minimum 8 years experience in IT projects',
+    'Do you have a valid driving licence?',
+  ]);
+  const fn = c.map(x => x.fieldName);
+  ok('abbreviated, content-derived name for the IT question', fn[0] === 'min_five_it_projects', fn[0]);
+  ok('rival question keeps its own distinguishing word', fn[1] === 'min_five_banking_projects', fn[1]);
+  ok('punctuation-variant duplicate reuses the same name', fn[2] === fn[0], fn[2]);
+  ok('numerically distinct question needs no disambiguation', fn[3] === 'min_eight_it_projects', fn[3]);
+  ok('filler words are dropped from the name', fn[4] === 'valid_driving_licence', fn[4]);
+  ok('no sequential "_2" style name anywhere', !fn.some(f => /_\d+$/.test(f)), JSON.stringify(fn));
+  ok('lang keys mirror the field names', c.every(x => x.langKey === 'edu_' + x.fieldName),
+    JSON.stringify(c.map(x => x.langKey)));
+  ok('all names are lowercase identifiers', fn.every(f => /^[a-z0-9]+(_[a-z0-9]+)*$/.test(f)), JSON.stringify(fn));
+}
+{
+  // A whole family of siblings: none may reclaim a stem another one outgrew.
+  const fn = names([
+    'Minimum 5 years experience in IT projects',
+    'Minimum 5 years experience in Banking projects',
+    'Minimum 5 years experience in Telecom projects',
+    'Minimum 5 years experience in Insurance projects',
+  ]).map(x => x.fieldName);
+  ok('every sibling carries its distinguishing word',
+    JSON.stringify(fn) === JSON.stringify(['min_five_it_projects', 'min_five_banking_projects',
+      'min_five_telecom_projects', 'min_five_insurance_projects']), JSON.stringify(fn));
+}
+{
+  // Identical word sets (pure reordering) have nothing meaningful to differ on —
+  // the numeric-suffix fallback must still guarantee uniqueness.
+  const fn = names(['Are you a registered CA?', 'Are you a registered CS?', 'Registered you are a CA ?'])
+    .map(x => x.fieldName);
+  ok('reordered-wording collision still resolves uniquely',
+    fn.length === new Set(fn).size && fn[0] === 'registered_ca' && fn[1] === 'registered_cs',
+    JSON.stringify(fn));
+}
+
 // ── End-to-end on the two previously-failing sheets ─────────────────────────
 function parse(file) {
   const wb = XLSX.readFile(path.join(__dirname, '..', 'resources', file));

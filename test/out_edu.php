@@ -253,6 +253,8 @@
 		'01' => 'Others',
 	);
 
+	$arrGraduation_Stream_All= stream_array_merge($arrGraduation_Stream);
+
 	// Post Graduation Stream
 	$arrPG_Stream_cond1['01']['01']
 		= $arrPG_Stream_cond1['02']['01'] = array(
@@ -340,6 +342,8 @@
 		'01' => 'Others',
 	);
 
+	$arrPG_Stream_All= stream_array_merge($arrPG_Stream);
+
 	// Ph.D Stream
 	$arrPhD_Stream['01']['01']
 		= $arrPhD_Stream['02']['01']
@@ -386,117 +390,127 @@
 		'01' => 'Others',
 	);
 
+	$arrPhD_Stream_All= stream_array_merge($arrPhD_Stream);
+
       // config.php
-	$eligibilityDependents = array('postcode', 'sscpercentage', 'sscgrade', 'graduationsubjects', 'graduationpercentage', 'graduationgrade', 'postgraduationsubjects', 'postgraduationpercentage', 'postgraduationgrade', 'phdsubjects', 'phdpercentage', 'phdgrade', 'totexp', 'minimum_five_years_regular', 'minimum_five', 'minimum_three_years_regular', 'minimum_three', 'not_less_than_five', 'not_less', 'minimum_five_years_regular_2', 'minimum_three_years_regular_2', 'not_less_than_five_2', 'minimum_three_years_regular_3', 'minimum_five_years_experience', 'possess_ms', 'minimum_seven_years_regular', 'not_less_than_five_3', 'minimum_three_years_regular_4', 'minimum_five_years_regular_3', 'minimum_seven_years_regular_2', 'minimum_three_years_regular_5', 'not_less_than_five_4', 'minimum_three_years_regular_6', 'three_years', 'not_less_than_three', 'minimum_three_years_regular_7', 'possess_g_c_certificate', 'possess_g_c_certificate_2', 'minimum_five_years_regular_4', 'minimum_three_years_experience', 'minimum_three_years_regular_8', 'minimum_three_years_regular_9', 'possess_g', 'not_less_than_three_2');
+	$eligibilityDependents = array('postcode', 'sscpercentage', 'sscgrade', 'graduationsubjects', 'graduationpercentage', 'graduationgrade', 'postgraduationsubjects', 'postgraduationpercentage', 'postgraduationgrade', 'phdsubjects', 'phdpercentage', 'phdgrade', 'totexp', 'min_five_regular_service_sub', 'min_three_regular_service_sub', 'not_less_than_five_edu', 'min_five_regular_service_officer', 'min_three_regular_service_officer', 'not_less_than_five_environment', 'min_three_regular_service_assistant', 'min_five_it_managerial', 'possess_ms_cit_cert', 'min_three_regular_service_scientific', 'min_five_regular_service_scientific', 'min_seven_regular_service_officers', 'not_less_than_five_laboratory', 'min_three_regular_service_junior', 'min_five_regular_service_junior', 'min_seven_regular_service_junior', 'min_three_regular_service_2', 'not_less_than_five_qualifications', 'min_three_regular_service_laboratory', 'min_three_regular_service_3', 'three_years_practical_court', 'min_three_regular_service_legal', 'not_less_than_three_practical', 'min_three_regular_service_4', 'possess_g_c_cert_120', 'not_less_than_five_2', 'possess_g_c_cert_80', 'min_three_regular_service_5', 'min_five_regular_service_assistant', 'min_three_supervisory_capacity', 'min_three_regular_service_head', 'not_less_than_three_supervisory', 'min_three_regular_service_senior', 'min_three_supervisory_capacity_2', 'min_three', 'min_three_regular_service_6', 'min_five_regular_service_2', 'possess_g_c_cert_2', 'not_less_than_three_accounts');
 
 	$arrPostBasedRadioCond = array(
 		'01' => array(
-			'01' => array(array('label' => 'edu_minimum_five_years_regular', 'field' => 'minimum_five_years_regular', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_minimum_five', 'field' => 'minimum_five', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_minimum_three_years_regular', 'field' => 'minimum_three_years_regular', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_minimum_three', 'field' => 'minimum_three', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No')),
-			'02' => array(array('label' => 'edu_not_less_than_five', 'field' => 'not_less_than_five', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_not_less', 'field' => 'not_less', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No')),
+			'01' => array(array('label' => 'edu_min_five_regular_service_sub', 'field' => 'min_five_regular_service_sub', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_min_three_regular_service_sub', 'field' => 'min_three_regular_service_sub', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No')),
+			'02' => array(array('label' => 'edu_not_less_than_five_edu', 'field' => 'not_less_than_five_edu', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 		'02' => array(
-			'01' => array(array('label' => 'edu_minimum_five_years_regular_2', 'field' => 'minimum_five_years_regular_2', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_minimum_five_years_regular', 'field' => 'minimum_five_years_regular', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_minimum_three_years_regular_2', 'field' => 'minimum_three_years_regular_2', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_minimum_three_years_regular', 'field' => 'minimum_three_years_regular', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No')),
-			'02' => array(array('label' => 'edu_not_less_than_five_2', 'field' => 'not_less_than_five_2', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_not_less_than_five', 'field' => 'not_less_than_five', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No')),
+			'01' => array(array('label' => 'edu_min_five_regular_service_officer', 'field' => 'min_five_regular_service_officer', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_min_three_regular_service_officer', 'field' => 'min_three_regular_service_officer', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No')),
+			'02' => array(array('label' => 'edu_not_less_than_five_environment', 'field' => 'not_less_than_five_environment', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 		'05' => array(
-			'01' => array(array('label' => 'edu_minimum_three_years_regular_3', 'field' => 'minimum_three_years_regular_3', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
-			'02' => array(array('label' => 'edu_minimum_five_years_experience', 'field' => 'minimum_five_years_experience', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'01' => array(array('label' => 'edu_min_three_regular_service_assistant', 'field' => 'min_three_regular_service_assistant', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'02' => array(array('label' => 'edu_min_five_it_managerial', 'field' => 'min_five_it_managerial', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 		'06' => array(
-			'02' => array(array('label' => 'edu_possess_ms', 'field' => 'possess_ms', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'02' => array(array('label' => 'edu_possess_ms_cit_cert', 'field' => 'possess_ms_cit_cert', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 		'09' => array(
-			'01' => array(array('label' => 'edu_minimum_three_years_regular', 'field' => 'minimum_three_years_regular', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_minimum_three', 'field' => 'minimum_three', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_minimum_five_years_regular', 'field' => 'minimum_five_years_regular', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_minimum_five', 'field' => 'minimum_five', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_minimum_seven_years_regular', 'field' => 'minimum_seven_years_regular', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No')),
-			'02' => array(array('label' => 'edu_not_less_than_five_3', 'field' => 'not_less_than_five_3', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_not_less_than_five', 'field' => 'not_less_than_five', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No')),
+			'01' => array(array('label' => 'edu_min_three_regular_service_scientific', 'field' => 'min_three_regular_service_scientific', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_min_five_regular_service_scientific', 'field' => 'min_five_regular_service_scientific', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_min_seven_regular_service_officers', 'field' => 'min_seven_regular_service_officers', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No')),
+			'02' => array(array('label' => 'edu_not_less_than_five_laboratory', 'field' => 'not_less_than_five_laboratory', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 		'10' => array(
-			'01' => array(array('label' => 'edu_minimum_three_years_regular_4', 'field' => 'minimum_three_years_regular_4', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_minimum_three_years_regular', 'field' => 'minimum_three_years_regular', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_minimum_five_years_regular_3', 'field' => 'minimum_five_years_regular_3', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_minimum_five_years_regular', 'field' => 'minimum_five_years_regular', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_minimum_seven_years_regular_2', 'field' => 'minimum_seven_years_regular_2', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No')),
-			'02' => array(array('label' => 'edu_not_less', 'field' => 'not_less', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'01' => array(array('label' => 'edu_min_three_regular_service_junior', 'field' => 'min_three_regular_service_junior', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_min_five_regular_service_junior', 'field' => 'min_five_regular_service_junior', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_min_seven_regular_service_junior', 'field' => 'min_seven_regular_service_junior', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No')),
+			'02' => array(array('label' => 'edu_not_less_than_five_laboratory', 'field' => 'not_less_than_five_laboratory', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 		'11' => array(
-			'01' => array(array('label' => 'edu_minimum_three_years_regular_5', 'field' => 'minimum_three_years_regular_5', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
-			'02' => array(array('label' => 'edu_not_less_than_five_4', 'field' => 'not_less_than_five_4', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'01' => array(array('label' => 'edu_min_three_regular_service_2', 'field' => 'min_three_regular_service_2', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'02' => array(array('label' => 'edu_not_less_than_five_qualifications', 'field' => 'not_less_than_five_qualifications', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 		'12' => array(
-			'01' => array(array('label' => 'edu_minimum_three_years_regular', 'field' => 'minimum_three_years_regular', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'01' => array(array('label' => 'edu_min_three_regular_service_laboratory', 'field' => 'min_three_regular_service_laboratory', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 		'14' => array(
-			'01' => array(array('label' => 'edu_minimum_three_years_regular_6', 'field' => 'minimum_three_years_regular_6', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
-			'02' => array(array('label' => 'edu_three_years', 'field' => 'three_years', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'01' => array(array('label' => 'edu_min_three_regular_service_3', 'field' => 'min_three_regular_service_3', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'02' => array(array('label' => 'edu_three_years_practical_court', 'field' => 'three_years_practical_court', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 		'15' => array(
-			'01' => array(array('label' => 'edu_minimum_three_years_regular', 'field' => 'minimum_three_years_regular', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
-			'02' => array(array('label' => 'edu_not_less_than_three', 'field' => 'not_less_than_three', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'01' => array(array('label' => 'edu_min_three_regular_service_legal', 'field' => 'min_three_regular_service_legal', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'02' => array(array('label' => 'edu_not_less_than_three_practical', 'field' => 'not_less_than_three_practical', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 		'17' => array(
-			'01' => array(array('label' => 'edu_minimum_three_years_regular_7', 'field' => 'minimum_three_years_regular_7', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
-			'02' => array(array('label' => 'edu_possess_g_c_certificate', 'field' => 'possess_g_c_certificate', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes'), array('label' => 'edu_not_less_than_five', 'field' => 'not_less_than_five', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'01' => array(array('label' => 'edu_min_three_regular_service_4', 'field' => 'min_three_regular_service_4', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'02' => array(array('label' => 'edu_possess_g_c_cert_120', 'field' => 'possess_g_c_cert_120', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes'), array('label' => 'edu_not_less_than_five_2', 'field' => 'not_less_than_five_2', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 		'18' => array(
-			'02' => array(array('label' => 'edu_possess_g_c_certificate_2', 'field' => 'possess_g_c_certificate_2', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'02' => array(array('label' => 'edu_possess_g_c_cert_80', 'field' => 'possess_g_c_cert_80', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 		'19' => array(
-			'01' => array(array('label' => 'edu_minimum_three_years_regular', 'field' => 'minimum_three_years_regular', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_minimum_five_years_regular_4', 'field' => 'minimum_five_years_regular_4', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No')),
-			'02' => array(array('label' => 'edu_minimum_three_years_experience', 'field' => 'minimum_three_years_experience', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'01' => array(array('label' => 'edu_min_three_regular_service_5', 'field' => 'min_three_regular_service_5', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_min_five_regular_service_assistant', 'field' => 'min_five_regular_service_assistant', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No')),
+			'02' => array(array('label' => 'edu_min_three_supervisory_capacity', 'field' => 'min_three_supervisory_capacity', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 		'20' => array(
-			'01' => array(array('label' => 'edu_minimum_three_years_regular', 'field' => 'minimum_three_years_regular', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'01' => array(array('label' => 'edu_min_three_regular_service_head', 'field' => 'min_three_regular_service_head', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 		'21' => array(
-			'02' => array(array('label' => 'edu_not_less_than_three', 'field' => 'not_less_than_three', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'02' => array(array('label' => 'edu_not_less_than_three_supervisory', 'field' => 'not_less_than_three_supervisory', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 		'22' => array(
-			'01' => array(array('label' => 'edu_possess_ms', 'field' => 'possess_ms', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes'), array('label' => 'edu_minimum_three_years_regular_8', 'field' => 'minimum_three_years_regular_8', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'01' => array(array('label' => 'edu_possess_ms_cit_cert', 'field' => 'possess_ms_cit_cert', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes'), array('label' => 'edu_min_three_regular_service_senior', 'field' => 'min_three_regular_service_senior', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 		'23' => array(
-			'02' => array(array('label' => 'edu_possess_ms', 'field' => 'possess_ms', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes'), array('label' => 'edu_minimum_three_years_experience', 'field' => 'minimum_three_years_experience', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'02' => array(array('label' => 'edu_possess_ms_cit_cert', 'field' => 'possess_ms_cit_cert', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes'), array('label' => 'edu_min_three_supervisory_capacity_2', 'field' => 'min_three_supervisory_capacity_2', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 		'24' => array(
-			'01' => array(array('label' => 'edu_possess_ms', 'field' => 'possess_ms', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes'), array('label' => 'edu_minimum_three_years_regular', 'field' => 'minimum_three_years_regular', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
-			'02' => array(array('label' => 'edu_possess_ms', 'field' => 'possess_ms', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes'), array('label' => 'edu_minimum_three_years_experience', 'field' => 'minimum_three_years_experience', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'01' => array(array('label' => 'edu_possess_ms_cit_cert', 'field' => 'possess_ms_cit_cert', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes'), array('label' => 'edu_min_three_regular_service_senior', 'field' => 'min_three_regular_service_senior', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'02' => array(array('label' => 'edu_possess_ms_cit_cert', 'field' => 'possess_ms_cit_cert', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes'), array('label' => 'edu_min_three', 'field' => 'min_three', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 		'25' => array(
-			'01' => array(array('label' => 'edu_possess_ms', 'field' => 'possess_ms', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_minimum_three_years_regular_9', 'field' => 'minimum_three_years_regular_9', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_minimum_five', 'field' => 'minimum_five', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No')),
-			'02' => array(array('label' => 'edu_possess_ms', 'field' => 'possess_ms', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes'), array('label' => 'edu_possess_g', 'field' => 'possess_g', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes'), array('label' => 'edu_not_less_than_three_2', 'field' => 'not_less_than_three_2', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'01' => array(array('label' => 'edu_possess_ms_cit_cert', 'field' => 'possess_ms_cit_cert', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_min_three_regular_service_6', 'field' => 'min_three_regular_service_6', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No'), array('label' => 'edu_min_five_regular_service_2', 'field' => 'min_five_regular_service_2', 'shouldbe' => 'Y,N', 'validate_msg' => 'Should be Yes or No')),
+			'02' => array(array('label' => 'edu_possess_ms_cit_cert', 'field' => 'possess_ms_cit_cert', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes'), array('label' => 'edu_possess_g_c_cert_2', 'field' => 'possess_g_c_cert_2', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes'), array('label' => 'edu_not_less_than_three_accounts', 'field' => 'not_less_than_three_accounts', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 		'26' => array(
-			'02' => array(array('label' => 'edu_possess_ms', 'field' => 'possess_ms', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes'), array('label' => 'edu_possess_g', 'field' => 'possess_g', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
+			'02' => array(array('label' => 'edu_possess_ms_cit_cert', 'field' => 'possess_ms_cit_cert', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes'), array('label' => 'edu_possess_g_c_cert_2', 'field' => 'possess_g_c_cert_2', 'shouldbe' => 'Y', 'validate_msg' => 'Should be Yes')),
 		),
 	);
 
       // edu_qry_arrays.php
 	$arrAdditionSection=array(
-		"minimum_five_years_regular",
-		"minimum_five",
-		"minimum_three_years_regular",
-		"minimum_three",
-		"not_less_than_five",
-		"not_less",
-		"minimum_five_years_regular_2",
-		"minimum_three_years_regular_2",
+		"min_five_regular_service_sub",
+		"min_three_regular_service_sub",
+		"not_less_than_five_edu",
+		"min_five_regular_service_officer",
+		"min_three_regular_service_officer",
+		"not_less_than_five_environment",
+		"min_three_regular_service_assistant",
+		"min_five_it_managerial",
+		"possess_ms_cit_cert",
+		"min_three_regular_service_scientific",
+		"min_five_regular_service_scientific",
+		"min_seven_regular_service_officers",
+		"not_less_than_five_laboratory",
+		"min_three_regular_service_junior",
+		"min_five_regular_service_junior",
+		"min_seven_regular_service_junior",
+		"min_three_regular_service_2",
+		"not_less_than_five_qualifications",
+		"min_three_regular_service_laboratory",
+		"min_three_regular_service_3",
+		"three_years_practical_court",
+		"min_three_regular_service_legal",
+		"not_less_than_three_practical",
+		"min_three_regular_service_4",
+		"possess_g_c_cert_120",
 		"not_less_than_five_2",
-		"minimum_three_years_regular_3",
-		"minimum_five_years_experience",
-		"possess_ms",
-		"minimum_seven_years_regular",
-		"not_less_than_five_3",
-		"minimum_three_years_regular_4",
-		"minimum_five_years_regular_3",
-		"minimum_seven_years_regular_2",
-		"minimum_three_years_regular_5",
-		"not_less_than_five_4",
-		"minimum_three_years_regular_6",
-		"three_years",
-		"not_less_than_three",
-		"minimum_three_years_regular_7",
-		"possess_g_c_certificate",
-		"possess_g_c_certificate_2",
-		"minimum_five_years_regular_4",
-		"minimum_three_years_experience",
-		"minimum_three_years_regular_8",
-		"minimum_three_years_regular_9",
-		"possess_g",
-		"not_less_than_three_2",
+		"possess_g_c_cert_80",
+		"min_three_regular_service_5",
+		"min_five_regular_service_assistant",
+		"min_three_supervisory_capacity",
+		"min_three_regular_service_head",
+		"not_less_than_three_supervisory",
+		"min_three_regular_service_senior",
+		"min_three_supervisory_capacity_2",
+		"min_three",
+		"min_three_regular_service_6",
+		"min_five_regular_service_2",
+		"possess_g_c_cert_2",
+		"not_less_than_three_accounts",
 		"revision"
 	);
 

@@ -203,6 +203,7 @@ function emitAxisArrays(posts,AX,single,suffix){
       missU=sortCombos(missU);
       if(missU.length) o+=emitForCombos(base, missU, {'01':'Others'}, single);
     }
+    o+='\n'+ind(1)+base+'_All= stream_array_merge('+base+');\n';
     o+='\n';
   }
   return o;

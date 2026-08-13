@@ -17,6 +17,8 @@
   var genEduQrySql = App.genEduQrySql;
   var getAllRadios = App.getAllRadios;
   var getOv = App.getOv;
+  var slugName = App.slugName;
+  var normRadioQuestion = App.normRadioQuestion;
   var parseFile = App.parseFile;
   var buildPostsRange = App.buildPostsRange;
   var extractRedFilter = App.extractRedFilter;
@@ -305,13 +307,21 @@ function updDimVar(el){
   updatePreview();
 }
 
+// A field name shared by the SAME question on several posts is correct by design
+// (identical questions resolve to one name), so only a name covering two genuinely
+// different questions is a duplicate worth warning about — hence counting distinct
+// normalized questions per name rather than counting inputs.
 function markDupFieldNames(){
   var con=document.getElementById('radio-cfg');
   var inputs=con?con.querySelectorAll('input[data-f="fieldName"]'):[];
   var counts={};
-  for(var i=0;i<inputs.length;i++){var v=inputs[i].value.trim();counts[v]=(counts[v]||0)+1;}
   for(var i=0;i<inputs.length;i++){
-    var v=inputs[i].value.trim(),isDup=counts[v]>1;
+    var v=inputs[i].value.trim(),q=normRadioQuestion(inputs[i].dataset.q||'');
+    if(!counts[v]) counts[v]={n:0,qs:{}};
+    if(!counts[v].qs[q]){ counts[v].qs[q]=1; counts[v].n++; }
+  }
+  for(var i=0;i<inputs.length;i++){
+    var v=inputs[i].value.trim(),isDup=counts[v].n>1;
     var grp=inputs[i].parentNode;
     var existing=grp.querySelector('.dup-warn');
     if(isDup&&!existing){
@@ -358,7 +368,24 @@ function renderS2(){
   renderIntCfg();
   updatePreview();
 }
-function updOv(el){getOv(el.dataset.pc,el.dataset.q)[el.dataset.f]=el.value;if(el.dataset.f==='fieldName')markDupFieldNames();updatePreview();}
+// Lang Key mirrors the PHP field name ("edu_<field>") until the user edits it by
+// hand — from then on `lkTouched` marks it as deliberately customized and the mirror
+// stops, so a manual lang key is never silently overwritten. renderS2's prefill never
+// sets the flag, so auto-derived keys stay in sync.
+function updOv(el){
+  var ov=getOv(el.dataset.pc,el.dataset.q);
+  ov[el.dataset.f]=el.value;
+  if(el.dataset.f==='langKey') ov.lkTouched=true;
+  if(el.dataset.f==='fieldName'){
+    if(!ov.lkTouched){
+      ov.langKey='edu_'+slugName(el.value);
+      var lk=el.parentNode.parentNode.querySelector('input[data-f="langKey"]');
+      if(lk) lk.value=ov.langKey;
+    }
+    markDupFieldNames();
+  }
+  updatePreview();
+}
 function updBilingual(el){S.bilingual=el.checked;updatePreview();}
 
 // ── APPEARED / PASSED CONFIG (Step 2) ───────────────────────────────────────

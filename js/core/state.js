@@ -25,11 +25,28 @@ function defaultPostVar(columnName){
   return slug||'dim';
 }
 
+// Slugify any user-typed name into a valid PHP field/lang identifier: lowercase,
+// non-alphanumerics collapsed to single underscores, no leading/trailing underscore.
+function slugName(s){
+  return String(s||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+}
+
 // ── UTILS ─────────────────────────────────────────────────────────────────
 function ind(n){var s='';for(var i=0;i<n;i++)s+='\t';return s;}
 function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function escA(s){return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-function getOv(pc,q){if(!S.radioOv[pc])S.radioOv[pc]={};if(!S.radioOv[pc][q])S.radioOv[pc][q]={};return S.radioOv[pc][q];}
+// Per-post user overrides for a radio's field/lang name, keyed by the NORMALIZED
+// question so every spelling variant of the same question ("… experience?" / "…
+// experience ?.") shares one override entry. Without the normalization an edit made
+// on the one variant the UI renders would not reach the other occurrences, which
+// generators resolve through rFn/rLk individually. App.normRadioQuestion is looked up
+// lazily because parsing/ loads after core/ (getOv only ever runs post-load).
+function getOv(pc,q){
+  var k=App.normRadioQuestion?App.normRadioQuestion(q):String(q||'');
+  if(!S.radioOv[pc])S.radioOv[pc]={};
+  if(!S.radioOv[pc][k])S.radioOv[pc][k]={};
+  return S.radioOv[pc][k];
+}
 function rFn(c,pc){return getOv(pc,c.question).fieldName||c.fieldName;}
 function rLk(c,pc){return getOv(pc,c.question).langKey||c.langKey;}
 function isCat(mk){var s=mk&&String(mk);return !!(s&&(s.indexOf('CAT:')===0||s.indexOf('MCAT:')===0));}
@@ -81,6 +98,7 @@ function sbNo(){    return S.bilingual?'Should be NO / नाही':'Should be 
   // ── exports to App ──
   App.S = S;
   App.defaultPostVar = defaultPostVar;
+  App.slugName = slugName;
   App.sbYes = sbYes;
   App.sbYesNo = sbYesNo;
   App.sbNo = sbNo;

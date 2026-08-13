@@ -517,19 +517,69 @@ function normRadioQuestion(q){
   return t.trim();
 }
 
+// Words that survive as question CONTENT but carry no identifying value in a field
+// name. Eligibility questions nearly all open with the same boilerplate ("Do you have
+// minimum N years post qualification relevant experience …"), so a name built from the
+// leading words alone says nothing — the meaning is in the domain words further in.
+// Deliberately NOT filler: cert / license / trade and other domain nouns, which are
+// exactly what separates valid_wireman_cert from valid_hmv_license.
+var NAME_FILLER={min:1,max:1,year:1,years:1,post:1,qual:1,relevant:1,exp:1,after:1,
+  passing:1,out:1,which:1,field:1,or:1,and:1,similar:1,possess:1,valid:1,industry:1,
+  organization:1,roles:1,work:1,basic:1,related:1,where:1,applicable:1,used:1,
+  involving:1,consolidated:1};
+// Longest name deriveField() will build, and the ceiling disambiguation may grow to.
+var BASE_MAX=4, NAME_MAX=5;
+
 function deriveField(q){
-  var stops={do:1,you:1,have:1,a:1,an:1,the:1,is:1,are:1,be:1,of:1,in:1,at:1,to:1,for:1,with:1,your:1,any:1,should:1,whether:1,that:1,this:1};
+  var stops={do:1,you:1,have:1,a:1,an:1,the:1,is:1,are:1,be:1,of:1,in:1,at:1,to:1,for:1,with:1,your:1,any:1,should:1,whether:1,that:1,this:1,yes:1,no:1};
   var nums={0:'zero',1:'one',2:'two',3:'three',4:'four',5:'five',6:'six',7:'seven',8:'eight',9:'nine',
             10:'ten',11:'eleven',12:'twelve',13:'thirteen',14:'fourteen',15:'fifteen',
             16:'sixteen',17:'seventeen',18:'eighteen',19:'nineteen',20:'twenty'};
+  // Shortened spellings for long words that recur in eligibility wording, so a name
+  // stays readable once disambiguation appends extra words ("minimum 5 years
+  // experience" -> min_five_years_exp rather than minimum_five_years_experience).
+  var abbr={minimum:'min',maximum:'max',experience:'exp',qualification:'qual',
+            certificate:'cert',required:'req',education:'edu'};
   var words=q.replace(/[^a-zA-Z0-9\s]/g,' ').toLowerCase().split(/\s+/).filter(function(w){return w&&!stops[w];})
-             .map(function(w){var n=parseInt(w,10);return(!isNaN(n)&&nums[n])?nums[n]:w;});
+             .map(function(w){var n=parseInt(w,10);return(!isNaN(n)&&nums[n])?nums[n]:w;})
+             .map(function(w){return abbr[w]||w;});
+  // Anchor on the first 2 words (keeps the requirement itself readable: min_eight,
+  // valid_wireman, registered_ca), then append the salient words — the first non-filler
+  // words in order, skipping repeats — until the name is BASE_MAX words long.
   var sig=words.slice(0,2);
+  var picked={};
+  for(var pi=0;pi<sig.length;pi++) picked[sig[pi]]=1;
+  for(var wi=2;wi<words.length&&sig.length<BASE_MAX;wi++){
+    var w=words[wi];
+    if(!w||picked[w]||NAME_FILLER[w]) continue;
+    sig.push(w); picked[w]=1;
+  }
   var fn=sig.join('_').replace(/_+/g,'_').replace(/^_|_$/g,'');
   // Required answer polarity: an explicit "Should be No" means the radio must be
   // answered 'N'; everything else defaults to 'Y' ("Should be Yes" or unstated).
   var shouldBe=/should\s*be\s*no\b/i.test(q)?'N':'Y';
   return{fn:fn||'field',lk:'edu_'+(fn||'field'),amb:sig.length<2,words:words,shouldBe:shouldBe};
+}
+
+// First word of `words` that the rival question does not use and that is not already
+// part of `curFn` — i.e. the smallest meaningful difference between two otherwise
+// similar questions ("... in IT projects" vs "... in Banking projects" -> it/banking).
+// Salient words win over filler, but a filler word the rival lacks still separates the
+// two so it is taken as a second choice. Returns null when the two questions use the
+// same word set (pure reordering), leaving the caller on its numeric-suffix fallback.
+function distinctWord(words, rivalWords, curFn){
+  var rival={},i;
+  for(i=0;i<(rivalWords||[]).length;i++) rival[rivalWords[i]]=1;
+  var inFn={},parts=String(curFn||'').split('_');
+  for(i=0;i<parts.length;i++) inFn[parts[i]]=1;
+  var fallback=null;
+  for(i=0;i<(words||[]).length;i++){
+    var w=words[i];
+    if(!w||rival[w]||inFn[w]) continue;
+    if(!NAME_FILLER[w]) return w;
+    if(!fallback) fallback=w;
+  }
+  return fallback;
 }
 
 function disambiguateRadioNames(posts){
@@ -557,38 +607,58 @@ function disambiguateRadioNames(posts){
     c._normQ=cNormQ;
     if(!repByNormQ[cNormQ]){ repByNormQ[cNormQ]=c; uniqueConds.push(c); }
   }
-  // Count how many times each base-4-word name is used, for numeric suffix fallback.
-  var MAX_WORDS=4;
+  // Counts per base name, for the numeric-suffix fallback of last resort.
   var numericCounters={};
+  // Names a condition outgrew while being disambiguated. A later question deriving
+  // the same stem must NOT reclaim it: with a family of similar questions ("… in IT
+  // / Banking / Telecom projects") the first two grow past the shared stem, which
+  // would otherwise leave the stem free for the third — giving it a bare, misleading
+  // name while its siblings carry the distinguishing word. Keeping the vacated names
+  // as tombstones (with the words of the question that vacated them) makes the third
+  // and every later sibling disambiguate against that question too.
+  var retired={};
   for(var i=0;i<uniqueConds.length;i++){
     var c=uniqueConds[i];
     var words=c.words||[];
-    var used=2; // deriveField already used 2 words
-    var maxIter=MAX_WORDS+4; // safety cap
+    var maxIter=NAME_MAX; // safety cap
     var cNormQ=c._normQ;
-    while(owners[c.fieldName]&&owners[c.fieldName].normQ!==cNormQ&&maxIter-->0){
-      var owner=owners[c.fieldName];
-      var ownerWordCount=owner.cond.fieldName.split('_').length;
-      var ownerNext=(ownerWordCount<MAX_WORDS)?owner.words[owner.usedWords]||null:null;
-      if(ownerNext){
-        var newOwnerFn=(owner.cond.fieldName+'_'+ownerNext).replace(/_+/g,'_');
-        delete owners[owner.cond.fieldName];
-        owner.cond.fieldName=newOwnerFn;
-        owner.cond.langKey='edu_'+newOwnerFn;
-        owner.usedWords++;
-        owners[newOwnerFn]={normQ:owner.normQ,cond:owner.cond,words:owner.words,usedWords:owner.usedWords};
-      } else {
-        delete owners[owner.cond.fieldName];
+    while(maxIter-->0){
+      var live=owners[c.fieldName];
+      var owner=(live&&live.normQ!==cNormQ)?live:null;
+      var ghost=owner?null:retired[c.fieldName];
+      if(ghost&&ghost.normQ===cNormQ) ghost=null;
+      if(!owner&&!ghost) break;
+      // Words of whichever question this name belongs to — the rival to differ from.
+      var rivalWords=owner?owner.words:ghost.words;
+      // Owner side — only when the name is still live; a tombstoned name's condition
+      // has already moved on, so only `c` needs to grow.
+      if(owner){
+        var ownerFits=owner.cond.fieldName.split('_').length<NAME_MAX;
+        var ownerNext=ownerFits?distinctWord(owner.words,words,owner.cond.fieldName):null;
+        if(ownerNext){
+          var newOwnerFn=(owner.cond.fieldName+'_'+ownerNext).replace(/_+/g,'_');
+          retired[owner.cond.fieldName]={normQ:owner.normQ,words:owner.words};
+          delete owners[owner.cond.fieldName];
+          owner.cond.fieldName=newOwnerFn;
+          owner.cond.langKey='edu_'+newOwnerFn;
+          owners[newOwnerFn]={normQ:owner.normQ,cond:owner.cond,words:owner.words};
+        } else {
+          // Owner is stuck at the word cap and keeps its current (still valid, unique
+          // so far) name — it must stay discoverable so a LATER condition that lands
+          // on this same name doesn't silently reuse it. Tombstoning under its own
+          // current name (rather than just deleting) keeps that guarantee.
+          retired[owner.cond.fieldName]={normQ:owner.normQ,words:owner.words};
+          delete owners[owner.cond.fieldName];
+        }
       }
-      var cWordCount=c.fieldName.split('_').length;
-      var nextWord=(cWordCount<MAX_WORDS)?words[used]||null:null;
+      var nextWord=(c.fieldName.split('_').length<NAME_MAX)?distinctWord(words,rivalWords,c.fieldName):null;
       if(nextWord){
         c.fieldName=(c.fieldName+'_'+nextWord).replace(/_+/g,'_');
         c.langKey='edu_'+c.fieldName;
-        used++;
       } else {
-        // At word cap — use numeric suffix on the base (first MAX_WORDS words).
-        var base=c.fieldName.split('_').slice(0,MAX_WORDS).join('_');
+        // Same word set as the rival (only ordering differs) — nothing meaningful
+        // left to append, so fall back to a numeric suffix on the base name.
+        var base=c.fieldName.split('_').slice(0,BASE_MAX).join('_');
         numericCounters[base]=(numericCounters[base]||1)+1;
         c.fieldName=base+'_'+numericCounters[base];
         c.langKey='edu_'+c.fieldName;
@@ -596,7 +666,7 @@ function disambiguateRadioNames(posts){
       }
     }
     if(!owners[c.fieldName])
-      owners[c.fieldName]={normQ:cNormQ,cond:c,words:words,usedWords:used};
+      owners[c.fieldName]={normQ:cNormQ,cond:c,words:words};
   }
   // Propagate each representative's final (possibly renamed) fieldName to its duplicates.
   for(var i=0;i<allConds.length;i++){

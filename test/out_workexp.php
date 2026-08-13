@@ -20,7 +20,7 @@ if(POST_QUALIFICATION_EXP){
 	if($postcode == '01' && $recrtmnt_mode == '01') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream_cond1[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['minimum_five_years_regular']=='Y')
+			($_POST['min_five_regular_service_sub']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -28,7 +28,7 @@ if(POST_QUALIFICATION_EXP){
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream_cond2[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
 			($_POST['selstream4']!='' && array_key_exists($_POST['selstream4'], $arrPG_Stream_cond1[$postcode][$recrtmnt_mode]) && $_POST['selmark4'] > 0 && $_POST['selgrade4'] !='') &&
-			($_POST['minimum_five']=='Y')
+			($_POST['min_five_regular_service_sub']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $pggraduationtimeStr;
 		}
@@ -36,14 +36,14 @@ if(POST_QUALIFICATION_EXP){
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream_cond2[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
 			($_POST['selstream4']!='' && array_key_exists($_POST['selstream4'], $arrPG_Stream_cond2[$postcode][$recrtmnt_mode]) && $_POST['selmark4'] > 0 && $_POST['selgrade4'] !='') &&
-			($_POST['minimum_three_years_regular']=='Y')
+			($_POST['min_three_regular_service_sub']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $pggraduationtimeStr;
 		}
 
 		if(
 			($_POST['selstream9']!='' && array_key_exists($_POST['selstream9'], $arrPhD_Stream[$postcode][$recrtmnt_mode]) && $_POST['selgrade9'] !='') &&
-			($_POST['minimum_three']=='Y')
+			($_POST['min_three_regular_service_sub']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $phdtimeStr;
 		}
@@ -52,7 +52,7 @@ if(POST_QUALIFICATION_EXP){
 	else if($postcode == '01' && $recrtmnt_mode == '02') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream_cond1[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['not_less_than_five']=='Y')
+			($_POST['not_less_than_five_edu']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -60,7 +60,7 @@ if(POST_QUALIFICATION_EXP){
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream_cond2[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
 			($_POST['selstream4']!='' && array_key_exists($_POST['selstream4'], $arrPG_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark4'] > 0 && $_POST['selgrade4'] !='') &&
-			($_POST['not_less']=='Y')
+			($_POST['not_less_than_five_edu']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $pggraduationtimeStr;
 		}
@@ -69,7 +69,7 @@ if(POST_QUALIFICATION_EXP){
 	else if($postcode == '02' && $recrtmnt_mode == '01') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream_cond1[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['minimum_five_years_regular_2']=='Y')
+			($_POST['min_five_regular_service_officer']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -77,7 +77,7 @@ if(POST_QUALIFICATION_EXP){
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream_cond2[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
 			($_POST['selstream4']!='' && array_key_exists($_POST['selstream4'], $arrPG_Stream_cond1[$postcode][$recrtmnt_mode]) && $_POST['selmark4'] > 0 && $_POST['selgrade4'] !='') &&
-			($_POST['minimum_five_years_regular']=='Y')
+			($_POST['min_five_regular_service_officer']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $pggraduationtimeStr;
 		}
@@ -85,14 +85,14 @@ if(POST_QUALIFICATION_EXP){
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream_cond2[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
 			($_POST['selstream4']!='' && array_key_exists($_POST['selstream4'], $arrPG_Stream_cond2[$postcode][$recrtmnt_mode]) && $_POST['selmark4'] > 0 && $_POST['selgrade4'] !='') &&
-			($_POST['minimum_three_years_regular_2']=='Y')
+			($_POST['min_three_regular_service_officer']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $pggraduationtimeStr;
 		}
 
 		if(
 			($_POST['selstream9']!='' && array_key_exists($_POST['selstream9'], $arrPhD_Stream[$postcode][$recrtmnt_mode]) && $_POST['selgrade9'] !='') &&
-			($_POST['minimum_three_years_regular']=='Y')
+			($_POST['min_three_regular_service_officer']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $phdtimeStr;
 		}
@@ -101,7 +101,7 @@ if(POST_QUALIFICATION_EXP){
 	else if($postcode == '02' && $recrtmnt_mode == '02') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream_cond1[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['not_less_than_five_2']=='Y')
+			($_POST['not_less_than_five_environment']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -109,7 +109,7 @@ if(POST_QUALIFICATION_EXP){
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream_cond2[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
 			($_POST['selstream4']!='' && array_key_exists($_POST['selstream4'], $arrPG_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark4'] > 0 && $_POST['selgrade4'] !='') &&
-			($_POST['not_less_than_five']=='Y')
+			($_POST['not_less_than_five_environment']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $pggraduationtimeStr;
 		}
@@ -141,7 +141,7 @@ if(POST_QUALIFICATION_EXP){
 	else if($postcode == '05' && $recrtmnt_mode == '01') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['minimum_three_years_regular_3']=='Y')
+			($_POST['min_three_regular_service_assistant']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -150,7 +150,7 @@ if(POST_QUALIFICATION_EXP){
 	else if($postcode == '05' && $recrtmnt_mode == '02') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['minimum_five_years_experience']=='Y')
+			($_POST['min_five_it_managerial']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -159,7 +159,7 @@ if(POST_QUALIFICATION_EXP){
 	else if($postcode == '06' && $recrtmnt_mode == '02') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['possess_ms']=='Y')
+			($_POST['possess_ms_cit_cert']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -185,14 +185,14 @@ if(POST_QUALIFICATION_EXP){
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream_cond1[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
 			($_POST['selstream4']!='' && array_key_exists($_POST['selstream4'], $arrPG_Stream_cond1[$postcode][$recrtmnt_mode]) && $_POST['selmark4'] > 0 && $_POST['selgrade4'] !='') &&
-			($_POST['minimum_three_years_regular']=='Y')
+			($_POST['min_three_regular_service_scientific']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $pggraduationtimeStr;
 		}
 
 		if(
 			($_POST['selstream9']!='' && array_key_exists($_POST['selstream9'], $arrPhD_Stream[$postcode][$recrtmnt_mode]) && $_POST['selgrade9'] !='') &&
-			($_POST['minimum_three']=='Y')
+			($_POST['min_three_regular_service_scientific']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $phdtimeStr;
 		}
@@ -200,21 +200,21 @@ if(POST_QUALIFICATION_EXP){
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream_cond1[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
 			($_POST['selstream4']!='' && array_key_exists($_POST['selstream4'], $arrPG_Stream_cond2[$postcode][$recrtmnt_mode]) && $_POST['selmark4'] > 0 && $_POST['selgrade4'] !='') &&
-			($_POST['minimum_five_years_regular']=='Y')
+			($_POST['min_five_regular_service_scientific']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $pggraduationtimeStr;
 		}
 
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream_cond2[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['minimum_five']=='Y')
+			($_POST['min_five_regular_service_scientific']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
 
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream_cond3[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['minimum_seven_years_regular']=='Y')
+			($_POST['min_seven_regular_service_officers']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -224,14 +224,14 @@ if(POST_QUALIFICATION_EXP){
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
 			($_POST['selstream4']!='' && array_key_exists($_POST['selstream4'], $arrPG_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark4'] > 0 && $_POST['selgrade4'] !='') &&
-			($_POST['not_less_than_five_3']=='Y')
+			($_POST['not_less_than_five_laboratory']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $pggraduationtimeStr;
 		}
 
 		if(
 			($_POST['selstream9']!='' && array_key_exists($_POST['selstream9'], $arrPhD_Stream[$postcode][$recrtmnt_mode]) && $_POST['selgrade9'] !='') &&
-			($_POST['not_less_than_five']=='Y')
+			($_POST['not_less_than_five_laboratory']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $phdtimeStr;
 		}
@@ -241,14 +241,14 @@ if(POST_QUALIFICATION_EXP){
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream_cond1[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
 			($_POST['selstream4']!='' && array_key_exists($_POST['selstream4'], $arrPG_Stream_cond1[$postcode][$recrtmnt_mode]) && $_POST['selmark4'] > 0 && $_POST['selgrade4'] !='') &&
-			($_POST['minimum_three_years_regular_4']=='Y')
+			($_POST['min_three_regular_service_junior']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $pggraduationtimeStr;
 		}
 
 		if(
 			($_POST['selstream9']!='' && array_key_exists($_POST['selstream9'], $arrPhD_Stream[$postcode][$recrtmnt_mode]) && $_POST['selgrade9'] !='') &&
-			($_POST['minimum_three_years_regular']=='Y')
+			($_POST['min_three_regular_service_junior']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $phdtimeStr;
 		}
@@ -256,21 +256,21 @@ if(POST_QUALIFICATION_EXP){
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream_cond1[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
 			($_POST['selstream4']!='' && array_key_exists($_POST['selstream4'], $arrPG_Stream_cond2[$postcode][$recrtmnt_mode]) && $_POST['selmark4'] > 0 && $_POST['selgrade4'] !='') &&
-			($_POST['minimum_five_years_regular_3']=='Y')
+			($_POST['min_five_regular_service_junior']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $pggraduationtimeStr;
 		}
 
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream_cond2[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['minimum_five_years_regular']=='Y')
+			($_POST['min_five_regular_service_junior']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
 
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream_cond3[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['minimum_seven_years_regular_2']=='Y')
+			($_POST['min_seven_regular_service_junior']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -280,7 +280,7 @@ if(POST_QUALIFICATION_EXP){
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
 			($_POST['selstream4']!='' && array_key_exists($_POST['selstream4'], $arrPG_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark4'] > 0 && $_POST['selgrade4'] !='') &&
-			($_POST['not_less']=='Y')
+			($_POST['not_less_than_five_laboratory']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $pggraduationtimeStr;
 		}
@@ -290,7 +290,7 @@ if(POST_QUALIFICATION_EXP){
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
 			($_POST['selstream4']!='' && array_key_exists($_POST['selstream4'], $arrPG_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark4'] > 0 && $_POST['selgrade4'] !='') &&
-			($_POST['not_less_than_five_4']=='Y')
+			($_POST['not_less_than_five_qualifications']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $pggraduationtimeStr;
 		}
@@ -315,7 +315,7 @@ if(POST_QUALIFICATION_EXP){
 	else if($postcode == '14' && $recrtmnt_mode == '02') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['three_years']=='Y')
+			($_POST['three_years_practical_court']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -324,7 +324,7 @@ if(POST_QUALIFICATION_EXP){
 	else if($postcode == '15' && $recrtmnt_mode == '02') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['not_less_than_three']=='Y')
+			($_POST['not_less_than_three_practical']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -341,8 +341,8 @@ if(POST_QUALIFICATION_EXP){
 	else if($postcode == '17' && $recrtmnt_mode == '02') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['possess_g_c_certificate']=='Y') &&
-			($_POST['not_less_than_five']=='Y')
+			($_POST['possess_g_c_cert_120']=='Y') &&
+			($_POST['not_less_than_five_2']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -351,7 +351,7 @@ if(POST_QUALIFICATION_EXP){
 	else if($postcode == '18' && $recrtmnt_mode == '02') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['possess_g_c_certificate_2']=='Y')
+			($_POST['possess_g_c_cert_80']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -361,14 +361,14 @@ if(POST_QUALIFICATION_EXP){
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
 			($_POST['selstream4']!='' && array_key_exists($_POST['selstream4'], $arrPG_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark4'] > 0 && $_POST['selgrade4'] !='') &&
-			($_POST['minimum_three_years_regular']=='Y')
+			($_POST['min_three_regular_service_5']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $pggraduationtimeStr;
 		}
 
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['minimum_five_years_regular_4']=='Y')
+			($_POST['min_five_regular_service_assistant']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -378,7 +378,7 @@ if(POST_QUALIFICATION_EXP){
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
 			($_POST['selstream4']!='' && array_key_exists($_POST['selstream4'], $arrPG_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark4'] > 0 && $_POST['selgrade4'] !='') &&
-			($_POST['minimum_three_years_experience']=='Y')
+			($_POST['min_three_supervisory_capacity']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $pggraduationtimeStr;
 		}
@@ -387,7 +387,7 @@ if(POST_QUALIFICATION_EXP){
 	else if($postcode == '20' && $recrtmnt_mode == '01') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['minimum_three_years_regular']=='Y')
+			($_POST['min_three_regular_service_head']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -396,7 +396,7 @@ if(POST_QUALIFICATION_EXP){
 	else if($postcode == '21' && $recrtmnt_mode == '02') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['not_less_than_three']=='Y')
+			($_POST['not_less_than_three_supervisory']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -405,8 +405,8 @@ if(POST_QUALIFICATION_EXP){
 	else if($postcode == '22' && $recrtmnt_mode == '01') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['possess_ms']=='Y') &&
-			($_POST['minimum_three_years_regular_8']=='Y')
+			($_POST['possess_ms_cit_cert']=='Y') &&
+			($_POST['min_three_regular_service_senior']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -415,8 +415,8 @@ if(POST_QUALIFICATION_EXP){
 	else if($postcode == '23' && $recrtmnt_mode == '02') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['possess_ms']=='Y') &&
-			($_POST['minimum_three_years_experience']=='Y')
+			($_POST['possess_ms_cit_cert']=='Y') &&
+			($_POST['min_three_supervisory_capacity_2']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -425,8 +425,8 @@ if(POST_QUALIFICATION_EXP){
 	else if($postcode == '24' && $recrtmnt_mode == '01') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['possess_ms']=='Y') &&
-			($_POST['minimum_three_years_regular']=='Y')
+			($_POST['possess_ms_cit_cert']=='Y') &&
+			($_POST['min_three_regular_service_senior']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -435,8 +435,8 @@ if(POST_QUALIFICATION_EXP){
 	else if($postcode == '24' && $recrtmnt_mode == '02') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['possess_ms']=='Y') &&
-			($_POST['minimum_three_years_experience']=='Y')
+			($_POST['possess_ms_cit_cert']=='Y') &&
+			($_POST['min_three']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -445,15 +445,15 @@ if(POST_QUALIFICATION_EXP){
 	else if($postcode == '25' && $recrtmnt_mode == '01') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['possess_ms']=='Y') &&
-			($_POST['minimum_three_years_regular_9']=='Y')
+			($_POST['possess_ms_cit_cert']=='Y') &&
+			($_POST['min_three_regular_service_6']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
 
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['minimum_five']=='Y')
+			($_POST['min_five_regular_service_2']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -462,9 +462,9 @@ if(POST_QUALIFICATION_EXP){
 	else if($postcode == '25' && $recrtmnt_mode == '02') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['possess_ms']=='Y') &&
-			($_POST['possess_g']=='Y') &&
-			($_POST['not_less_than_three_2']=='Y')
+			($_POST['possess_ms_cit_cert']=='Y') &&
+			($_POST['possess_g_c_cert_2']=='Y') &&
+			($_POST['not_less_than_three_accounts']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
@@ -473,8 +473,8 @@ if(POST_QUALIFICATION_EXP){
 	else if($postcode == '26' && $recrtmnt_mode == '02') {
 		if(
 			($_POST['selstream3']!='' && array_key_exists($_POST['selstream3'], $arrGraduation_Stream[$postcode][$recrtmnt_mode]) && $_POST['selmark3'] > 0 && $_POST['selgrade3'] !='') &&
-			($_POST['possess_ms']=='Y') &&
-			($_POST['possess_g']=='Y')
+			($_POST['possess_ms_cit_cert']=='Y') &&
+			($_POST['possess_g_c_cert_2']=='Y')
 		) {
 			$eligibilityPostQualidtArr[]  = $graduationtimeStr;
 		}
