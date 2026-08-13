@@ -5,8 +5,9 @@
   // ── imports from App ──
   var EDU = App.EDU;
   var EDU_ORDER = App.EDU_ORDER;
-  var POSTQUAL_TS = App.POSTQUAL_TS;
   var S = App.S;
+  var apRank = App.apRank;
+  var defaultAcadRank = App.defaultAcadRank;
   var escA = App.escA;
   var escH = App.escH;
   var genEduConfig = App.genEduConfig;
@@ -404,16 +405,191 @@ function apDistinctLevels(){
   return EDU_ORDER.filter(function(l){return seen[l];});
 }
 // Human hint about a level's place in the hierarchy (drives suppression behaviour).
+// Reads the EFFECTIVE rank (App.apRank), so the hint follows the arrangement below.
 function apRankHint(level){
-  var def=EDU[level], info=def&&POSTQUAL_TS[def.idx];
-  if(info&&info.acad>0) return 'academic rank '+info.acad;
-  return 'special (no hierarchy precedence)';
+  var r=apRank(level);
+  if(r>0) return 'hierarchy rank '+r;
+  return 'generic (no hierarchy precedence)';
+}
+
+// ── AP HIERARCHY ARRANGEMENT (drag & drop) ──────────────────────────────────
+// The default split of the DETECTED levels, derived from the default POSTQUAL_TS ranks:
+// ranked levels ascending (lowest → highest, EDU.idx breaking rank ties) in `hierarchy`,
+// everything else in `generic`. Nothing is hardcoded per level here — a new EDU level
+// simply lands in the group its default rank implies and can be dragged anywhere.
+function apDefaultGroups(){
+  var levels=apDistinctLevels(), h=[], g=[];
+  for(var i=0;i<levels.length;i++) (defaultAcadRank(levels[i])>0?h:g).push(levels[i]);
+  h.sort(function(a,b){
+    var d=defaultAcadRank(a)-defaultAcadRank(b);
+    return d||((EDU[a]?EDU[a].idx:99)-(EDU[b]?EDU[b].idx:99));
+  });
+  return {hierarchy:h, generic:g};
+}
+// The groups to RENDER, plus repair of a stored arrangement against the levels currently
+// detected in the sheet: unknown/no-longer-present levels are dropped, duplicates keep
+// only their first occurrence (a level lives in exactly one group), and newly detected
+// levels are appended to whichever group their default rank implies. When nothing is
+// stored the defaults are returned for display only — `ap.hierarchy` stays null so the
+// generator keeps its legacy behaviour until the user actually arranges something.
+function apGroups(){
+  var ap=S.appearedPassed, def=apDefaultGroups();
+  if(!ap || !ap.hierarchy) return def;
+  var levels=apDistinctLevels(), known={}, used={};
+  for(var i=0;i<levels.length;i++) known[levels[i]]=true;
+  function clean(list){
+    var out=[];
+    for(var i=0;i<(list||[]).length;i++){
+      var l=list[i];
+      if(known[l] && !used[l]){ used[l]=true; out.push(l); }
+    }
+    return out;
+  }
+  var h=clean(ap.hierarchy), g=clean(ap.generic);
+  for(var j=0;j<levels.length;j++){                       // account for every detected level
+    var l=levels[j]; if(used[l]) continue;
+    used[l]=true;
+    (def.hierarchy.indexOf(l)>=0?h:g).push(l);
+  }
+  return {hierarchy:h, generic:g};
+}
+// Commit an arrangement to state and refresh everything that depends on it.
+function apSetGroups(groups){
+  S.appearedPassed.hierarchy=groups.hierarchy.slice();
+  S.appearedPassed.generic=groups.generic.slice();
+  renderApCfg(); updatePreview();
+}
+// Move `level` into `toKey` ('hierarchy'|'generic') at `idx` (-1 / out of range = append).
+function apMoveLevel(level,toKey,idx){
+  var g=apGroups(), src=(g.hierarchy.indexOf(level)>=0)?'hierarchy':'generic';
+  var from=g[src], at=from.indexOf(level);
+  if(at<0) return;
+  from.splice(at,1);
+  var dst=g[toKey];
+  if(idx==null || idx<0 || idx>dst.length) idx=dst.length;
+  dst.splice(idx,0,level);
+  apSetGroups(g);
+}
+// Shift a level by `delta` positions inside its own group (keyboard / no-drag fallback).
+function apShiftLevel(level,delta){
+  var g=apGroups(), key=(g.hierarchy.indexOf(level)>=0)?'hierarchy':'generic';
+  var list=g[key], at=list.indexOf(level), to=at+delta;
+  if(at<0 || to<0 || to>=list.length) return;
+  list.splice(at,1); list.splice(to,0,level);
+  apSetGroups(g);
+}
+// Send a level to the other group (appended at the end).
+function apSwapGroup(level){
+  var g=apGroups(), key=(g.hierarchy.indexOf(level)>=0)?'generic':'hierarchy';
+  apMoveLevel(level,key,g[key].length);
+}
+// Forget the arrangement — back to the default POSTQUAL_TS ranks.
+function apResetGroups(){
+  S.appearedPassed.hierarchy=null; S.appearedPassed.generic=null;
+  renderApCfg(); updatePreview();
+}
+// One draggable item. HTML5 DnD + the ↑ ↓ ⇄ buttons are wired programmatically because
+// the level name is sheet data (no inline-handler escaping to get wrong).
+function apDndItem(level,num,groupKey,idx){
+  var it=document.createElement('div');
+  it.className='ap-item'; it.draggable=true;
+  it.dataset.level=level; it.dataset.group=groupKey; it.dataset.idx=idx;
+  it.innerHTML='<span class="ap-grip">⠿</span>'
+    +(num?'<span class="ap-num">'+num+'.</span>':'')
+    +'<span class="ap-name">'+escH(level)+'</span>'
+    +'<span class="ap-btns">'
+      +'<button type="button" class="ap-btn" data-act="up" title="Move up">↑</button>'
+      +'<button type="button" class="ap-btn" data-act="down" title="Move down">↓</button>'
+      +'<button type="button" class="ap-btn" data-act="swap" title="Move to the other group">⇄</button>'
+    +'</span>';
+  it.addEventListener('dragstart',function(e){
+    e.dataTransfer.setData('text/plain',level);
+    e.dataTransfer.effectAllowed='move';
+    it.classList.add('dragging');
+  });
+  it.addEventListener('dragend',function(){ it.classList.remove('dragging'); });
+  it.addEventListener('dragover',function(e){
+    e.preventDefault(); e.stopPropagation();
+    var r=it.getBoundingClientRect(), after=(e.clientY-r.top)>r.height/2;
+    it.classList.toggle('drop-after',after);
+    it.classList.toggle('drop-before',!after);
+  });
+  it.addEventListener('dragleave',function(){ it.classList.remove('drop-before','drop-after'); });
+  it.addEventListener('drop',function(e){
+    e.preventDefault(); e.stopPropagation();
+    var moved=e.dataTransfer.getData('text/plain');
+    var r=it.getBoundingClientRect(), after=(e.clientY-r.top)>r.height/2;
+    it.classList.remove('drop-before','drop-after');
+    if(!moved || moved===level) return;
+    var g=apGroups(), target=g[groupKey].indexOf(level);
+    var srcSame=(g[groupKey].indexOf(moved)>=0);
+    var pos=target+(after?1:0);
+    if(srcSame && g[groupKey].indexOf(moved)<target) pos--;   // removal shifts later slots
+    apMoveLevel(moved,groupKey,pos);
+  });
+  var btns=it.querySelectorAll('.ap-btn');
+  for(var b=0;b<btns.length;b++) btns[b].addEventListener('click',function(e){
+    e.preventDefault(); e.stopPropagation();
+    var act=this.dataset.act;
+    if(act==='swap') apSwapGroup(level);
+    else apShiftLevel(level,act==='up'?-1:1);
+  });
+  return it;
+}
+// One drop column (a group). Dropping on empty space appends to that group.
+function apDndCol(title,hint,groupKey,levels,numbered){
+  var col=document.createElement('div'); col.className='ap-dnd-col';
+  var head=document.createElement('div');
+  head.innerHTML='<h4>'+escH(title)+'</h4><span class="dim" style="font-size:11px">'+escH(hint)+'</span>';
+  col.appendChild(head);
+  var list=document.createElement('div'); list.className='ap-list';
+  for(var i=0;i<levels.length;i++) list.appendChild(apDndItem(levels[i],numbered?(i+1):0,groupKey,i));
+  if(!levels.length){
+    var empty=document.createElement('div'); empty.className='ap-empty';
+    empty.textContent='Drop qualifications here';
+    list.appendChild(empty);
+  }
+  col.appendChild(list);
+  col.addEventListener('dragover',function(e){ e.preventDefault(); col.classList.add('drag-over'); });
+  col.addEventListener('dragleave',function(){ col.classList.remove('drag-over'); });
+  col.addEventListener('drop',function(e){
+    e.preventDefault(); col.classList.remove('drag-over');
+    var moved=e.dataTransfer.getData('text/plain');
+    if(moved) apMoveLevel(moved,groupKey,-1);
+  });
+  return col;
+}
+// The whole arrangement block: two columns + status line + reset link.
+function apRenderHierarchy(con){
+  var g=apGroups(), configured=!!(S.appearedPassed && S.appearedPassed.hierarchy);
+  var sec=document.createElement('div'); sec.className='radio-sec';
+  var head=document.createElement('div');
+  head.innerHTML='<h4>Qualification Hierarchy</h4>'
+    +'<p class="dim" style="font-size:12px;margin-bottom:10px">Drag to arrange the qualifications detected in the sheet. The <b>Hierarchical</b> order (lowest → highest) decides which level is the "highest qualification" of each post — only that one is Appeared/Passed-gated. Levels in <b>Generic</b> have no precedence: they never suppress and are never suppressed. '
+    +(configured?'<b>Custom arrangement in use.</b>':'Using the default arrangement.')+'</p>';
+  sec.appendChild(head);
+  var wrap=document.createElement('div'); wrap.className='ap-dnd';
+  wrap.appendChild(apDndCol('Hierarchical','lowest → highest','hierarchy',g.hierarchy,true));
+  wrap.appendChild(apDndCol('Generic / Non-Hierarchical','no precedence','generic',g.generic,false));
+  sec.appendChild(wrap);
+  var foot=document.createElement('div');
+  foot.style.cssText='margin-top:10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap';
+  foot.innerHTML='<span class="dim" style="font-size:11px">'+(g.hierarchy.length+g.generic.length)
+    +' qualification(s) detected — '+g.hierarchy.length+' hierarchical, '+g.generic.length+' generic</span>';
+  if(configured){
+    var rst=document.createElement('button');
+    rst.type='button'; rst.className='btn btn-s'; rst.textContent='Reset to default hierarchy';
+    rst.addEventListener('click',function(){ apResetGroups(); });
+    foot.appendChild(rst);
+  }
+  sec.appendChild(foot);
+  con.appendChild(sec);
 }
 function renderApCfg(){
   var con=document.getElementById('ap-cfg'); if(!con) return;
   con.innerHTML='';
   var levels=apDistinctLevels();
-  S.appearedPassed=S.appearedPassed||{enabled:false,fields:{}};
+  S.appearedPassed=S.appearedPassed||{enabled:false,fields:{},hierarchy:null,generic:null};
   var ap=S.appearedPassed;
 
   var head=document.createElement('div');
@@ -421,15 +597,21 @@ function renderApCfg(){
     +'<label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;margin-bottom:6px">'
     +'<input type="checkbox" id="ap-enable-chk" '+(ap.enabled?'checked':'')+' onchange="updApEnable(this)">'
     +'Enable Appeared / Passed Support</label>'
-    +'<p class="dim" style="font-size:13px;margin-bottom:12px">When a candidate has only <b>Appeared</b> (A), marks &amp; grade are not required for that level; <b>Passed</b> (P) requires them as today. Appeared/Passed applies only to the <b>highest qualification</b> required by each post: if a post requires Graduation <b>and</b> Post Graduation, Graduation stays a normal check and only Post Graduation is treated as Appeared/Passed. Enable it on every level of a ladder so each post gates its own top qualification.</p>';
+    +'<p class="dim" style="font-size:13px;margin-bottom:12px">When a candidate has only <b>Appeared</b> (A), marks &amp; grade are not required for that level; <b>Passed</b> (P) requires them as today. Appeared/Passed applies only to the <b>highest qualification</b> required by each post — as ranked by the hierarchy you arrange below: if a post requires Graduation <b>and</b> Post Graduation, Graduation stays a normal check and only Post Graduation is treated as Appeared/Passed. Enable it on every level of a ladder so each post gates its own top qualification.</p>';
   con.appendChild(head);
 
   if(!ap.enabled) return;
   if(!levels.length){ con.innerHTML+='<div class="alert alert-info">No Exam Passed levels detected — nothing to configure.</div>'; return; }
 
+  apRenderHierarchy(con);
+
   var sec=document.createElement('div'); sec.className='radio-sec';
-  for(var i=0;i<levels.length;i++){
-    var lvl=levels[i], selected=(ap.fields[lvl]!=null), fv=selected?ap.fields[lvl]:'';
+  var fhd=document.createElement('div');
+  fhd.innerHTML='<h4>Appeared / Passed $_POST Fields</h4>';
+  sec.appendChild(fhd);
+  var g=apGroups(), ordered=g.hierarchy.concat(g.generic);   // read in the arranged order
+  for(var i=0;i<ordered.length;i++){
+    var lvl=ordered[i], selected=(ap.fields[lvl]!=null), fv=selected?ap.fields[lvl]:'';
     var row=document.createElement('div');
     row.innerHTML='<div class="f-row" style="align-items:flex-end">'
       +'<div class="f-grp" style="flex:0 0 auto"><label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;margin:0">'
@@ -673,6 +855,13 @@ function goStep(n){
   App.updApEnable = updApEnable;
   App.updApLevel = updApLevel;
   App.updApField = updApField;
+  App.apDistinctLevels = apDistinctLevels;
+  App.apDefaultGroups = apDefaultGroups;
+  App.apGroups = apGroups;
+  App.apMoveLevel = apMoveLevel;
+  App.apShiftLevel = apShiftLevel;
+  App.apSwapGroup = apSwapGroup;
+  App.apResetGroups = apResetGroups;
   App.updatePreview = updatePreview;
   App.weNone = weNone;
   App.renderIntCfg = renderIntCfg;

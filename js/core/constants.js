@@ -104,6 +104,16 @@ var POSTQUAL_TS = {
   10:{v:'$iddtimeStr',                acad:0}
 };
 
+// Default academic rank of an EDU level, read from the POSTQUAL_TS table above.
+// >0 = academic ladder position (larger = higher); 0 = special / unknown level with
+// no ladder precedence. This is only the DEFAULT — the Appeared/Passed hierarchy the
+// user arranges in Step 2 overrides it (see App.apRank in core/state.js).
+function defaultAcadRank(level){
+  var def=EDU[level]; if(!def) return 0;
+  var info=POSTQUAL_TS[def.idx];
+  return (info&&info.acad)?info.acad:0;
+}
+
 // Look up a normalised mark string. Returns the {php, err} descriptor from the
 // static MARK_OPS table when the value is listed there; otherwise synthesises
 // one for any valid >=N% / >N% / N% pattern so arbitrary percentages work.
@@ -127,5 +137,6 @@ function lookupMarkOp(mk){
   App.MARK_OPS = MARK_OPS;
   App.lookupMarkOp = lookupMarkOp;
   App.POSTQUAL_TS = POSTQUAL_TS;
+  App.defaultAcadRank = defaultAcadRank;
   App.gradeCheck = gradeCheck;
 })(window.App = window.App || {});

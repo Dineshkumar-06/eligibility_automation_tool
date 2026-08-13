@@ -5,9 +5,9 @@
   // ── imports from App ──
   var EDU = App.EDU;
   var GRADE_OPS = App.GRADE_OPS;
-  var POSTQUAL_TS = App.POSTQUAL_TS;
   var apEnabled = App.apEnabled;
   var apField = App.apField;
+  var apRank = App.apRank;
   var lookupMarkOp = App.lookupMarkOp;
   var annotateCondNames = App.annotateCondNames;
   var arrRef = App.arrRef;
@@ -201,14 +201,15 @@ function buildCondLine(cond,post,single,opts){
 }
 
 // ── APPEARED / PASSED HIERARCHY ─────────────────────────────────────────────
-// Academic rank of a condition's level, reusing the existing POSTQUAL_TS hierarchy
-// (SSC1 < HSC2 < Graduation3 < (PG|PGDiploma)4 < PhD5). 0 = radio / 'Others' / any
-// `acad:0` special (Diploma, Certification, Professional, IDD) — no precedence.
+// Academic rank of a condition's level, delegated to App.apRank so the hierarchy is
+// whatever the user arranged in Step 2 (drag & drop). With no configuration apRank
+// falls back to the default POSTQUAL_TS ranks (SSC1 < HSC2 < Graduation3 <
+// (PG|PGDiploma)4 < PhD5). 0 = radio / 'Others' / any level in the generic
+// (non-hierarchical) group — e.g. Diploma, Certification, Professional, IDD by
+// default — which has no precedence either way.
 function acadRank(cond){
   if(cond.type!=='edu') return 0;
-  var def=EDU[cond.level]; if(!def) return 0;
-  var info=POSTQUAL_TS[def.idx];
-  return (info&&info.acad)?info.acad:0;
+  return apRank(cond.level);
 }
 // The AP field for `cond`, but suppressed to null when a higher-ranked ACADEMIC
 // qualification also appears in the same OR-group. Appeared/Passed applies only to the
@@ -440,6 +441,7 @@ function weRadioTiers(post,pc){
   App.buildCondGroupLine = buildCondGroupLine;
   App.effectiveApField = effectiveApField;
   App.acadRank = acadRank;
+  App.lowerAppearedFields = lowerAppearedFields;
   App.buildErrLine = buildErrLine;
   App.buildErrMsgs = buildErrMsgs;
   App.buildGradeMarkPer = buildGradeMarkPer;

@@ -145,6 +145,7 @@ The **lookup tables**. No logic, just domain knowledge.
 | `GRADE_OPS`, `GRADE_RANK` | Grade names → PHP, plus the hierarchy | grade comparisons wrong |
 | `gradeCheck()` | The *only* function here — expands "Second Class" into "Second OR First Class" | a grade threshold doesn't accept higher grades |
 | `POSTQUAL_TS` | Level idx → the `strtotime()` variable + academic rank | the work-exp date logic picks the wrong qualification |
+| `defaultAcadRank(level)` | The **default** Appeared/Passed hierarchy rank of a level, read from `POSTQUAL_TS.acad` (`0` = generic / no precedence) | the default hierarchy (before the user arranges one) is wrong |
 
 **Debug heuristic:** "Why did level X map to field Y?" → `EDU`. "Why wasn't my level
 recognized?" → `EDU_ALIASES` / `EDU_KW` (and `matchLevel` in `parsing/helpers.js`).
@@ -163,6 +164,8 @@ every module reads/writes.
 | `rFn`, `rLk` | Resolve a radio's field-name / lang-key (override OR auto-derived) | wrong radio field name in output |
 | `isCat(mk)` | Is this mark a category-split (`CAT:…`)? | category-mark branch taken/not taken wrongly |
 | `intEnabled()`, `intField()` | Is the Internal Candidate feature on? What is the PHP field name? | wrong branch taken / wrong `$_POST` key in output |
+| `apEnabled()`, `apField(level)` | Is Appeared/Passed on? Which `$_POST` field carries this level's A/P value (`null` = not AP-active)? | `_appeared` missing / leaking for a level |
+| `apRank(level)` | The level's hierarchy rank: position in `S.appearedPassed.hierarchy` (1-based, higher = higher qualification), `0` for anything in `.generic`, else `defaultAcadRank(level)` | the wrong level is treated as a post's "highest qualification" |
 | `snapCtx()` | Captures `{dimensions, colMap, weHeader, weMode}` into a snapshot object | context not captured after a `buildPostsRange` call |
 | `withCtx(ctx, fn)` | Applies a context snapshot around `fn()`, then restores | generation uses the wrong section's schema (singleton leak) |
 
@@ -598,6 +601,8 @@ App.S._lang     // edu_details_lang.php
 | Change the structure of one output file (branched path) | `generators/internalBranch.js` (the matching `gen*Branched` function) |
 | Change the work-exp boilerplate (head/tail) | `generators/workExp.js` (`WE_HEAD`/`WE_TAIL`, base64) |
 | Change the Internal Candidate UI (checkbox, field input) | `ui/ui.js` (`renderIntCfg`) |
+| Change the Appeared/Passed hierarchy (which level is a post's "highest qualification") | it's user data, not code: the Step-2 drag & drop writes `S.appearedPassed.hierarchy` / `.generic`, resolved by `apRank` in `core/state.js`; the default comes from `defaultAcadRank` in `core/constants.js` |
+| Change the Appeared/Passed UI (enable, hierarchy columns, field names) | `ui/ui.js` (`renderApCfg`, `apRenderHierarchy`, `apGroups`, `apMoveLevel`) |
 | Change how the sheet is split / re-parsed on toggle | `ui/ui.js` (`parseRows`, `reparse`) |
 | Change on-screen tables / previews / buttons | `ui/ui.js` |
 | Add a new inline `onclick=` handler | export from `ui/ui.js` **and** add to `main.js` window list |

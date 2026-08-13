@@ -10,7 +10,11 @@
 //   user-supplied $_POST field name carrying the candidate's A/P choice, e.g.
 //   {'Graduation':'grad_appeared'}. A level is AP-active iff enabled AND it has a
 //   non-empty field name (see apField below).
-var S = {posts:[], errors:[], warnings:[], rawRows:[], colMap:{}, dimensions:[], radioOv:{}, bilingual:false, redRemovedCount:0, appearedPassed:{enabled:false, fields:{}},
+//   `hierarchy` / `generic` hold the qualification hierarchy the user arranges by drag &
+//   drop in Step 2: `hierarchy` is a list of EDU level names ordered lowest → highest,
+//   `generic` the levels with no ladder precedence. Both null = not configured ⇒ the
+//   default POSTQUAL_TS ranks are used (see apRank below), so output stays legacy.
+var S = {posts:[], errors:[], warnings:[], rawRows:[], colMap:{}, dimensions:[], radioOv:{}, bilingual:false, redRemovedCount:0, appearedPassed:{enabled:false, fields:{}, hierarchy:null, generic:null},
          internalCandidate:{enabled:false, field:'internal_candidate', posts:[], ctx:null},
          _normalCtx:null, clarifications:{stream:[], degree:[], radio:[]},
          _edu:'', _eli:'', _eduval:'', _workexp:'', _qrysql:''};
@@ -86,6 +90,22 @@ function apField(level){
   return f||null;
 }
 
+// Hierarchy rank of an EDU level for Appeared/Passed purposes: >0 = ladder position
+// (larger = higher qualification), 0 = generic / non-hierarchical (no precedence).
+// Resolution order — user-arranged hierarchy, then the generic bucket, then the default
+// POSTQUAL_TS ranks (App.defaultAcadRank, looked up lazily because core/constants.js
+// exports it before this file loads but callers only run post-load). Nothing here is
+// hardcoded per level, so a new Exam Passed type just works once it is dragged in.
+function apRank(level){
+  var ap=S.appearedPassed||{}, h=ap.hierarchy, g=ap.generic;
+  if(h && h.length){
+    var i=h.indexOf(level);
+    if(i>=0) return i+1;
+    if(g && g.indexOf(level)>=0) return 0;
+  } else if(g && g.length && g.indexOf(level)>=0) return 0;
+  return App.defaultAcadRank?App.defaultAcadRank(level):0;
+}
+
 // Radio "Should be" prompt text. When S.bilingual is on (Marathi/Hindi content
 // present — toggled by the Step-2 checkbox), emit the bilingual variants used in
 // the reference config.php; otherwise the plain English text.
@@ -109,6 +129,7 @@ function sbNo(){    return S.bilingual?'Should be NO / नाही':'Should be 
   App.isCat = isCat;
   App.apEnabled = apEnabled;
   App.apField = apField;
+  App.apRank = apRank;
   App.intEnabled = intEnabled;
   App.intField = intField;
   App.snapCtx = snapCtx;
