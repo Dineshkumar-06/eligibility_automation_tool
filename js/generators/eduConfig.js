@@ -235,7 +235,7 @@ function emitDependentsAndRadios(posts,single,suffix){
   // collect levels actually used across all posts (in EDU_ORDER sequence), and track
   // which levels actually carry Degree values so a Degree dep-var is added only when
   // present (keeps Stream-only sheets' dependents list byte-identical).
-  var usedLevels={}, degLevels={};
+  var usedLevels={}, degLevels={}, gradeLevels={}, markLevels={};
   for(var pi=0;pi<posts.length;pi++)
     for(var gi=0;gi<posts[pi].orGroups.length;gi++)
       for(var ci=0;ci<posts[pi].orGroups[gi].conditions.length;ci++){
@@ -243,6 +243,8 @@ function emitDependentsAndRadios(posts,single,suffix){
         if(dc.type==='edu'){
           usedLevels[dc.level]=true;
           if((dc.degrees&&dc.degrees.length)||dc.anyDegree) degLevels[dc.level]=true;
+          if(dc.gradeRaw)    gradeLevels[dc.level]=true;
+          if(dc.hasMarksCol) markLevels[dc.level]=true;
         }
       }
   for(var li=0;li<EDU_ORDER.length;li++){
@@ -252,8 +254,8 @@ function emitDependentsAndRadios(posts,single,suffix){
     var def=EDU[lvl];
     if(def&&def.hasDegree&&degLevels[lvl]) depVars.push(pfx+'degree');
     if(def&&def.hasStream) depVars.push(pfx+'subjects');
-    depVars.push(pfx+'percentage');
-    depVars.push(pfx+'grade');
+    if(markLevels[lvl])  depVars.push(pfx+'percentage');
+    if(gradeLevels[lvl]) depVars.push(pfx+'grade');
   }
   // totexp if any OR-group carries a work-exp requirement
   var needsWE=posts.some(function(p){return p.orGroups.some(function(g){return g.workExp>0;});});

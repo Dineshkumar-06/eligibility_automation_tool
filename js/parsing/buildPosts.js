@@ -123,6 +123,8 @@ function buildPostsRange(rows){
   }
 
   var curWeMonths=0;
+  var hasGradeCol=CI.grade>=0;
+  var hasMarksCol=CI.marks>=0;
   for(var ri=CI._hdrRow+1;ri<rows.length;ri++){
     var r=rows[ri];
     var A=get(r,CI.srno),B=get(r,CI.post),C=get(r,CI.field);
@@ -191,14 +193,14 @@ function buildPostsRange(rows){
       }
       var inlineLvl=matchLevel(C);
       if(inlineLvl){
-        var mk=normMark(E),gk=normGrade(F);
+        var mk=normMark(E),gk=hasGradeCol?normGrade(F):null;
         if(mk&&!isCat(mk)&&!lookupMarkOp(mk))
           errors.push({ri:ri,pc:cur.postcode,msg:'Unknown mark operator "'+E+'"'});
         else {
           var rawSubsI=EDU[inlineLvl].hasStream?parseSubs(D):[];
           var isAnyI=rawSubsI.length===1&&rawSubsI[0]==='__ANY__';
           var degI=parseAxis(EDU[inlineLvl].hasDegree,DG);
-          grp.conditions.push({type:'edu',level:inlineLvl,subjects:isAnyI?[]:rawSubsI,anyStream:isAnyI,degrees:degI.vals,anyDegree:degI.any,markRaw:mk,markRawOrig:E,gradeRaw:gk,ri:ri,status:'ok',condName:'',degreeCondName:''});
+          grp.conditions.push({type:'edu',level:inlineLvl,subjects:isAnyI?[]:rawSubsI,anyStream:isAnyI,degrees:degI.vals,anyDegree:degI.any,markRaw:mk,markRawOrig:E,gradeRaw:gk,hasMarksCol:hasMarksCol,ri:ri,status:'ok',condName:'',degreeCondName:''});
         }
       }
       continue;
@@ -245,15 +247,15 @@ function buildPostsRange(rows){
     }
     var lvl=matchLevel(C);
     if(lvl){
-      var mk=normMark(E),gk=normGrade(F);
+      var mk=normMark(E),gk=hasGradeCol?normGrade(F):null;
       if(mk&&!isCat(mk)&&!lookupMarkOp(mk)){
         errors.push({ri:ri,pc:cur.postcode,msg:'Unknown mark operator "'+E+'"'});
-        grp.conditions.push({type:'edu',level:lvl,subjects:[],anyStream:false,degrees:[],anyDegree:false,markRaw:mk,gradeRaw:gk,ri:ri,status:'error',condName:'',degreeCondName:''});
+        grp.conditions.push({type:'edu',level:lvl,subjects:[],anyStream:false,degrees:[],anyDegree:false,markRaw:mk,gradeRaw:gk,hasMarksCol:hasMarksCol,ri:ri,status:'error',condName:'',degreeCondName:''});
       } else {
         var rawSubs=EDU[lvl].hasStream?parseSubs(D):[];
         var isAny=rawSubs.length===1&&rawSubs[0]==='__ANY__';
         var deg=parseAxis(EDU[lvl].hasDegree,DG);
-        grp.conditions.push({type:'edu',level:lvl,subjects:isAny?[]:rawSubs,anyStream:isAny,degrees:deg.vals,anyDegree:deg.any,markRaw:mk,markRawOrig:E,gradeRaw:gk,ri:ri,status:'ok',condName:'',degreeCondName:''});
+        grp.conditions.push({type:'edu',level:lvl,subjects:isAny?[]:rawSubs,anyStream:isAny,degrees:deg.vals,anyDegree:deg.any,markRaw:mk,markRawOrig:E,gradeRaw:gk,hasMarksCol:hasMarksCol,ri:ri,status:'ok',condName:'',degreeCondName:''});
       }
       continue;
     }

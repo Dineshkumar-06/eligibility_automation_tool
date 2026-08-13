@@ -343,9 +343,10 @@ function buildErrLine(cond,post,single,opts){
   var go=cond.gradeRaw?(GRADE_OPS[cond.gradeRaw]||null):null;
   var aref=arrRef(def,cond.condName,single,post,STREAM_AXIS,sfx);
 
+  var gradeSep=go?" ,&nbsp;&nbsp; ":"";
   var markPart='';
-  if(cat)     markPart=" ,&nbsp;&nbsp; \".$LANG['edu_lbl_mark'].\" >= \".$GradeMarkPer.\" % ,&nbsp;&nbsp; ";
-  else if(mo) markPart=" ,&nbsp;&nbsp; \".$LANG['edu_lbl_mark'].\" "+mo.err+" ,&nbsp;&nbsp; ";
+  if(cat)     markPart=" ,&nbsp;&nbsp; \".$LANG['edu_lbl_mark'].\" >= \".$GradeMarkPer.\" %"+gradeSep;
+  else if(mo) markPart=" ,&nbsp;&nbsp; \".$LANG['edu_lbl_mark'].\" "+mo.err+gradeSep;
   var gradePart=go?" &nbsp;&nbsp; \".$LANG['edu_lbl_grade'].\" = "+go.err+" &nbsp;&nbsp;\"":'\"';
 
   // Degree / subject fragments. Each is a value-axis clause that RE-OPENS the message
