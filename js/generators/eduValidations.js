@@ -161,8 +161,7 @@ function genEduValidations(posts){
   var globalVars=collectGlobalVars(posts);
   var single=posts.length===1;
 
-  var o='<?PHP\n';
-  o+=ind(0)+'function checkDOPassing($field_number,$row_name,$col_name){\n';
+  var o=ind(0)+'function checkDOPassing($field_number,$row_name,$col_name){\n';
   o+=ind(1)+'global '+globalVars.join(',')+';\n\n';
   o+=ind(1)+"$errmsg = '';\n";
   o+=ind(1)+"$field_yr = $_POST['selyr'.$field_number];\n";
@@ -196,7 +195,6 @@ function genEduValidations(posts){
   o+=ind(1)+'}\n';
   o+=ind(1)+'return $errmsg;\n';
   o+='}'+'\n';
-  o+='?>';
   return o;
 }
 

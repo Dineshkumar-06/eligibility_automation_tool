@@ -74,6 +74,22 @@ function normEdu(s) {
 a.edu = normEdu(a.edu);
 b.edu = normEdu(b.edu);
 
+// edu_config.php / edu_validations.php / work_exp_details_validations.php no longer
+// carry PHP open/close tags in the modular generators (legacy still has them —
+// eligibity_validation.php is unaffected and keeps its tags in both). Strip them
+// from the legacy side (new side already has none) so the comparison isolates
+// real logic differences from this intentional tag removal.
+function stripPhpTags(s) {
+  var out = s;
+  if (/^<\?php\n/i.test(out)) out = out.replace(/^<\?php\n/i, '');
+  if (out.endsWith('?>')) out = out.slice(0, -2);
+  return out;
+}
+for (const k of ['edu', 'eduval', 'workexp']) {
+  a[k] = stripPhpTags(a[k]);
+  b[k] = stripPhpTags(b[k]);
+}
+
 console.log('legacy sheet posts: new=' + a.posts + ' old=' + b.posts);
 console.log('detected dimensions:', JSON.stringify(a.dims));
 

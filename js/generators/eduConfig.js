@@ -74,7 +74,7 @@ function postForCombo(posts, combo){
 
 function genEduConfig(posts){
   var single=posts.length===1;
-  var o='<?PHP\n'+ind(1)+'/***********************************************Edu Config ***************************************************************/\n\n';
+  var o=ind(1)+'/***********************************************Edu Config ***************************************************************/\n\n';
 
   // Emit every value array for ONE axis (Degree or Subject/Stream). Identical code
   // path for both; only the axis descriptor (which condition values, which EDU array
@@ -327,7 +327,6 @@ function emitDependentsAndRadios(posts,single,suffix){
   }
   o+='      // edu_qry_arrays.php\n';
   o+=arrAdditionSection(posts)+'\n';
-  o+='?>';
   return o;
 }
 

@@ -1,4 +1,3 @@
-<?PHP
 function checkDOPassing($field_number,$row_name,$col_name){
 	global $errmsgarr,$LANG,$arrGraduation_Stream_cond1,$arrGraduation_Stream_cond2,$arrGraduation_Stream_cond3,$arrGraduation_Stream,$arrPG_Stream_cond1,$arrPG_Stream_cond2,$arrPG_Stream,$arrPhD_Stream;
 
@@ -981,4 +980,3 @@ function checkDOPassing($field_number,$row_name,$col_name){
 	}
 	return $errmsg;
 }
-?>

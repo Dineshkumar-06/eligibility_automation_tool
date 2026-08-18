@@ -825,11 +825,18 @@ function dlZip(){
 }
 
 // ── NAVIGATION ────────────────────────────────────────────────────────────
-function goStep(n){
+// fromTab=true means the click came from the step breadcrumb rather than an
+// action-bar button — only allow it to jump to a step already reached
+// (S.maxStep), so clicking "Generate & Export" in the breadcrumb can't skip
+// ahead of a step whose data (posts/config) hasn't been produced yet.
+function goStep(n,fromTab){
+  if(fromTab && n>S.maxStep) return;
+  S.maxStep=Math.max(S.maxStep,n);
   [1,2,3].forEach(function(i){
     document.getElementById('step-'+i).classList.toggle('hidden',i!==n);
     var si=document.getElementById('si-'+i);
     si.classList.toggle('active',i===n);si.classList.toggle('done',i<n);
+    si.classList.toggle('reachable',i<=S.maxStep);
   });
   if(n===2) renderS2();
   if(n===3) renderS3();

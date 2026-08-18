@@ -1,4 +1,3 @@
-<?php
   	
 if(POST_QUALIFICATION_EXP){
 /*  switch($_POST['postcode']){

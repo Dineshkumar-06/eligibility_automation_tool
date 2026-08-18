@@ -17,7 +17,7 @@
 var S = {posts:[], errors:[], warnings:[], rawRows:[], colMap:{}, dimensions:[], radioOv:{}, bilingual:false, redRemovedCount:0, appearedPassed:{enabled:false, fields:{}, hierarchy:null, generic:null},
          internalCandidate:{enabled:false, field:'internal_candidate', posts:[], ctx:null},
          _normalCtx:null, clarifications:{stream:[], degree:[], radio:[]},
-         _edu:'', _eli:'', _eduval:'', _workexp:'', _qrysql:''};
+         _edu:'', _eli:'', _eduval:'', _workexp:'', _qrysql:'', maxStep:1};
 
 // Derive a sane default PHP POST-variable name from a dimension column header.
 // "POST" -> "postcode" (legacy name preserved); everything else -> snake_case of

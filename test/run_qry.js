@@ -31,7 +31,8 @@ assert(items[items.length-1]==='revision', 'revision is the LAST element');
 assert(items.filter(x=>x==='revision').length===1, 'revision appears exactly once');
 assert(items.slice(0,-1).join('|')===fields.join('|'), '$arrAdditionSection fields match collectRadioFields, in order');
 assert(new Set(items).size===items.length, 'no duplicate entries in $arrAdditionSection');
-assert(edu.trim().endsWith('?>'), 'edu_config.php still ends with ?>');
+assert(!edu.includes('<?PHP') && !edu.includes('?>'), 'edu_config.php has no PHP open/close tags');
+assert(edu.trim().endsWith(');'), 'edu_config.php still ends with the $arrAdditionSection array');
 
 // SQL: one ALTER per field, none for revision, no dups
 const alters = (sql.match(/ADD `([^`]+)`/g)||[]).map(s=>s.replace(/ADD `|`/g,''));

@@ -75,8 +75,7 @@ function genEduValidationsBranched(normal, internal, ctxN, ctxI, field){
   // Union global vars from both branches — include both unsuffixed and _internal variants.
   var globalVars=collectGlobalVars(allPosts, ['', '_internal']);
 
-  var o='<?PHP\n';
-  o+=ind(0)+'function checkDOPassing($field_number,$row_name,$col_name){\n';
+  var o=ind(0)+'function checkDOPassing($field_number,$row_name,$col_name){\n';
   o+=ind(1)+'global '+globalVars.join(',')+';\n\n';
   o+=ind(1)+"$errmsg = '';\n";
   o+=ind(1)+"$field_yr = $_POST['selyr'.$field_number];\n";
@@ -114,7 +113,6 @@ function genEduValidationsBranched(normal, internal, ctxN, ctxI, field){
   o+=ind(1)+'}\n';
   o+=ind(1)+'return $errmsg;\n';
   o+='}'+'\n';
-  o+='?>';
   return o;
 }
 
@@ -173,7 +171,7 @@ function genWorkExpBranched(normal, internal, ctxN, ctxI, field){
 // Keys are identical across both sets; only the array name differs.
 function genEduConfigBranched(normal, internal, ctxN, ctxI, field){
   var singleN=(normal.length===1), singleI=(internal.length===1);
-  var o='<?PHP\n'+ind(1)+'/***********************************************Edu Config ***************************************************************/\n\n';
+  var o=ind(1)+'/***********************************************Edu Config ***************************************************************/\n\n';
 
   // Normal candidate arrays (no suffix).
   o+=withCtx(ctxN, function(){
@@ -185,7 +183,7 @@ function genEduConfigBranched(normal, internal, ctxN, ctxI, field){
     return emitAxisArrays(internal,DEGREE_AXIS,singleI,'_internal') + emitAxisArrays(internal,STREAM_AXIS,singleI,'_internal');
   });
 
-  // $eligibilityDependents, $arrPostBasedRadioCond, arrAdditionSection, and '?>' are
+  // $eligibilityDependents, $arrPostBasedRadioCond, and arrAdditionSection are
   // emitted once over the union of all posts — they are shared config, not branched.
   var allPosts=normal.concat(internal);
   o+=withCtx(ctxN, function(){ return emitDependentsAndRadios(allPosts, singleN); });

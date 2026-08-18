@@ -55,7 +55,7 @@ function mergedOrder(condSlots){
 }
 
 function genLangFile(posts){
-  var o='<?php\n\n';
+  var o='';
   var seen={};
   for(var pi=0;pi<posts.length;pi++){
     var post=posts[pi];
@@ -77,7 +77,6 @@ function genLangFile(posts){
       o+="$LANG['"+lk+"'] = '"+q.replace(/'/g,"\\'")+"';\n";
     }
   }
-  o+='\n?>';
   return o;
 }
 

@@ -33,11 +33,11 @@
     <p>Generate all eligibility related code from Eligibility Criteria Excel</p>
   </div>
   <div class="steps">
-    <div class="step-item active" id="si-1"><div class="step-num">1</div><div class="step-label">Upload &amp; Parse</div></div>
+    <div class="step-item active reachable" id="si-1" role="button" tabindex="0" aria-label="Go to step 1: Upload &amp; Parse" onclick="goStep(1,true)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goStep(1,true);}"><div class="step-num">1</div><div class="step-label">Upload &amp; Parse</div></div>
     <span class="step-sep">›</span>
-    <div class="step-item" id="si-2"><div class="step-num">2</div><div class="step-label">Configure &amp; Review</div></div>
+    <div class="step-item" id="si-2" role="button" tabindex="0" aria-label="Go to step 2: Configure &amp; Review" onclick="goStep(2,true)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goStep(2,true);}"><div class="step-num">2</div><div class="step-label">Configure &amp; Review</div></div>
     <span class="step-sep">›</span>
-    <div class="step-item" id="si-3"><div class="step-num">3</div><div class="step-label">Generate &amp; Export</div></div>
+    <div class="step-item" id="si-3" role="button" tabindex="0" aria-label="Go to step 3: Generate &amp; Export" onclick="goStep(3,true)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goStep(3,true);}"><div class="step-num">3</div><div class="step-label">Generate &amp; Export</div></div>
   </div>
   <div id="step-1">
     <div class="upload-wrap" id="upload-area" role="button" tabindex="0" aria-label="Upload Excel file: click or press Enter to browse, or drag and drop" onclick="document.getElementById('file-in').click()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('file-in').click();}">
