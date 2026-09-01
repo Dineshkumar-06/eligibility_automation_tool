@@ -2791,30 +2791,6 @@
       "norm_label": "reset()"
     },
     {
-      "label": "ok()",
-      "file_type": "code",
-      "source_file": "test/run_subject_other_equivalent.js",
-      "source_location": "L15",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "test_run_subject_other_equivalent_ok",
-      "community": 32,
-      "community_name": "run_subject_other_equivalent.js",
-      "norm_label": "ok()"
-    },
-    {
-      "label": "reset()",
-      "file_type": "code",
-      "source_file": "test/run_subject_other_equivalent.js",
-      "source_location": "L20",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "test_run_subject_other_equivalent_reset",
-      "community": 32,
-      "community_name": "run_subject_other_equivalent.js",
-      "norm_label": "reset()"
-    },
-    {
       "label": "acadRank()",
       "file_type": "code",
       "source_file": "js/generators/eligibility.js",
@@ -3022,7 +2998,7 @@
       "label": "annotateCondNames()",
       "file_type": "code",
       "source_file": "js/parsing/streams.js",
-      "source_location": "L158",
+      "source_location": "L152",
       "_callable": true,
       "_origin": "ast",
       "id": "js_parsing_streams_annotatecondnames",
@@ -3034,7 +3010,7 @@
       "label": "arrRef()",
       "file_type": "code",
       "source_file": "js/parsing/streams.js",
-      "source_location": "L204",
+      "source_location": "L198",
       "_callable": true,
       "_origin": "ast",
       "id": "js_parsing_streams_arrref",
@@ -3070,7 +3046,7 @@
       "label": "getAllRadios()",
       "file_type": "code",
       "source_file": "js/parsing/streams.js",
-      "source_location": "L212",
+      "source_location": "L206",
       "_callable": true,
       "_origin": "ast",
       "id": "js_parsing_streams_getallradios",
@@ -3082,7 +3058,7 @@
       "label": "getCatValues()",
       "file_type": "code",
       "source_file": "js/parsing/streams.js",
-      "source_location": "L228",
+      "source_location": "L222",
       "_callable": true,
       "_origin": "ast",
       "id": "js_parsing_streams_getcatvalues",
@@ -3118,7 +3094,7 @@
       "label": "postAxisOrder()",
       "file_type": "code",
       "source_file": "js/parsing/streams.js",
-      "source_location": "L140",
+      "source_location": "L134",
       "_callable": true,
       "_origin": "ast",
       "id": "js_parsing_streams_postaxisorder",
@@ -4738,7 +4714,7 @@
       "label": "Architecture",
       "file_type": "document",
       "source_file": "CLAUDE.md",
-      "source_location": "L55",
+      "source_location": "L54",
       "_origin": "ast",
       "id": "claude_architecture",
       "community": 22,
@@ -4760,7 +4736,7 @@
       "label": "Internal / Departmental Candidate feature",
       "file_type": "document",
       "source_file": "CLAUDE.md",
-      "source_location": "L83",
+      "source_location": "L82",
       "_origin": "ast",
       "id": "claude_internal_departmental_candidate_feature",
       "community": 22,
@@ -4771,7 +4747,7 @@
       "label": "Knowledge graph (graphify)",
       "file_type": "document",
       "source_file": "CLAUDE.md",
-      "source_location": "L98",
+      "source_location": "L97",
       "_origin": "ast",
       "id": "claude_knowledge_graph_graphify",
       "community": 22,
@@ -4782,7 +4758,7 @@
       "label": "Module wiring",
       "file_type": "document",
       "source_file": "CLAUDE.md",
-      "source_location": "L74",
+      "source_location": "L73",
       "_origin": "ast",
       "id": "claude_module_wiring",
       "community": 22,
@@ -4826,7 +4802,7 @@
       "label": "Where to look for a given change",
       "file_type": "document",
       "source_file": "CLAUDE.md",
-      "source_location": "L92",
+      "source_location": "L91",
       "_origin": "ast",
       "id": "claude_where_to_look_for_a_given_change",
       "community": 22,
@@ -5161,28 +5137,6 @@
       "id": "test_run_we_mixed_app",
       "community": 31,
       "community_name": "run_we_mixed.js",
-      "norm_label": "app"
-    },
-    {
-      "label": "run_subject_other_equivalent.js",
-      "file_type": "code",
-      "source_file": "test/run_subject_other_equivalent.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "test_run_subject_other_equivalent",
-      "community": 32,
-      "community_name": "run_subject_other_equivalent.js",
-      "norm_label": "run_subject_other_equivalent.js"
-    },
-    {
-      "label": "App",
-      "file_type": "code",
-      "source_file": "test/run_subject_other_equivalent.js",
-      "source_location": "L12",
-      "_origin": "ast",
-      "id": "test_run_subject_other_equivalent_app",
-      "community": 32,
-      "community_name": "run_subject_other_equivalent.js",
       "norm_label": "app"
     },
     {
@@ -5736,8 +5690,8 @@
       "community": 0,
       "norm_label": "css/styles.css \u2014 stylesheet (was the inline <style> block of the original test.html)",
       "_origin": "semantic",
-      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)",
-      "id": "css_styles"
+      "id": "css_styles",
+      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)"
     },
     {
       "label": "index.html \u2014 App Shell, Step UI & Module Load Order",
@@ -5751,8 +5705,8 @@
       "community": 0,
       "norm_label": "index.html \u2014 app shell, step ui & module load order",
       "_origin": "semantic",
-      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)",
-      "id": "index_doc"
+      "id": "index_doc",
+      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)"
     },
     {
       "label": "WE_HEAD \u2014 base64-embedded static PHP head boilerplate for work_exp_details_validations.php",
@@ -5766,8 +5720,8 @@
       "community": 0,
       "norm_label": "we_head \u2014 base64-embedded static php head boilerplate for work_exp_details_validations.php",
       "_origin": "semantic",
-      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)",
-      "id": "js_generators_workexp_we_head"
+      "id": "js_generators_workexp_we_head",
+      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)"
     },
     {
       "label": "WE_TAIL \u2014 base64-embedded static PHP tail boilerplate for work_exp_details_validations.php",
@@ -5781,8 +5735,8 @@
       "community": 0,
       "norm_label": "we_tail \u2014 base64-embedded static php tail boilerplate for work_exp_details_validations.php",
       "_origin": "semantic",
-      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)",
-      "id": "js_generators_workexp_we_tail"
+      "id": "js_generators_workexp_we_tail",
+      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)"
     },
     {
       "label": "Internal / Departmental Candidate Support \u2014 splits one sheet into two parallel posts[] arrays (normal + internal) when enabled and a separator row is found",
@@ -5796,8 +5750,8 @@
       "community": 0,
       "norm_label": "internal / departmental candidate support \u2014 splits one sheet into two parallel posts[] arrays (normal + internal) when enabled and a separator row is found",
       "_origin": "semantic",
-      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)",
-      "id": "debugging_internal_candidate_feature"
+      "id": "debugging_internal_candidate_feature",
+      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)"
     },
     {
       "label": "Work-exp modes (S.weMode), decided in buildPosts: Case 1 all posts participate (header says Post Qualification only), Case 2 none participate (plain Work Experience header), Case 3 per-post opt-in (header offers both)",
@@ -5811,8 +5765,8 @@
       "community": 0,
       "norm_label": "work-exp modes (s.wemode), decided in buildposts: case 1 all posts participate (header says post qualification only), case 2 none participate (plain work experience header), case 3 per-post opt-in (header offers both)",
       "_origin": "semantic",
-      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)",
-      "id": "debugging_work_exp_modes"
+      "id": "debugging_work_exp_modes",
+      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)"
     },
     {
       "label": "Light/Dark theme toggle \u2014 applied pre-paint via inline <head> script to avoid FOUC, persisted to localStorage key 'ecg-theme', swaps highlight.js stylesheet to match",
@@ -5826,8 +5780,8 @@
       "community": 0,
       "norm_label": "light/dark theme toggle \u2014 applied pre-paint via inline <head> script to avoid fouc, persisted to localstorage key 'ecg-theme', swaps highlight.js stylesheet to match",
       "_origin": "semantic",
-      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)",
-      "id": "index_theme_toggle"
+      "id": "index_theme_toggle",
+      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)"
     },
     {
       "label": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)",
@@ -5841,8 +5795,8 @@
       "community": 0,
       "norm_label": "debugging.md \u2014 debugging guide (eligibility code generator)",
       "_origin": "semantic",
-      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)",
-      "id": "debugging_doc"
+      "id": "debugging_doc",
+      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)"
     },
     {
       "label": "README.md \u2014 Project Overview & Structure",
@@ -5856,8 +5810,8 @@
       "community": 0,
       "norm_label": "readme.md \u2014 project overview & structure",
       "_origin": "semantic",
-      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)",
-      "id": "readme_doc"
+      "id": "readme_doc",
+      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)"
     },
     {
       "label": "Context snapshot (ctx = {dimensions,colMap,weHeader,weMode}) + withCtx(ctx,fn) \u2014 rationale: buildPostsRange is called twice for the internal-candidate split and each call overwrites shared S fields, so snapCtx must capture the schema right after each call and withCtx must wrap every branched-generator emission to apply/restore the correct schema, preventing a singleton leak across branches",
@@ -5871,8 +5825,8 @@
       "community": 0,
       "norm_label": "context snapshot (ctx = {dimensions,colmap,weheader,wemode}) + withctx(ctx,fn) \u2014 rationale: buildpostsrange is called twice for the internal-candidate split and each call overwrites shared s fields, so snapctx must capture the schema right after each call and withctx must wrap every branched-generator emission to apply/restore the correct schema, preventing a singleton leak across branches",
       "_origin": "semantic",
-      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)",
-      "id": "debugging_context_snapshot_withctx"
+      "id": "debugging_context_snapshot_withctx",
+      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)"
     },
     {
       "label": "detectCols Degree-as-field fix \u2014 some internal sections use a 'Degree' column as the education-level column rather than a Degree axis; when field==workexp (both matched by \"qualif\") and a standalone degree column exists, detectCols promotes degree->field and clears the degree axis. Load-bearing: if reverted, internal sections yield 40+ junk posts",
@@ -5886,8 +5840,8 @@
       "community": 0,
       "norm_label": "detectcols degree-as-field fix \u2014 some internal sections use a 'degree' column as the education-level column rather than a degree axis; when field==workexp (both matched by \"qualif\") and a standalone degree column exists, detectcols promotes degree->field and clears the degree axis. load-bearing: if reverted, internal sections yield 40+ junk posts",
       "_origin": "semantic",
-      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)",
-      "id": "debugging_degree_as_field_fix"
+      "id": "debugging_degree_as_field_fix",
+      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)"
     },
     {
       "label": "3-Step Pipeline: Excel -> posts[] (parsing/) -> 5 PHP strings (generators/) -> rendered UI (ui/); core/ is shared vocabulary, main.js is the ignition switch",
@@ -5901,8 +5855,8 @@
       "community": 0,
       "norm_label": "3-step pipeline: excel -> posts[] (parsing/) -> 5 php strings (generators/) -> rendered ui (ui/); core/ is shared vocabulary, main.js is the ignition switch",
       "_origin": "semantic",
-      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)",
-      "id": "debugging_three_step_pipeline"
+      "id": "debugging_three_step_pipeline",
+      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)"
     },
     {
       "label": "window.App shared-global module pattern \u2014 each file is an IIFE that pulls needed names into locals and exports its own functions back onto App, loaded by index.html in dependency order",
@@ -5916,8 +5870,8 @@
       "community": 0,
       "norm_label": "window.app shared-global module pattern \u2014 each file is an iife that pulls needed names into locals and exports its own functions back onto app, loaded by index.html in dependency order",
       "_origin": "semantic",
-      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)",
-      "id": "debugging_window_app_global_pattern"
+      "id": "debugging_window_app_global_pattern",
+      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)"
     },
     {
       "label": "Modular split verified byte-identical \u2014 original single test.html was reorganized into functional modules with no logic changes; an equivalence test confirmed both versions produce identical output for all five generated files, including the base64-embedded work_exp template",
@@ -5931,8 +5885,8 @@
       "community": 0,
       "norm_label": "modular split verified byte-identical \u2014 original single test.html was reorganized into functional modules with no logic changes; an equivalence test confirmed both versions produce identical output for all five generated files, including the base64-embedded work_exp template",
       "_origin": "semantic",
-      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)",
-      "id": "readme_module_split_equivalence"
+      "id": "readme_module_split_equivalence",
+      "community_name": "DEBUGGING.md \u2014 Debugging Guide (Eligibility Code Generator)"
     },
     {
       "label": "posts[] condition tree \u2014 posts -> orGroups -> conditions (edu | radio); the single most useful debugging inspection target (App.S.posts)",
@@ -5946,8 +5900,8 @@
       "community": 4,
       "norm_label": "posts[] condition tree \u2014 posts -> orgroups -> conditions (edu | radio); the single most useful debugging inspection target (app.s.posts)",
       "_origin": "semantic",
-      "community_name": "eligibility.js",
-      "id": "debugging_posts_tree_structure"
+      "id": "debugging_posts_tree_structure",
+      "community_name": "eligibility.js"
     },
     {
       "label": "context.md \u2014 Dev Context Notes (legacy single-file version)",
@@ -5961,8 +5915,8 @@
       "community": 4,
       "norm_label": "context.md \u2014 dev context notes (legacy single-file version)",
       "_origin": "semantic",
-      "community_name": "eligibility.js",
-      "id": "context_doc"
+      "id": "context_doc",
+      "community_name": "eligibility.js"
     },
     {
       "label": "Fix 2 (DONE): 'Any value' in subjects column means any stream accepted \u2014 no edu_config array, just a not-empty $_POST check in validation, and \"Please enter\" instead of \"Please select\" in the error text",
@@ -5976,8 +5930,8 @@
       "community": 4,
       "norm_label": "fix 2 (done): 'any value' in subjects column means any stream accepted \u2014 no edu_config array, just a not-empty $_post check in validation, and \"please enter\" instead of \"please select\" in the error text",
       "_origin": "semantic",
-      "community_name": "eligibility.js",
-      "id": "context_any_value_subjects_fix"
+      "id": "context_any_value_subjects_fix",
+      "community_name": "eligibility.js"
     },
     {
       "label": "Fix 1 (NOT DONE / reverted): posts with empty subjects for a level where sibling posts DO have subjects should default to array('01'=>'Others'); getStreamData currently skips empty-subject conditions so no slot/array is ever emitted \u2014 blocked pending clarification of the exact Excel layout",
@@ -5991,8 +5945,8 @@
       "community": 4,
       "norm_label": "fix 1 (not done / reverted): posts with empty subjects for a level where sibling posts do have subjects should default to array('01'=>'others'); getstreamdata currently skips empty-subject conditions so no slot/array is ever emitted \u2014 blocked pending clarification of the exact excel layout",
       "_origin": "semantic",
-      "community_name": "eligibility.js",
-      "id": "context_others_default_array_fix"
+      "id": "context_others_default_array_fix",
+      "community_name": "eligibility.js"
     },
     {
       "label": "Fix 3 (DONE): subjects are '/'-delimited, not comma-delimited (commas can appear inside one subject value); quoted \"...\" subject values must have their quotes stripped",
@@ -6006,8 +5960,8 @@
       "community": 4,
       "norm_label": "fix 3 (done): subjects are '/'-delimited, not comma-delimited (commas can appear inside one subject value); quoted \"...\" subject values must have their quotes stripped",
       "_origin": "semantic",
-      "community_name": "eligibility.js",
-      "id": "context_subject_delimiter_fix"
+      "id": "context_subject_delimiter_fix",
+      "community_name": "eligibility.js"
     },
     {
       "label": "Red-cell removal filter \u2014 reviewers strike removed requirements in red font/fill; colorFilter.js reads OOXML color info directly (SheetJS is color-blind) and blanks/cleans rows before parseRows runs",
@@ -6021,8 +5975,8 @@
       "community": 9,
       "norm_label": "red-cell removal filter \u2014 reviewers strike removed requirements in red font/fill; colorfilter.js reads ooxml color info directly (sheetjs is color-blind) and blanks/cleans rows before parserows runs",
       "_origin": "semantic",
-      "community_name": "colorFilter.js",
-      "id": "debugging_red_cell_filter_feature"
+      "id": "debugging_red_cell_filter_feature",
+      "community_name": "colorFilter.js"
     }
   ],
   "links": [
@@ -8275,7 +8229,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "js/parsing/streams.js",
-      "source_location": "L159",
+      "source_location": "L153",
       "weight": 1.0,
       "_origin": "ast",
       "source": "js_parsing_streams_annotatecondnames",
@@ -8287,7 +8241,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "js/parsing/streams.js",
-      "source_location": "L205",
+      "source_location": "L199",
       "weight": 1.0,
       "_origin": "ast",
       "source": "js_parsing_streams_arrref",
@@ -8311,7 +8265,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "js/parsing/streams.js",
-      "source_location": "L141",
+      "source_location": "L135",
       "weight": 1.0,
       "_origin": "ast",
       "source": "js_parsing_streams_postaxisorder",
@@ -9762,18 +9716,6 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "test/run_subject_other_equivalent.js",
-      "source_location": "L12",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "test_run_subject_other_equivalent",
-      "target": "test_harness",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
       "source_file": "test/run_we_mixed.js",
       "source_location": "L9",
       "weight": 1.0,
@@ -9797,7 +9739,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "CLAUDE.md",
-      "source_location": "L74",
+      "source_location": "L73",
       "weight": 1.0,
       "_origin": "ast",
       "source": "claude_architecture",
@@ -9808,7 +9750,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "CLAUDE.md",
-      "source_location": "L83",
+      "source_location": "L82",
       "weight": 1.0,
       "_origin": "ast",
       "source": "claude_architecture",
@@ -9819,7 +9761,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "CLAUDE.md",
-      "source_location": "L92",
+      "source_location": "L91",
       "weight": 1.0,
       "_origin": "ast",
       "source": "claude_architecture",
@@ -9863,7 +9805,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "CLAUDE.md",
-      "source_location": "L55",
+      "source_location": "L54",
       "weight": 1.0,
       "_origin": "ast",
       "source": "claude_claude_md",
@@ -9874,7 +9816,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "CLAUDE.md",
-      "source_location": "L98",
+      "source_location": "L97",
       "weight": 1.0,
       "_origin": "ast",
       "source": "claude_claude_md",
@@ -11931,7 +11873,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "js/parsing/streams.js",
-      "source_location": "L140",
+      "source_location": "L134",
       "weight": 1.0,
       "_origin": "ast",
       "source": "js_parsing_streams",
@@ -11942,7 +11884,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "js/parsing/streams.js",
-      "source_location": "L158",
+      "source_location": "L152",
       "weight": 1.0,
       "_origin": "ast",
       "source": "js_parsing_streams",
@@ -11953,7 +11895,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "js/parsing/streams.js",
-      "source_location": "L204",
+      "source_location": "L198",
       "weight": 1.0,
       "_origin": "ast",
       "source": "js_parsing_streams",
@@ -11964,7 +11906,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "js/parsing/streams.js",
-      "source_location": "L212",
+      "source_location": "L206",
       "weight": 1.0,
       "_origin": "ast",
       "source": "js_parsing_streams",
@@ -11975,7 +11917,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "js/parsing/streams.js",
-      "source_location": "L228",
+      "source_location": "L222",
       "weight": 1.0,
       "_origin": "ast",
       "source": "js_parsing_streams",
@@ -14312,39 +14254,6 @@
       "_origin": "ast",
       "source": "test_run_radio",
       "target": "test_run_radio_path",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "test/run_subject_other_equivalent.js",
-      "source_location": "L12",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "test_run_subject_other_equivalent",
-      "target": "test_run_subject_other_equivalent_app",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "test/run_subject_other_equivalent.js",
-      "source_location": "L15",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "test_run_subject_other_equivalent",
-      "target": "test_run_subject_other_equivalent_ok",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "test/run_subject_other_equivalent.js",
-      "source_location": "L20",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "test_run_subject_other_equivalent",
-      "target": "test_run_subject_other_equivalent_reset",
       "confidence_score": 1.0
     },
     {

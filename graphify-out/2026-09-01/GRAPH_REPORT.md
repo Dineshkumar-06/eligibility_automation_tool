@@ -1,11 +1,11 @@
 # Graph Report - eligibility_automation_tool  (2026-09-01)
 
 ## Corpus Check
-- 46 files · ~59,128 words
+- 45 files · ~58,518 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 506 nodes · 846 edges · 33 communities (29 shown, 4 thin omitted)
+- 502 nodes · 842 edges · 32 communities (29 shown, 3 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 3 edges (avg confidence: 0.62)
 - Token cost: 0 input · 0 output
 
@@ -43,12 +43,11 @@
 - run_clarify.js
 - run_issues.js
 - run_we_mixed.js
-- run_subject_other_equivalent.js
 
 ## God Nodes (most connected - your core abstractions)
 1. `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` - 49 edges
-2. `index.html — App Shell, Step UI & Module Load Order` - 21 edges
-3. `README.md — Project Overview & Structure` - 21 edges
+2. `README.md — Project Overview & Structure` - 21 edges
+3. `index.html — App Shell, Step UI & Module Load Order` - 21 edges
 4. `updatePreview()` - 16 edges
 5. `buildPosts()` - 13 edges
 6. `genWorkExpDetails()` - 13 edges
@@ -73,11 +72,11 @@
 - None detected.
 
 ## Hyperedges (group relationships)
-- **context.md subject-parsing fix session: Fix 1 (pending), Fix 2 ('Any value'), and Fix 3 (delimiter/quotes) all revolve around parseSubs and the downstream condition/error builders** — context_any_value_subjects_fix, context_subject_delimiter_fix, context_others_default_array_fix, js_parsing_helpers_parsesubs, js_generators_eligibility_buildcondline [EXTRACTED 1.00]
 - **Internal Candidate branched-output family: 6 gen*Branched functions implementing the split normal/internal PHP emission pattern via withCtx** — js_generators_internalbranch_geneligibilitybranched, js_generators_internalbranch_geneduvalidationsbranched, js_generators_internalbranch_genworkexpbranched, js_generators_internalbranch_geneduconfigbranched, js_generators_internalbranch_genlangfilebranched, js_generators_internalbranch_geneduqrysqlbranched, debugging_context_snapshot_withctx, debugging_internal_candidate_feature [EXTRACTED 1.00]
 - **The 3-step pipeline folders (core/parsing/generators/ui) that jointly implement Excel -> posts[] -> PHP -> UI** — js_core_state, js_parsing_buildposts, js_generators_eligibility, js_ui_ui, debugging_three_step_pipeline [EXTRACTED 1.00]
+- **context.md subject-parsing fix session: Fix 1 (pending), Fix 2 ('Any value'), and Fix 3 (delimiter/quotes) all revolve around parseSubs and the downstream condition/error builders** — context_any_value_subjects_fix, context_subject_delimiter_fix, context_others_default_array_fix, js_parsing_helpers_parsesubs, js_generators_eligibility_buildcondline [EXTRACTED 1.00]
 
-## Communities (33 total, 4 thin omitted)
+## Communities (32 total, 3 thin omitted)
 
 ### Community 0 - "DEBUGGING.md — Debugging Guide (Eligibility Code Generator)"
 Cohesion: 0.07
@@ -180,21 +179,21 @@ Cohesion: 0.53
 Nodes (4): buildExamAliasGroups(), openExamAliasRef(), prettifyAlias(), renderExamAliasRef()
 
 ## Knowledge Gaps
-- **121 isolated node(s):** `App`, `Legacy`, `fs`, `path`, `rows` (+116 more)
+- **120 isolated node(s):** `App`, `Legacy`, `fs`, `path`, `rows` (+115 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **3 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` connect `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` to `app.legacy.js`, `ui.js`, `eligibility.js`, `helpers.js`, `state.js`, `colorFilter.js`, `eduConfig.js`, `buildPostsRange`?**
-  _High betweenness centrality (0.160) - this node is a cross-community bridge._
+  _High betweenness centrality (0.163) - this node is a cross-community bridge._
 - **Why does `README.md — Project Overview & Structure` connect `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` to `app.legacy.js`, `ui.js`, `eligibility.js`, `helpers.js`, `state.js`, `colorFilter.js`, `dimensions.js`, `eduConfig.js`, `buildPostsRange`?**
-  _High betweenness centrality (0.094) - this node is a cross-community bridge._
+  _High betweenness centrality (0.096) - this node is a cross-community bridge._
 - **Why does `index.html — App Shell, Step UI & Module Load Order` connect `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` to `ui.js`, `eligibility.js`, `helpers.js`, `state.js`, `colorFilter.js`, `dimensions.js`, `eduConfig.js`, `buildPostsRange`?**
-  _High betweenness centrality (0.049) - this node is a cross-community bridge._
+  _High betweenness centrality (0.050) - this node is a cross-community bridge._
 - **What connects `App`, `Legacy`, `fs` to the rest of the system?**
-  _121 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _120 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` be split into smaller, more focused modules?**
   _Cohesion score 0.06848357791754019 - nodes in this community are weakly interconnected._
 - **Should `app.legacy.js` be split into smaller, more focused modules?**

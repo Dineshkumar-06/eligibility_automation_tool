@@ -47,9 +47,15 @@ function getStreamData(posts, axis){
   var globalKeyReg={}; // level -> {subjValue -> key, nextSeq}
 
   function getGlobalKey(level, subjValue){
-    var sl=subjValue.toLowerCase();
-    if(sl.includes('other'))          return '01';
-    if(sl.includes('equivalent'))      return '99';
+    // Exact match only (mirrors buildSM below) — a subject cell whose entire
+    // value IS the standalone catch-all word ("Others" / "Equivalent") gets the
+    // shared sentinel key. A substring test here would also fire on any longer,
+    // legitimate value that merely CONTAINS that word (e.g. a certification named
+    // "... / Equivalent React JS certification"), silently colliding it with
+    // every other such value onto the same key and dropping all but the last.
+    var sl=subjValue.trim().toLowerCase();
+    if(sl==='others'||sl==='other')   return '01';
+    if(sl==='equivalent')             return '99';
     if(!globalKeyReg[level])   globalKeyReg[level]={map:{},nextSeq:2};
     var reg=globalKeyReg[level];
     if(reg.map[subjValue]===undefined){

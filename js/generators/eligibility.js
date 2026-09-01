@@ -67,9 +67,22 @@ function emitPostChain(posts, single, arrSuffix){
     o+='\n'+ind(d+1)+'$errmsg.=$Elig_errmsg;\n';
     o+=ind(d+1)+"$errmsgarr[]='eligibility|'.$Elig_errmsg;\n\n";
     o+=ind(d)+'}else\n'+ind(d)+'{\n'+ind(d+1)+"$errmsgarr[]='eligibility|';\n"+ind(d)+'}\n';
-    if(post.workExp){
+    // A post's work-exp requirement is NOT always the same across every OR-group:
+    // some branches may require no experience at all (dash/blank WE cell) while
+    // others require N years, gated on a "do you have N years experience?" radio
+    // that's already part of that branch's eligibility conditions above. post.workExp
+    // only reflects the FIRST OR-group's cell, so it must not gate this block alone —
+    // any OR-group with a WE requirement means the block is needed.
+    var weGroups=grps.filter(function(g){return g.workExp;});
+    if(post.workExp||weGroups.length){
       var tiers=weRadioTiers(post,post.postcode);
-      if(tiers.length>=2){
+      // Uniform when every OR-group that carries conditions shares the same WE
+      // months (including groups that require none) — then the check applies
+      // regardless of which branch the applicant qualifies through, so it stays
+      // unconditional (byte-identical to prior behaviour). Otherwise it only
+      // applies to branches gated by their own experience radio.
+      var uniform=grps.every(function(g){return (g.workExp||0)===(grps[0].workExp||0);});
+      if(tiers.length>=2||(tiers.length===1&&!uniform)){
         for(var ti=0;ti<tiers.length;ti++){
           o+=ind(d)+(ti===0?'if':'else if')+"($_POST['"+tiers[ti].field+"'] == 'Y') {\n";
           o+=buildWE(tiers[ti].months,d+1);
