@@ -36,6 +36,7 @@
   var genLangFileBranched = App.genLangFileBranched;
   var genEduQrySqlBranched = App.genEduQrySqlBranched;
   var detectClarifications = App.detectClarifications;
+  var buildClarificationMailText = App.buildClarificationMailText;
 
 function onFileChange(e){
   var inp=e.target;
@@ -162,8 +163,11 @@ function renderS1(){
     cb.innerHTML='';
     var cl=S.clarifications||{stream:[],degree:[],radio:[]};
     // One card per duplicate group: a small axis tag, then the competing spellings as
-    // chips (each carrying the postcode(s) it was found under, so the user can jump
-    // straight to that post in the table instead of hunting through the sheet).
+    // chips — each carrying the postcode(s) it was found under, so the user can jump
+    // straight to that post in the table instead of hunting through the sheet. Cards are
+    // grouped under an exam-level heading (Graduation, Post Graduation, ...) instead of
+    // tagging every chip individually, since a value like "B.Tech in CS" reads as
+    // ambiguous without knowing which qualification it was entered under.
     var axisCard=function(axisTag,g){
       var chips=g.map(function(v){
         var pcs=(g.postcodes&&g.postcodes[v])||[];
@@ -175,15 +179,37 @@ function renderS1(){
     };
     var boxes='';
     // Subject/Stream + Degree: values that LOOK like duplicates but were left as-is —
-    // purely a "please review" flag, kept in the original blue info box.
-    var axisCards=(cl.stream||[]).map(function(g){return axisCard('Stream',g);}).join('')+
-      (cl.degree||[]).map(function(g){return axisCard('Degree',g);}).join('');
-    if(axisCards){
-      var axisCount=(cl.stream||[]).length+(cl.degree||[]).length;
+    // purely a "please review" flag, kept in the original blue info box. Stream and
+    // Degree sections sharing the same exam level are rendered under one heading, in
+    // qualification-rank order (Graduation before Post Graduation, etc.).
+    var levelMap={}, levelOrder=[];
+    (cl.stream||[]).forEach(function(sec){
+      if(!levelMap[sec.level]){ levelMap[sec.level]={stream:[],degree:[]}; levelOrder.push(sec.level); }
+      levelMap[sec.level].stream=levelMap[sec.level].stream.concat(sec.groups);
+    });
+    (cl.degree||[]).forEach(function(sec){
+      if(!levelMap[sec.level]){ levelMap[sec.level]={stream:[],degree:[]}; levelOrder.push(sec.level); }
+      levelMap[sec.level].degree=levelMap[sec.level].degree.concat(sec.groups);
+    });
+    levelOrder.sort(function(a,b){
+      var ra=(EDU[a]&&EDU[a].idx)||999, rb=(EDU[b]&&EDU[b].idx)||999;
+      return ra-rb;
+    });
+    var axisCount=0;
+    var levelBlocks=levelOrder.map(function(lvl){
+      var sc=levelMap[lvl];
+      axisCount+=sc.stream.length+sc.degree.length;
+      var cards=sc.stream.map(function(g){return axisCard('Stream',g);}).join('')+
+        sc.degree.map(function(g){return axisCard('Degree',g);}).join('');
+      return '<div class="clarify-level-group"><div class="clarify-level-hdr">'+escH(lvl)+'</div>'+
+        '<div class="clarify-cards">'+cards+'</div></div>';
+    }).join('');
+    if(levelBlocks){
       boxes+='<div class="alert alert-info clarify-panel">'+
         '<div class="clarify-panel-hdr"><span class="bd bd-b">VALUES</span> <strong>Possible duplicate Subject/Stream &amp; Degree values</strong> '+
-        '<span class="clarify-count">'+axisCount+'</span></div>'+
-        '<div class="clarify-cards">'+axisCards+'</div>'+
+        '<span class="clarify-count">'+axisCount+'</span>'+
+        '<button type="button" class="btn btn-s clarify-copy-btn" onclick="copyClarificationText(\'values\',this)">Copy for mail</button></div>'+
+        levelBlocks+
         '<div class="clarify-hint">These may be the same value spelled differently. This is informational only and does not block code generation — review and align spelling in the sheet if intentional.</div>'+
         '</div>';
     }
@@ -199,7 +225,8 @@ function renderS1(){
       }).join('');
       boxes+='<div class="alert alert-warn clarify-panel">'+
         '<div class="clarify-panel-hdr"><span class="bd bd-o">RADIO</span> <strong>Duplicate radio button question(s) detected</strong> '+
-        '<span class="clarify-count">'+cl.radio.length+'</span></div>'+
+        '<span class="clarify-count">'+cl.radio.length+'</span>'+
+        '<button type="button" class="btn btn-s clarify-copy-btn" onclick="copyClarificationText(\'radio\',this)">Copy for mail</button></div>'+
         '<div class="clarify-cards">'+radioCards+'</div>'+
         '<div class="clarify-hint">These are formatting-only variants of the same question — merged automatically. This is informational only and does not block code generation.</div>'+
         '</div>';
@@ -803,6 +830,22 @@ function copyCode(which,btn){
   btn.style.cssText='background:#238636;color:#fff;border:none';
   setTimeout(function(){btn.innerHTML=orig;btn.style.cssText='';},2000);
 }
+// Copies a plain-text, mail-ready summary of one clarification panel ('values' = Subject/
+// Stream + Degree duplicates, 'radio' = duplicate radio questions) — the on-screen chips
+// carry postcodes/levels for the sheet owner, but the recipient of the mail only needs the
+// competing spellings, so those are stripped by buildClarificationMailText.
+function copyClarificationText(kind,btn){
+  var text=buildClarificationMailText(kind,S.clarifications);
+  if(!text) return;
+  var ta=document.createElement('textarea');
+  ta.value=text;ta.style.cssText='position:fixed;top:0;left:0;opacity:0';
+  document.body.appendChild(ta);ta.focus();ta.select();
+  try{document.execCommand('copy');}catch(e){}
+  document.body.removeChild(ta);
+  var orig=btn.innerHTML;btn.innerHTML='Copied!';
+  btn.style.cssText='background:#238636;color:#fff;border:none';
+  setTimeout(function(){btn.innerHTML=orig;btn.style.cssText='';},2000);
+}
 function dlFile(which){
   var fi=fileInfo(which);
   if(!fi.code){alert(fi.file+' is not generated for this sheet.');return;}
@@ -844,6 +887,7 @@ function goStep(n,fromTab){
 
   // ── exports to App ──
   App.copyCode = copyCode;
+  App.copyClarificationText = copyClarificationText;
   App.dlFile = dlFile;
   App.dlZip = dlZip;
   App.fileInfo = fileInfo;

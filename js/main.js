@@ -15,6 +15,7 @@
   var updIntField = App.updIntField;
   var switchTab = App.switchTab;
   var copyCode = App.copyCode;
+  var copyClarificationText = App.copyClarificationText;
   var dlFile = App.dlFile;
   var dlZip = App.dlZip;
   var onFileChange = App.onFileChange;
@@ -28,7 +29,7 @@
 window.goStep=goStep;window.updOv=updOv;window.updDimVar=updDimVar;window.updBilingual=updBilingual;window.switchTab=switchTab;
 window.updApEnable=updApEnable;window.updApLevel=updApLevel;window.updApField=updApField;
 window.updIntEnable=updIntEnable;window.updIntField=updIntField;
-window.copyCode=copyCode;window.dlFile=dlFile;window.dlZip=dlZip;
+window.copyCode=copyCode;window.copyClarificationText=copyClarificationText;window.dlFile=dlFile;window.dlZip=dlZip;
 window.openPostCompare=openPostCompare;window.closePostCompare=closePostCompare;window.runPostCompare=runPostCompare;
 window.openExamAliasRef=openExamAliasRef;window.closeExamAliasRef=closeExamAliasRef;
 
