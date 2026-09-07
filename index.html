@@ -142,14 +142,33 @@
     <div class="pc-body">
       <div class="pc-panes">
         <div class="pc-pane">
-          <label for="pc-sow">SOW Posts</label>
+          <div class="pc-pane-hdr">
+            <label for="pc-sow">SOW Posts</label>
+            <label class="pc-dim-lbl" for="pc-sow-dim">Columns
+              <select id="pc-sow-dim">
+                <option value="1">1D — Post only</option>
+                <option value="2">2D — Post + 1 more</option>
+                <option value="3">3D — Post + 2 more</option>
+              </select>
+            </label>
+          </div>
           <textarea id="pc-sow" placeholder="Paste post rows copied from the SOW sheet..."></textarea>
         </div>
         <div class="pc-pane">
-          <label for="pc-eli">Eligibility Sheet Posts</label>
+          <div class="pc-pane-hdr">
+            <label for="pc-eli">Eligibility Sheet Posts</label>
+            <label class="pc-dim-lbl" for="pc-eli-dim">Columns
+              <select id="pc-eli-dim">
+                <option value="1">1D — Post only</option>
+                <option value="2">2D — Post + 1 more</option>
+                <option value="3">3D — Post + 2 more</option>
+              </select>
+            </label>
+          </div>
           <textarea id="pc-eli" placeholder="Paste post rows copied from the Eligibility Criteria sheet..."></textarea>
         </div>
       </div>
+      <div class="pc-hint">2D/3D: paste the Post Name column plus each extra identity column (e.g. Recruitment Mode, Discipline) tab-separated, in sheet order. Merged cells that paste as blank are filled in automatically from the row above.</div>
       <div class="pc-acts"><button class="btn btn-p" type="button" onclick="runPostCompare()">Compare</button></div>
       <div id="pc-result"></div>
     </div>
