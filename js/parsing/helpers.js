@@ -406,6 +406,23 @@ function normGrade(s){
 // unlike case or wording differences, which may be genuine — so this normalization is
 // applied unconditionally at parse time rather than merely flagged for review.
 function collapseWs(s){ return String(s||'').replace(/\s+/g,' ').trim(); }
+// Split on "/" like String.split, EXCEPT a "/" inside a (...) group is not a
+// delimiter — e.g. "BE in (AI/ML)" is one segment, not two. Parens (unlike a
+// quoted token) are kept verbatim in the segment text; an unterminated "("
+// simply protects every "/" to the end of the string (mirrors parseSubs'
+// unterminated-quote handling below).
+function splitSlashOutsideParens(str){
+  var parts=[], cur='', depth=0;
+  for(var i=0;i<str.length;i++){
+    var ch=str.charAt(i);
+    if(ch==='(') depth++;
+    else if(ch===')'){ if(depth>0) depth--; }
+    if(ch==='/'&&depth===0){ parts.push(cur); cur=''; continue; }
+    cur+=ch;
+  }
+  parts.push(cur);
+  return parts;
+}
 function parseSubs(s){
   // A blank cell, or one that is only dashes/whitespace ("-", "----", "—"), is the
   // "no value" placeholder (common in the Degree column for SSC/HSC rows) and yields
@@ -413,21 +430,22 @@ function parseSubs(s){
   if(!s||/^[\s\-–—]+$/.test(s)) return [];
   if(/^any(\s+(value|stream|streams|subject|subjects|values))?$/i.test(s.trim())) return ['__ANY__'];
   // Tokenise: quoted tokens ("...") are kept whole even if they contain "/";
-  // unquoted segments are split on "/".
+  // unquoted segments are split on "/", except a "/" enclosed in (...) — the
+  // other exception — which stays part of the same segment (splitSlashOutsideParens).
   var tokens=[];
   var rest=s;
   while(rest.length){
     var qi=rest.indexOf('"');
     if(qi===-1){
-      // no more quoted sections — split remainder on "/"
-      var parts=rest.split('/');
+      // no more quoted sections — split remainder on "/" (parens-aware)
+      var parts=splitSlashOutsideParens(rest);
       for(var i=0;i<parts.length;i++){var v=collapseWs(parts[i]);if(v&&v!=='-')tokens.push(v);}
       break;
     }
     // handle unquoted segment before the opening quote
     if(qi>0){
       var before=rest.slice(0,qi);
-      var bparts=before.split('/');
+      var bparts=splitSlashOutsideParens(before);
       for(var i=0;i<bparts.length;i++){
         // last segment before the quote may be empty (trailing "/") — skip
         var v=collapseWs(bparts[i]);

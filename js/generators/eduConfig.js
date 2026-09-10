@@ -26,6 +26,9 @@
   var isLegacyDims = App.isLegacyDims;
   var buildNested = App.buildNested;
   var arrAdditionSection = App.arrAdditionSection;
+  var isCat = App.isCat;
+  var parseCatMark = App.parseCatMark;
+  var isDisabilityToken = App.isDisabilityToken;
 
 // Emit one stream array (sm) assigned to every combination in `combos`.
 //   single post           -> "$arrX = array(...);"
@@ -209,6 +212,24 @@ function emitAxisArrays(posts,AX,single,suffix){
   return o;
 }
 
+// Which $_POST fields a CAT:/MCAT: mark condition's buildCatCond output actually
+// references: {cat:bool, dis:bool}. A bare disability token ("PwBD"/"PWD"/...)
+// needs only 'disability'; a plain category token needs only 'category_name'; a
+// "<cat>-PwBD" hybrid needs both.
+function markCatFields(markRaw){
+  var parsed=parseCatMark(markRaw);
+  var toks=parsed.multi
+    ? [].concat.apply([],parsed.tiers.map(function(t){return t.cats;}))
+    : parsed.cats;
+  var cat=false, dis=false;
+  for(var i=0;i<toks.length;i++){
+    var tok=String(toks[i]).trim();
+    if(isDisabilityToken(tok)) dis=true;
+    else { cat=true; if(/-\s*pw\s*b?d$/i.test(tok)) dis=true; }
+  }
+  return {cat:cat, dis:dis};
+}
+
 // suffix: optional string appended to $arrPostBasedRadioCond (e.g. '_internal').
 // When omitted (or ''), behaviour is identical to before.
 function emitDependentsAndRadios(posts,single,suffix){
@@ -236,6 +257,7 @@ function emitDependentsAndRadios(posts,single,suffix){
   // which levels actually carry Degree values so a Degree dep-var is added only when
   // present (keeps Stream-only sheets' dependents list byte-identical).
   var usedLevels={}, degLevels={}, gradeLevels={}, markLevels={};
+  var needsCategory=false, needsDisability=false;
   for(var pi=0;pi<posts.length;pi++)
     for(var gi=0;gi<posts[pi].orGroups.length;gi++)
       for(var ci=0;ci<posts[pi].orGroups[gi].conditions.length;ci++){
@@ -245,6 +267,11 @@ function emitDependentsAndRadios(posts,single,suffix){
           if((dc.degrees&&dc.degrees.length)||dc.anyDegree) degLevels[dc.level]=true;
           if(dc.gradeRaw)    gradeLevels[dc.level]=true;
           if(dc.hasMarksCol) markLevels[dc.level]=true;
+          if(isCat(dc.markRaw)){
+            var mf=markCatFields(dc.markRaw);
+            if(mf.cat) needsCategory=true;
+            if(mf.dis) needsDisability=true;
+          }
         }
       }
   for(var li=0;li<EDU_ORDER.length;li++){
@@ -260,6 +287,12 @@ function emitDependentsAndRadios(posts,single,suffix){
   // totexp if any OR-group carries a work-exp requirement
   var needsWE=posts.some(function(p){return p.orGroups.some(function(g){return g.workExp>0;});});
   if(needsWE) depVars.push('totexp');
+  // category_name/disability — a CAT:/MCAT: mark condition drives buildCatCond's
+  // $_POST['category_name']/$_POST['disability'] checks in eligibility.php, so both
+  // are eligibility dependents whenever the sheet's marks column names a real
+  // category and/or a disability token respectively (see markCatFields above).
+  if(needsCategory)   depVars.push('category_name');
+  if(needsDisability) depVars.push('disability');
   // radio field names (de-duped, across all posts)
   var radioSeen={};
   for(var pi=0;pi<posts.length;pi++){

@@ -83,6 +83,12 @@ function emitPostChain(posts, single, arrSuffix){
       // applies to branches gated by their own experience radio.
       var uniform=grps.every(function(g){return (g.workExp||0)===(grps[0].workExp||0);});
       if(tiers.length>=2||(tiers.length===1&&!uniform)){
+        // Default to "cleared" before the per-tier chain: when none of the
+        // experience radios below is 'Y', no branch runs buildWE, so without this
+        // the totexp_popup alert would keep showing whatever a PRIOR post left in
+        // $errmsgarr. A matching tier's buildWE still pushes its own entry right
+        // after (alert or clear), so this only matters for the "all No" case.
+        o+=ind(d)+"$errmsgarr[]='totexp_popup|';\n";
         for(var ti=0;ti<tiers.length;ti++){
           o+=ind(d)+(ti===0?'if':'else if')+"($_POST['"+tiers[ti].field+"'] == 'Y') {\n";
           o+=buildWE(tiers[ti].months,d+1);

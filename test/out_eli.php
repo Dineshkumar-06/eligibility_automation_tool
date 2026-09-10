@@ -58,6 +58,7 @@
 		{
 			$errmsgarr[]='eligibility|';
 		}
+		$errmsgarr[]='totexp_popup|';
 		if($_POST['min_five_regular_service_sub'] == 'Y') {
 			if(WORK_EXP_ROW_COUNT > 0){
 				if(!($_POST['totexp']>=60)){
@@ -181,6 +182,7 @@
 		{
 			$errmsgarr[]='eligibility|';
 		}
+		$errmsgarr[]='totexp_popup|';
 		if($_POST['min_five_regular_service_officer'] == 'Y') {
 			if(WORK_EXP_ROW_COUNT > 0){
 				if(!($_POST['totexp']>=60)){
@@ -496,6 +498,7 @@
 		{
 			$errmsgarr[]='eligibility|';
 		}
+		$errmsgarr[]='totexp_popup|';
 		if($_POST['min_seven_regular_service_officers'] == 'Y') {
 			if(WORK_EXP_ROW_COUNT > 0){
 				if(!($_POST['totexp']>=84)){
@@ -639,6 +642,7 @@
 		{
 			$errmsgarr[]='eligibility|';
 		}
+		$errmsgarr[]='totexp_popup|';
 		if($_POST['min_seven_regular_service_junior'] == 'Y') {
 			if(WORK_EXP_ROW_COUNT > 0){
 				if(!($_POST['totexp']>=84)){
@@ -1131,6 +1135,7 @@
 		{
 			$errmsgarr[]='eligibility|';
 		}
+		$errmsgarr[]='totexp_popup|';
 		if($_POST['min_five_regular_service_assistant'] == 'Y') {
 			if(WORK_EXP_ROW_COUNT > 0){
 				if(!($_POST['totexp']>=60)){
@@ -1443,6 +1448,7 @@
 		{
 			$errmsgarr[]='eligibility|';
 		}
+		$errmsgarr[]='totexp_popup|';
 		if($_POST['min_five_regular_service_2'] == 'Y') {
 			if(WORK_EXP_ROW_COUNT > 0){
 				if(!($_POST['totexp']>=60)){
