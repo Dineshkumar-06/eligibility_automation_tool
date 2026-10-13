@@ -397,6 +397,7 @@ function renderS2(){
   }
   var bc=document.getElementById('bilingual-chk'); if(bc) bc.checked=S.bilingual;
   renderApCfg();
+  renderSowCfg();
   renderIntCfg();
   updatePreview();
 }
@@ -690,6 +691,52 @@ function updApLevel(el){
 }
 function updApField(el){ S.appearedPassed.fields[el.dataset.level]=el.value; markApFieldIssues(); updatePreview(); }
 
+// ── FIELDS NOT PRESENT IN SOW (Step 2) ──────────────────────────────────────
+// Master checkbox + one Mark / Date / Grade row per Exam Passed level. A ticked box means
+// that field is NOT on the SOW Education page, so no condition may reference it
+// (selmarkN / selgradeN checks, passing-date cutoff, dependents). Unticked ⇒ default.
+var SOW_KINDS=[['mark','Mark','sm'],['date','Date',null],['grade','Grade','sg']];
+function renderSowCfg(){
+  var con=document.getElementById('sow-cfg'); if(!con) return;
+  con.innerHTML='';
+  S.sowAbsent=S.sowAbsent||{enabled:false,levels:{}};
+  var sa=S.sowAbsent;
+  var head=document.createElement('div');
+  head.innerHTML='<div class="sec-title" style="margin-top:18px">Fields Not Present in SOW</div>'
+    +'<label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;margin-bottom:6px">'
+    +'<input type="checkbox" '+(sa.enabled?'checked':'')+' onchange="updSowEnable(this)">'
+    +'Some Exam Passed fields are not present in the SOW</label>'
+    +'<p class="dim" style="font-size:13px;margin-bottom:12px">Tick a field below when it does <b>not exist</b> on the SOW Education page (e.g. Certification has no Mark / Grade). No condition, alert or dependent is generated for a ticked field, even when the eligibility sheet has "-" there. Unticked fields keep the default behaviour.</p>';
+  con.appendChild(head);
+  if(!sa.enabled) return;
+  var levels=apDistinctLevels();
+  if(!levels.length){ con.innerHTML+='<div class="alert alert-info">No Exam Passed levels detected — nothing to configure.</div>'; return; }
+  var sec=document.createElement('div'); sec.className='radio-sec';
+  sec.innerHTML='<h4>Not present in SOW</h4>';
+  for(var i=0;i<levels.length;i++){
+    var lvl=levels[i], def=EDU[lvl], lv=sa.levels[lvl]||{};
+    var boxes='';
+    for(var k=0;k<SOW_KINDS.length;k++){
+      var kd=SOW_KINDS[k], fld=kd[2]?def[kd[2]]:null;
+      boxes+='<label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;margin-right:18px">'
+        +'<input type="checkbox" data-level="'+escA(lvl)+'" data-kind="'+kd[0]+'" '+(lv[kd[0]]?'checked':'')+' onchange="updSowField(this)">'
+        +kd[1]+(fld?' <span class="dim mono" style="font-size:11px">('+fld+')</span>':'')+'</label>';
+    }
+    var row=document.createElement('div');
+    row.innerHTML='<div class="f-row" style="align-items:center"><div class="f-grp" style="flex:0 0 220px"><b style="font-size:14px">'+escH(lvl)+'</b></div>'
+      +'<div class="f-grp" style="flex:1;display:flex;flex-wrap:wrap">'+boxes+'</div></div>';
+    sec.appendChild(row);
+  }
+  con.appendChild(sec);
+}
+function updSowEnable(el){ S.sowAbsent.enabled=el.checked; renderSowCfg(); updatePreview(); }
+function updSowField(el){
+  var l=el.dataset.level;
+  if(!S.sowAbsent.levels[l]) S.sowAbsent.levels[l]={};
+  S.sowAbsent.levels[l][el.dataset.kind]=el.checked;
+  updatePreview();
+}
+
 // ── INTERNAL CANDIDATE CONFIG (Step 2) ──────────────────────────────────────
 function renderIntCfg(){
   var con=document.getElementById('int-cfg'); if(!con) return;
@@ -908,6 +955,9 @@ function goStep(n,fromTab){
   App.updBilingual = updBilingual;
   App.renderApCfg = renderApCfg;
   App.updApEnable = updApEnable;
+  App.renderSowCfg = renderSowCfg;
+  App.updSowEnable = updSowEnable;
+  App.updSowField = updSowField;
   App.updApLevel = updApLevel;
   App.updApField = updApField;
   App.apDistinctLevels = apDistinctLevels;

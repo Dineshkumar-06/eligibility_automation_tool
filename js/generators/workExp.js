@@ -35,7 +35,7 @@ function eduIdxsOf(conds){
   for(var i=0;i<conds.length;i++){
     if(conds[i].type!=='edu') continue;
     var def=EDU[conds[i].level];
-    if(def&&!seen[def.idx]){seen[def.idx]=true;out.push(def.idx);}
+    if(def&&!seen[def.idx]&&!App.sowAbsent(conds[i].level,'date')){seen[def.idx]=true;out.push(def.idx);}
   }
   return out.sort(function(a,b){return a-b;});
 }

@@ -265,9 +265,10 @@ function emitDependentsAndRadios(posts,single,suffix){
         if(dc.type==='edu'){
           usedLevels[dc.level]=true;
           if((dc.degrees&&dc.degrees.length)||dc.anyDegree) degLevels[dc.level]=true;
-          if(dc.gradeRaw)    gradeLevels[dc.level]=true;
-          if(dc.hasMarksCol) markLevels[dc.level]=true;
-          if(isCat(dc.markRaw)){
+          var noMk=App.sowAbsent(dc.level,'mark'), noGr=App.sowAbsent(dc.level,'grade');
+          if(dc.gradeRaw&&!noGr)    gradeLevels[dc.level]=true;
+          if(dc.hasMarksCol&&!noMk) markLevels[dc.level]=true;
+          if(!noMk&&isCat(dc.markRaw)){
             var mf=markCatFields(dc.markRaw);
             if(mf.cat) needsCategory=true;
             if(mf.dis) needsDisability=true;

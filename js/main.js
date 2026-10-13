@@ -29,6 +29,7 @@
 
 window.goStep=goStep;window.updOv=updOv;window.updDimVar=updDimVar;window.updBilingual=updBilingual;window.switchTab=switchTab;
 window.updApEnable=updApEnable;window.updApLevel=updApLevel;window.updApField=updApField;
+window.updSowEnable=App.updSowEnable;window.updSowField=App.updSowField;
 window.updIntEnable=updIntEnable;window.updIntField=updIntField;
 window.copyCode=copyCode;window.copyClarificationText=copyClarificationText;window.dlFile=dlFile;window.dlZip=dlZip;
 window.openPostCompare=openPostCompare;window.closePostCompare=closePostCompare;window.runPostCompare=runPostCompare;window.filterPostCompare=filterPostCompare;

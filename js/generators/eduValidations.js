@@ -104,9 +104,12 @@ function emitValChain(posts, single, arrSuffix){
         var c=allConds[ci];
         if(c.type!=='edu') continue;
         var def=EDU[c.level];
-        if(def) idxSeen[def.idx]=true;
+        // A level whose Date field is not present in the SOW has no passing-date
+        // field_number to match, so it is left out of the cutoff selection.
+        if(def && !App.sowAbsent(c.level,'date')) idxSeen[def.idx]=true;
       }
       var idxList=Object.keys(idxSeen).map(Number).sort(function(a,b){return a-b;});
+      if(!idxList.length){ continue; }
 
       o+=ind(d)+(firstGrp?'if':'} else if')+'(\n';
       for(var ci=0;ci<condParts.length;ci++){
@@ -136,11 +139,18 @@ function emitValChain(posts, single, arrSuffix){
       firstGrp=false;
     }
 
-    o+=ind(d)+'} else{ \n';
-    o+=ind(d+1)+"$QUALIFICATION_AS_ON_YEAR = date('Y');\n";
-    o+=ind(d+1)+"$QUALIFICATION_AS_ON_MONTH = date('m');\n";
-    o+=ind(d+1)+"$QUALIFICATION_AS_ON_DAY = date('d');\n";
-    o+=ind(d)+'}\t\n';
+    if(firstGrp){
+      // every group was skipped (no level here has a Date field) — plain default
+      o+=ind(d)+"$QUALIFICATION_AS_ON_YEAR = date('Y');\n";
+      o+=ind(d)+"$QUALIFICATION_AS_ON_MONTH = date('m');\n";
+      o+=ind(d)+"$QUALIFICATION_AS_ON_DAY = date('d');\n";
+    } else {
+      o+=ind(d)+'} else{ \n';
+      o+=ind(d+1)+"$QUALIFICATION_AS_ON_YEAR = date('Y');\n";
+      o+=ind(d+1)+"$QUALIFICATION_AS_ON_MONTH = date('m');\n";
+      o+=ind(d+1)+"$QUALIFICATION_AS_ON_DAY = date('d');\n";
+      o+=ind(d)+'}\t\n';
+    }
   }
 
   if(!single&&anyPostBlock){

@@ -16,6 +16,7 @@
 //   default POSTQUAL_TS ranks are used (see apRank below), so output stays legacy.
 var S = {posts:[], errors:[], warnings:[], rawRows:[], colMap:{}, dimensions:[], radioOv:{}, bilingual:false, redRemovedCount:0, appearedPassed:{enabled:false, fields:{}, hierarchy:null, generic:null},
          internalCandidate:{enabled:false, field:'internal_candidate', posts:[], ctx:null},
+         sowAbsent:{enabled:false, levels:{}},
          _normalCtx:null, clarifications:{stream:[], degree:[], radio:[]},
          _edu:'', _eli:'', _eduval:'', _workexp:'', _qrysql:'', maxStep:1};
 
@@ -90,6 +91,19 @@ function apField(level){
   return f||null;
 }
 
+// ── FIELD NOT PRESENT IN SOW ────────────────────────────────────────────────
+// Some Exam Passed levels (e.g. Certification) have no Mark / Grade / Date field on the
+// SOW Education page even though the eligibility sheet carries "-" for them. With the
+// Step-2 "not present in SOW" option on, S.sowAbsent.levels[level][kind] (kind = 'mark' |
+// 'grade' | 'date') marks a field as absent, and no condition may reference it.
+// Off (default) ⇒ always false ⇒ legacy output.
+function sowAbsent(level,kind){
+  var s=S.sowAbsent;
+  if(!s||!s.enabled) return false;
+  var l=s.levels&&s.levels[level];
+  return !!(l&&l[kind]);
+}
+
 // Hierarchy rank of an EDU level for Appeared/Passed purposes: >0 = ladder position
 // (larger = higher qualification), 0 = generic / non-hierarchical (no precedence).
 // Resolution order — user-arranged hierarchy, then the generic bucket, then the default
@@ -130,6 +144,7 @@ function sbNo(){    return S.bilingual?'Should be NO / नाही':'Should be 
   App.apEnabled = apEnabled;
   App.apField = apField;
   App.apRank = apRank;
+  App.sowAbsent = sowAbsent;
   App.intEnabled = intEnabled;
   App.intField = intField;
   App.snapCtx = snapCtx;

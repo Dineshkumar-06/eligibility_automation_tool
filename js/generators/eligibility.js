@@ -8,6 +8,7 @@
   var apEnabled = App.apEnabled;
   var apField = App.apField;
   var apRank = App.apRank;
+  var sowAbsent = App.sowAbsent;
   var lookupMarkOp = App.lookupMarkOp;
   var annotateCondNames = App.annotateCondNames;
   var arrRef = App.arrRef;
@@ -170,9 +171,11 @@ function buildCondLine(cond,post,single,opts){
   var pc=(post&&post.postcode!=null)?post.postcode:post;
   if(cond.type==='radio') return "($_POST['"+rFn(cond,pc)+"']=='"+(cond.shouldBe==='N'?'N':'Y')+"')";
   var def=EDU[cond.level];
-  var cat=isCat(cond.markRaw);
-  var mo=(!cat&&cond.markRaw)?lookupMarkOp(cond.markRaw):null;
-  var gc=gradeCheck("$_POST['"+def.sg+"']",cond.gradeRaw);
+  // A field flagged "not present in SOW" for this level contributes no clause at all.
+  var noMark=sowAbsent(cond.level,'mark'), noGrade=sowAbsent(cond.level,'grade');
+  var cat=!noMark&&isCat(cond.markRaw);
+  var mo=(!noMark&&!cat&&cond.markRaw)?lookupMarkOp(cond.markRaw):null;
+  var gc=noGrade?null:gradeCheck("$_POST['"+def.sg+"']",cond.gradeRaw);
   // Order matches the sheet's column order: Degree first, then Subject/Stream, then
   // the mark and grade checks. Each axis is independent; only the axes that actually
   // carry a value for this condition contribute a clause. The clauses are split into
@@ -358,9 +361,10 @@ function buildErrLine(cond,post,single,opts){
   }
   var sfx=opts&&opts.arrSuffix;
   var def=EDU[cond.level];
-  var cat=isCat(cond.markRaw);
-  var mo=(!cat&&cond.markRaw)?lookupMarkOp(cond.markRaw):null;
-  var go=cond.gradeRaw?(GRADE_OPS[cond.gradeRaw]||null):null;
+  var noMark=sowAbsent(cond.level,'mark'), noGrade=sowAbsent(cond.level,'grade');
+  var cat=!noMark&&isCat(cond.markRaw);
+  var mo=(!noMark&&!cat&&cond.markRaw)?lookupMarkOp(cond.markRaw):null;
+  var go=(!noGrade&&cond.gradeRaw)?(GRADE_OPS[cond.gradeRaw]||null):null;
   var aref=arrRef(def,cond.condName,single,post,STREAM_AXIS,sfx);
 
   var gradeSep=go?" ,&nbsp;&nbsp; ":"";
