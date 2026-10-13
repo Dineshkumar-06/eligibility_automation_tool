@@ -132,9 +132,9 @@ console.log('\n=== detectClarifications: grouped by exam level, not merged acros
   ok('mail has a Graduation: heading', gradIdx >= 0);
   ok('mail has a Post Graduation: heading, after the Graduation heading', pgIdx > gradIdx);
   ok('Graduation bullet lists only the Graduation mismatch',
-    mail.indexOf('"B.Tech. in CS", "B.Tech in CS"') > gradIdx && mail.indexOf('"B.Tech. in CS", "B.Tech in CS"') < pgIdx);
+    mail.indexOf('"B.Tech. in CS" (Postcode: 01), "B.Tech in CS" (Postcode: 02)') > gradIdx && mail.indexOf('"B.Tech. in CS" (Postcode: 01), "B.Tech in CS" (Postcode: 02)') < pgIdx);
   ok('Post Graduation bullet lists only the Post Graduation mismatch',
-    mail.indexOf('"M.Tech. in CS", "M.Tech in CS"') > pgIdx);
+    mail.indexOf('"M.Tech. in CS" (Postcode: 01), "M.Tech in CS" (Postcode: 02)') > pgIdx);
 }
 
 console.log('\nCLARIFICATION FEATURE: ' + (fail === 0 ? 'ALL PASS' : fail + ' FAILED') + ' (' + pass + ' passed)');

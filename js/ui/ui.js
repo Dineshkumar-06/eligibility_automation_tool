@@ -219,7 +219,11 @@ function renderS1(){
     // a heads-up, and must not be mistaken for the Subject/Stream/Degree review notice.
     if(cl.radio&&cl.radio.length){
       var radioCards=cl.radio.map(function(g){
-        var chips=g.texts.map(function(v){return '<span class="clarify-chip">"'+escH(v)+'"</span>';}).join('<span class="clarify-chip-sep">≈</span>');
+        var chips=g.texts.map(function(v){
+          var pcs=(g.postcodes&&g.postcodes[v])||[];
+          var pcTags=pcs.map(function(pc){return '<span class="clarify-chip-pc">'+escH(pc)+'</span>';}).join('');
+          return '<span class="clarify-chip">"'+escH(v)+'"'+pcTags+'</span>';
+        }).join('<span class="clarify-chip-sep">≈</span>');
         return '<div class="clarify-card"><div class="clarify-chipset">'+chips+'</div>'+
           '<div class="clarify-hint">Merged into one field: <code>'+escH(g.fieldName)+'</code></div></div>';
       }).join('');

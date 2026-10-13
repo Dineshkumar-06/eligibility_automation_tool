@@ -67,11 +67,17 @@ function parseMarkClauses(s){
     // A single line may still pack several space-separated clauses, e.g.
     // "UR/EWS/OBC/ST >=60% SC >=55%". Scan left-to-right for <label?><op><num>.
     var line=segs[i];
-    var re=/([A-Za-z][A-Za-z0-9.\/,&()\s\-]*?)?\s*(>=|<=|>|<|=)\s*(\d{1,3})\s*%?/g;
+    // VALUE-FIRST form: the line STARTS with the operator and the category label
+    // FOLLOWS the number (">=60% for all others", ">=50% for SC/ST/PwBD"). Here the
+    // label is the text after the value up to the next operator, not before it.
+    var valueFirst=/^(?:>=|<=|>|<|=)/.test(line);
+    var re=valueFirst
+      ? /()\s*(>=|<=|>|<|=)\s*(\d{1,3})\s*%?\s*([A-Za-z][^<>=]*)?/g
+      : /([A-Za-z][A-Za-z0-9.\/,&()\s\-]*?)?\s*(>=|<=|>|<|=)\s*(\d{1,3})\s*%?/g;
     var m, found=false;
     while((m=re.exec(line))!==null){
       found=true;
-      var label=(m[1]||'').trim();
+      var label=((valueFirst?m[4]:m[1])||'').trim();
       // Strip leading descriptor words ("For", "For all", "category", "marks").
       label=label.replace(/^(?:for\s+all|for|minimum|atleast|at\s+least|category|marks?|percentage|class|grade)\b\s*/i,'').trim();
       // A label of "all other"/"others"/"general"/"open"/"unreserved" denotes the

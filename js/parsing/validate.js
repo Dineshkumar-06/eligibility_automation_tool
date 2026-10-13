@@ -107,7 +107,7 @@ function collectRadioConds(posts){
     for(var gi=0;gi<orGroups.length;gi++){
       var conds=orGroups[gi].conditions||[];
       for(var ci=0;ci<conds.length;ci++)
-        if(conds[ci].type==='radio') out.push(conds[ci]);
+        if(conds[ci].type==='radio') out.push({cond:conds[ci],postcode:posts[pi].postcode});
     }
   }
   return out;
@@ -120,11 +120,12 @@ function findRadioDupGroups(conds){
   var normRadioQuestion=App.normRadioQuestion;
   var map=new Map();
   for(var i=0;i<conds.length;i++){
-    var c=conds[i], key=normRadioQuestion(c.question);
+    var c=conds[i].cond, pc=conds[i].postcode, key=normRadioQuestion(c.question);
     if(!key) continue;
-    if(!map.has(key)) map.set(key,{texts:[],fieldName:c.fieldName});
+    if(!map.has(key)) map.set(key,{texts:[],fieldName:c.fieldName,postcodes:{}});
     var entry=map.get(key);
-    if(entry.texts.indexOf(c.question)===-1) entry.texts.push(c.question);
+    if(entry.texts.indexOf(c.question)===-1){ entry.texts.push(c.question); entry.postcodes[c.question]=[]; }
+    if(pc!==undefined&&pc!==null&&entry.postcodes[c.question].indexOf(pc)===-1) entry.postcodes[c.question].push(pc);
   }
   var groups=[];
   map.forEach(function(entry){ if(entry.texts.length>=2) groups.push(entry); });
@@ -171,16 +172,20 @@ function mergeLevelSections(streamSections,degreeSections){
 // 'values' for the Subject/Stream + Degree duplicate groups (grouped under an exam-level
 // heading, e.g. "Graduation:", so the recipient isn't left guessing which qualification a
 // value belongs to), 'radio' for the duplicate radio-button question groups (no exam-level
-// concept, so left flat). Deliberately omits postcodes — an on-screen aid for the sheet
-// owner; the recipient only needs the competing spellings. Returns '' when there is
+// concept, so left flat). Each spelling is followed by the postcode(s) it appears under,
+// e.g. "B.Tech" (Postcode: 101, 102). Returns '' when there is
 // nothing to report for that kind.
+function fmtMailValue(v,postcodes){
+  var pcs=(postcodes&&postcodes[v])||[];
+  return '"'+v+'"'+(pcs.length?' (Postcode: '+pcs.join(', ')+')':'');
+}
 function buildClarificationMailText(kind,cl){
   cl = cl||{stream:[],degree:[],radio:[]};
   if(kind==='radio'){
-    var radioGroups=(cl.radio||[]).map(function(g){return g.texts;});
+    var radioGroups=cl.radio||[];
     if(!radioGroups.length) return '';
-    var radioLines=radioGroups.map(function(texts){
-      return '- '+texts.map(function(v){return '"'+v+'"';}).join(', ');
+    var radioLines=radioGroups.map(function(g){
+      return '- '+g.texts.map(function(v){return fmtMailValue(v,g.postcodes);}).join(', ');
     });
     return 'The following radio button questions in the eligibility sheet do not match. Kindly confirm which values we should use.\n'+radioLines.join('\n');
   }
@@ -188,7 +193,7 @@ function buildClarificationMailText(kind,cl){
   if(!sections.length) return '';
   var blocks=sections.map(function(sec){
     var lines=sec.groups.map(function(g){
-      return '- '+g.map(function(v){return '"'+v+'"';}).join(', ');
+      return '- '+g.map(function(v){return fmtMailValue(v,g.postcodes);}).join(', ');
     });
     return sec.level+':\n'+lines.join('\n');
   });
