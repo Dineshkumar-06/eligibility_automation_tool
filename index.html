@@ -57,7 +57,12 @@
       <div id="alerts-box" style="margin-top:12px"></div>
       <div id="clarify-box" style="margin-top:12px"></div>
       <div class="stats" id="stats-row"></div>
-      <div class="sec-title" style="margin-top:4px">Parsed Condition Tree</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:4px">
+        <div class="sec-title">Parsed Condition Tree</div>
+        <label id="red-toggle-wrap" class="red-toggle" style="display:none" title="Show content marked red in the sheet (excluded from parsing and generated code)">
+          <input type="checkbox" id="red-toggle" onchange="toggleRedView(this)"> Highlight red (removed) content
+        </label>
+      </div>
       <div class="tbl-wrap">
         <table class="ptbl">
           <thead><tr><th>Post</th><th>Code</th><th>OR Grp</th><th>Type</th><th>Level / Question</th><th class="col-degree" style="display:none">Degree</th><th>Subjects</th><th>Mark</th><th>Grade</th><th>Work Exp</th><th>Status</th></tr></thead>

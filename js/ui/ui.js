@@ -66,9 +66,14 @@ function onFileChange(e){
         var wb=XLSX.read(buf,{type:'array'});
         var ws=wb.Sheets[wb.SheetNames[0]];
         var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false});
+        S.redRf=null; S.redRange=null; S.rawRowsFull=null; S.showRed=false;
         if(rf && rf.count){
           var range=XLSX.utils.decode_range(ws['!ref']||'A1');
-          applyRedFilter(rows, rf, {r0:range.s.r, c0:range.s.c});
+          // Keep an unfiltered copy + the colour map so the "show red" toggle can
+          // render what was removed without touching the real parse.
+          S.rawRowsFull=rows.map(function(r){return r.slice();});
+          S.redRf=rf; S.redRange={r0:range.s.r, c0:range.s.c};
+          applyRedFilter(rows, rf, S.redRange);
         }
         S.redRemovedCount = rf ? rf.count : 0;
         S.rawRows=rows;
@@ -98,6 +103,7 @@ function onFileChange(e){
 // S.internalCandidate.posts, S._normalCtx, S.internalCandidate.ctx.
 // Does NOT wipe S.radioOv so user overrides are preserved across re-parses.
 function parseRows(rows){
+  S._redView=null;
   var sepIdx=(intEnabled())?findInternalSeparator(rows):-1;
   if(intEnabled() && sepIdx>=0){
     // Split at separator. Normal section = rows before sepIdx; internal = rows
@@ -135,6 +141,32 @@ function reparse(){
   renderS1();
   renderS2();
 }
+
+// ── "Show red (removed) content" view ───────────────────────────────────────
+// Parses the UNFILTERED rows into a display-only tree (S.* schema fields are saved and
+// restored, so generation is unaffected) and records, per section, the colMap and row
+// offset needed to map each condition back to its sheet cell for red highlighting.
+function buildRedView(){
+  if(S._redView) return S._redView;
+  var rows=S.rawRowsFull, secs=[];
+  var saved=snapCtx();
+  try{
+    var sepIdx=intEnabled()?findInternalSeparator(rows):-1;
+    if(sepIdx>=0){
+      var rn=buildPostsRange(rows.slice(0,sepIdx)); var cn=snapCtx();
+      var ri=buildPostsRange(rows.slice(sepIdx+1)); var ci=snapCtx();
+      secs.push({label:'Normal Candidates',posts:rn.posts,colMap:cn.colMap,rowOff:0});
+      if(ri.posts.length) secs.push({label:'Internal Candidates',posts:ri.posts,colMap:ci.colMap,rowOff:sepIdx+1});
+    } else {
+      var r=buildPostsRange(rows);
+      secs.push({label:null,posts:r.posts,colMap:snapCtx().colMap,rowOff:0});
+    }
+  } finally {
+    S.dimensions=saved.dimensions; S.colMap=saved.colMap; S.weHeader=saved.weHeader; S.weMode=saved.weMode;
+  }
+  return (S._redView=secs);
+}
+function toggleRedView(el){ S.showRed=!!el.checked; renderS1(); }
 
 function renderS1(){
   document.getElementById('s1-results').classList.remove('hidden');
@@ -255,17 +287,39 @@ function renderS1(){
   var degHdr=document.querySelector('.ptbl th.col-degree');
   if(degHdr) degHdr.style.display=hasDegreeCol?'':'none';
   // The Degree <td> for an EDU row (empty string when the column is hidden).
-  function degCell(cond){
+  function degCell(cond,red){
     if(!hasDegreeCol) return '';
     var txt=(cond.degrees&&cond.degrees.length)?escH(cond.degrees.join(', ')):(cond.anyDegree?'<em>Any</em>':'<em>—</em>');
+    if(red) txt='<span class="red-rm">'+txt+'</span>';
     return '<td class="dim" style="font-size:12px">'+txt+'</td>';
   }
+  var redTgl=document.getElementById('red-toggle-wrap');
+  var canRed=!!(S.redRf&&S.rawRowsFull&&S.redRemovedCount);
+  if(redTgl){ redTgl.style.display=canRed?'':'none'; document.getElementById('red-toggle').checked=canRed&&!!S.showRed; }
   var tbody=document.getElementById('ptbl-body'); tbody.innerHTML='';
   // When Internal Candidate support is active and both sections have posts, render a
   // two-section tree: a "Normal Candidates" section header row, all normal posts, then
   // an "Internal Candidates" section header row, all internal posts.
   var isIntBranch=intEnabled()&&S.internalCandidate.posts&&S.internalCandidate.posts.length>0;
-  function renderPostsIntoTbody(posts,sectionLabel){
+  function renderPostsIntoTbody(posts,sectionLabel,rv){
+    // rv (red view only): {colMap,rowOff}. Maps a parsed row/col back to the sheet cell.
+    var rf=S.redRf, rg=S.redRange;
+    function cellKey(ri,col){ return (rv.rowOff+ri+rg.r0)+','+(col+rg.c0); }
+    function fullRed(ri,col){ return !!(rv&&col!==undefined&&col>=0&&rf.redCells.has(cellKey(ri,col))); }
+    function partRed(ri,col){ return !!(rv&&col!==undefined&&col>=0&&rf.cleanText.has(cellKey(ri,col))); }
+    function anyRed(ri,col){ return fullRed(ri,col)||partRed(ri,col); }
+    function mark(txt,red){ return red?'<span class="red-rm">'+txt+'</span>':txt; }
+    function normS(v){ return String(v).replace(/\s+/g,' ').trim().toLowerCase(); }
+    // Subjects: a fully-red cell marks every item; a partly-red cell marks only the items
+    // that are absent from the black-only text the real parse saw.
+    function subjHtml(cond,txtEmpty){
+      if(!cond.subjects.length) return txtEmpty;
+      var col=rv&&rv.colMap.subject, all=fullRed(cond.ri,col), keep=null;
+      if(rv&&!all&&partRed(cond.ri,col)){
+        keep={}; App.parseSubs(rf.cleanText.get(cellKey(cond.ri,col))).forEach(function(x){keep[normS(x)]=1;});
+      }
+      return cond.subjects.map(function(x){return mark(escH(x),all||(keep&&!keep[normS(x)]));}).join(', ');
+    }
     if(sectionLabel){
       var secRow=tbody.insertRow(); secRow.className='r-section';
       secRow.innerHTML='<td colspan="'+colSpanAll+'" style="background:#1a2940;color:#7dd3fc;font-weight:700;font-size:13px;padding:8px 12px;letter-spacing:.04em">'+escH(sectionLabel)+'</td>';
@@ -273,7 +327,7 @@ function renderS1(){
     for(var pi=0;pi<posts.length;pi++){
       var post=posts[pi];
       var hr=tbody.insertRow(); hr.className='r-hdr';
-      hr.innerHTML='<td colspan="'+colSpanAll+'">Post <strong>'+post.postcode+'</strong>: '+escH(post.postName)+(post.workExp?' <span class="bd bd-b">Work Exp: '+post.workExp/12+'yr</span>':'')+'</td>';
+      hr.innerHTML='<td colspan="'+colSpanAll+'">Post <strong>'+post.postcode+'</strong>: '+mark(escH(post.postName),rv&&anyRed(post.ri,rv.colMap.post))+(post.workExp?' <span class="bd bd-b">Work Exp: '+post.workExp/12+'yr</span>':'')+'</td>';
       for(var gi=0;gi<post.orGroups.length;gi++){
         if(gi>0){var sr=tbody.insertRow();sr.className='r-sep';sr.innerHTML='<td colspan="'+colSpanAll+'">── OR ──</td>';}
         var conds=post.orGroups[gi].conditions;
@@ -283,16 +337,23 @@ function renderS1(){
           var sb=cond.status==='error'?'<span class="bd bd-r">Error</span>':cond.status==='warn'?'<span class="bd bd-o">Review</span>':'<span class="bd bd-g">OK</span>';
           var grpWe=post.orGroups[gi].workExp;
           if(cond.type==='edu'){
-            var subTxt=cond.subjects.length?escH(cond.subjects.join(', ')):(cond.anyStream?'<em>Any</em>':'<em>—</em>');
-            tr.innerHTML='<td>'+escH(post.postName)+'</td><td class="mono">'+post.postcode+'</td><td>'+(gi+1)+'</td><td><span class="bd bd-grey">EDU</span></td><td>'+escH(cond.level)+'</td>'+degCell(cond)+'<td class="dim" style="font-size:12px">'+subTxt+'</td><td class="mono">'+(cond.markRaw||'—')+'</td><td>'+escH(cond.gradeRaw||'—')+'</td><td>'+(grpWe?grpWe/12+'yr':'—')+'</td><td>'+sb+'</td>';
+            var subTxt=subjHtml(cond,cond.anyStream?'<em>Any</em>':'<em>—</em>');
+            var cm=rv&&rv.colMap, lvRed=rv&&anyRed(cond.ri,cm.field);
+            if(lvRed) tr.className+=' r-red';
+            tr.innerHTML='<td>'+escH(post.postName)+'</td><td class="mono">'+post.postcode+'</td><td>'+(gi+1)+'</td><td><span class="bd bd-grey">EDU</span></td><td>'+mark(escH(cond.level),lvRed)+'</td>'+degCell(cond,rv&&anyRed(cond.ri,cm.degree))+'<td class="dim" style="font-size:12px">'+subTxt+'</td><td class="mono">'+mark(cond.markRaw||'—',rv&&anyRed(cond.ri,cm.marks))+'</td><td>'+mark(escH(cond.gradeRaw||'—'),rv&&anyRed(cond.ri,cm.grade))+'</td><td>'+(grpWe?grpWe/12+'yr':'—')+'</td><td>'+sb+'</td>';
           }
-          else
-            tr.innerHTML='<td>'+escH(post.postName)+'</td><td class="mono">'+post.postcode+'</td><td>'+(gi+1)+'</td><td><span class="bd bd-o">RADIO</span></td><td colspan="'+colSpanQ+'" class="dim" style="font-size:12px">'+escH(cond.question)+'</td><td>'+(grpWe?grpWe/12+'yr':'—')+'</td><td>'+sb+'</td>';
+          else {
+            var qRed=rv&&(anyRed(cond.ri,rv.colMap.field)||anyRed(cond.ri,rv.colMap.subject)||anyRed(cond.ri,rv.colMap.degree));
+            if(qRed) tr.className+=' r-red';
+            tr.innerHTML='<td>'+escH(post.postName)+'</td><td class="mono">'+post.postcode+'</td><td>'+(gi+1)+'</td><td><span class="bd bd-o">RADIO</span></td><td colspan="'+colSpanQ+'" class="dim" style="font-size:12px">'+mark(escH(cond.question),qRed)+'</td><td>'+(grpWe?grpWe/12+'yr':'—')+'</td><td>'+sb+'</td>';
+          }
         }
       }
     }
   }
-  if(isIntBranch){
+  if(canRed&&S.showRed){
+    buildRedView().forEach(function(sec){ renderPostsIntoTbody(sec.posts,sec.label,sec); });
+  } else if(isIntBranch){
     renderPostsIntoTbody(S.posts,'Normal Candidates');
     renderPostsIntoTbody(S.internalCandidate.posts,'Internal Candidates');
   } else {
@@ -944,6 +1005,7 @@ function goStep(n,fromTab){
   App.fileInfo = fileInfo;
   App.goStep = goStep;
   App.onFileChange = onFileChange;
+  App.toggleRedView = toggleRedView;
   App.renderDimCfg = renderDimCfg;
   App.updDimVar = updDimVar;
   App.renderS1 = renderS1;

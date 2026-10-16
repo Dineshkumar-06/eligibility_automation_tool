@@ -160,7 +160,7 @@
       var body = sm[1];
       if(body.indexOf('<r>')<0 && body.indexOf('<r ')<0){
         // plain string — colour (if any) comes from the cell's font, not here.
-        out.push({hasRedRun:false, blackText:null});
+        out.push({hasRedRun:false, blackText:null, rich:false});
         continue;
       }
       var rre = /<r>([\s\S]*?)<\/r>/g, rm, hasRed=false, black='';
@@ -176,7 +176,7 @@
         // meaningless — keep it in the black text and don't flag the cell.
         if(red && txt.trim()!=='') hasRed=true; else black += txt;
       }
-      out.push({hasRedRun:hasRed, blackText:black});
+      out.push({hasRedRun:hasRed, blackText:black, rich:true});
     }
     return out;
   }
@@ -249,6 +249,11 @@
             else { cleanText.set(key, black); }
             continue;
           }
+          // Rich-text string with NO visible red run: the runs fully override the
+          // cell font, so a red cell-style font is not what Excel displays (e.g.
+          // "Graduation" in an uncoloured run + a stray red trailing space). Treat
+          // as not red; fill is the only remaining way the cell can read as red.
+          if(si && si.rich){ if(fillRed) redCells.add(key); continue; }
         }
         if(fillRed || fontRed) redCells.add(key);
       }

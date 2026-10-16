@@ -1,16 +1,16 @@
-# Graph Report - eligibility_automation_tool  (2026-10-13)
+# Graph Report - eligibility_automation_tool  (2026-10-16)
 
 ## Corpus Check
-- 47 files · ~61,850 words
+- 47 files · ~62,206 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 526 nodes · 879 edges · 39 communities (35 shown, 4 thin omitted)
+- 535 nodes · 899 edges · 40 communities (36 shown, 4 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 2 edges (avg confidence: 0.68)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `1a032d97`
+- Built from commit: `4236931a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -50,6 +50,7 @@
 - emit.js
 - run_sow_absent.js
 - eduQryArrays.js
+- renderPostsIntoTbody
 
 ## God Nodes (most connected - your core abstractions)
 1. `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` - 49 edges
@@ -83,7 +84,7 @@
 - **Internal Candidate branched-output family: 6 gen*Branched functions implementing the split normal/internal PHP emission pattern via withCtx** — js_generators_internalbranch_geneligibilitybranched, js_generators_internalbranch_geneduvalidationsbranched, js_generators_internalbranch_genworkexpbranched, js_generators_internalbranch_geneduconfigbranched, js_generators_internalbranch_genlangfilebranched, js_generators_internalbranch_geneduqrysqlbranched, debugging_context_snapshot_withctx, debugging_internal_candidate_feature [EXTRACTED 1.00]
 - **The 3-step pipeline folders (core/parsing/generators/ui) that jointly implement Excel -> posts[] -> PHP -> UI** — js_core_state, js_parsing_buildposts, js_generators_eligibility, js_ui_ui, debugging_three_step_pipeline [EXTRACTED 1.00]
 
-## Communities (39 total, 4 thin omitted)
+## Communities (40 total, 4 thin omitted)
 
 ### Community 0 - "DEBUGGING.md — Debugging Guide (Eligibility Code Generator)"
 Cohesion: 0.16
@@ -99,7 +100,7 @@ Nodes (13): alters, App, edu, emptyEdu, emptySql, fields, fs, items (+5 more)
 
 ### Community 3 - "ui.js"
 Cohesion: 0.09
-Nodes (48): apDefaultGroups(), apDistinctLevels(), apDndCol(), apDndItem(), apGroups(), apMoveLevel(), apRankHint(), apRenderHierarchy() (+40 more)
+Nodes (49): apDefaultGroups(), apDistinctLevels(), apDndCol(), apDndItem(), apGroups(), apMoveLevel(), apRankHint(), apRenderHierarchy() (+41 more)
 
 ### Community 4 - "eligibility.js"
 Cohesion: 0.11
@@ -209,6 +210,10 @@ Nodes (4): App, d, gen(), mk()
 Cohesion: 0.70
 Nodes (4): alterStmt(), arrAdditionSection(), collectRadioFields(), genEduQrySql()
 
+### Community 39 - "renderPostsIntoTbody"
+Cohesion: 0.57
+Nodes (8): renderPostsIntoTbody(), anyRed(), cellKey(), fullRed(), mark(), normS(), partRed(), subjHtml()
+
 ## Knowledge Gaps
 - **123 isolated node(s):** `App`, `Legacy`, `fs`, `path`, `rows` (+118 more)
   These have ≤1 connection - possible missing edges or undocumented components.
@@ -218,11 +223,11 @@ Nodes (4): alterStmt(), arrAdditionSection(), collectRadioFields(), genEduQrySql
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` connect `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` to `app.legacy.js`, `index.html — App Shell, Step UI & Module Load Order`, `eduValidations.js`, `eligibility.js`, `emit.js`, `workExp.js`, `helpers.js`, `state.js`, `colorFilter.js`, `ui.js`, `eduConfig.js`, `buildPostsRange`?**
-  _High betweenness centrality (0.155) - this node is a cross-community bridge._
+  _High betweenness centrality (0.157) - this node is a cross-community bridge._
 - **Why does `README.md — Project Overview & Structure` connect `index.html — App Shell, Step UI & Module Load Order` to `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)`, `app.legacy.js`, `workExp.js`, `eduValidations.js`, `eligibility.js`, `emit.js`, `eduQryArrays.js`, `helpers.js`, `state.js`, `colorFilter.js`, `ui.js`, `dimensions.js`, `eduConfig.js`, `buildPostsRange`?**
-  _High betweenness centrality (0.091) - this node is a cross-community bridge._
+  _High betweenness centrality (0.094) - this node is a cross-community bridge._
 - **Why does `index.html — App Shell, Step UI & Module Load Order` connect `index.html — App Shell, Step UI & Module Load Order` to `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)`, `workExp.js`, `eduValidations.js`, `eligibility.js`, `emit.js`, `eduQryArrays.js`, `helpers.js`, `state.js`, `colorFilter.js`, `ui.js`, `dimensions.js`, `eduConfig.js`, `buildPostsRange`?**
-  _High betweenness centrality (0.048) - this node is a cross-community bridge._
+  _High betweenness centrality (0.049) - this node is a cross-community bridge._
 - **What connects `App`, `Legacy`, `fs` to the rest of the system?**
   _123 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `app.legacy.js` be split into smaller, more focused modules?**
@@ -230,4 +235,4 @@ _Questions this graph is uniquely positioned to answer:_
 - **Should `run_qry.js` be split into smaller, more focused modules?**
   _Cohesion score 0.125 - nodes in this community are weakly interconnected._
 - **Should `ui.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.08925979680696662 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08735150244584207 - nodes in this community are weakly interconnected._
