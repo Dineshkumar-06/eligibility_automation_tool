@@ -163,7 +163,7 @@
         out.push({hasRedRun:false, blackText:null, rich:false});
         continue;
       }
-      var rre = /<r>([\s\S]*?)<\/r>/g, rm, hasRed=false, black='';
+      var rre = /<r>([\s\S]*?)<\/r>/g, rm, hasRed=false, black='', runs=[];
       while((rm=rre.exec(body))){
         var run = rm[1];
         var rprc = /<rPr>[\s\S]*?<color\b[^>]*\/?>[\s\S]*?<\/rPr>|<color\b[^>]*\/?>/.exec(run);
@@ -174,9 +174,11 @@
         // Only a red run with actual visible text counts as a removal. A red
         // run that is pure whitespace (e.g. a stray red trailing space) is
         // meaningless — keep it in the black text and don't flag the cell.
-        if(red && txt.trim()!=='') hasRed=true; else black += txt;
+        var isRed = red && txt.trim()!=='';
+        runs.push({t:txt, red:isRed});
+        if(isRed) hasRed=true; else black += txt;
       }
-      out.push({hasRedRun:hasRed, blackText:black, rich:true});
+      out.push({hasRedRun:hasRed, blackText:black, rich:true, runs:runs});
     }
     return out;
   }
@@ -223,7 +225,7 @@
 
   // Pure core (no zip / no promises) — directly unit-testable in Node.
   function computeFilter(stylesXml, themeXml, ssXml, sheetXml){
-    var redCells=new Set(), cleanText=new Map();
+    var redCells=new Set(), cleanText=new Map(), segments=new Map();
     var palette = buildThemePalette(themeXml);
     var st = parseStyles(stylesXml, palette);
     var ss = parseSharedStrings(ssXml, palette);
@@ -246,7 +248,7 @@
           if(si && si.hasRedRun){
             var black=(si.blackText||'').trim();
             if(black==='' || fillRed){ redCells.add(key); }
-            else { cleanText.set(key, black); }
+            else { cleanText.set(key, black); segments.set(key, si.runs); }
             continue;
           }
           // Rich-text string with NO visible red run: the runs fully override the
@@ -258,7 +260,7 @@
         if(fillRed || fontRed) redCells.add(key);
       }
     }
-    return {redCells:redCells, cleanText:cleanText, count:redCells.size+cleanText.size};
+    return {redCells:redCells, cleanText:cleanText, segments:segments, count:redCells.size+cleanText.size};
   }
 
   // ── apply the cleanup map to SheetJS's flattened rows (mutates in place) ───

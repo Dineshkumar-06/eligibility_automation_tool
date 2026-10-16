@@ -309,16 +309,27 @@ function renderS1(){
     function partRed(ri,col){ return !!(rv&&col!==undefined&&col>=0&&rf.cleanText.has(cellKey(ri,col))); }
     function anyRed(ri,col){ return fullRed(ri,col)||partRed(ri,col); }
     function mark(txt,red){ return red?'<span class="red-rm">'+txt+'</span>':txt; }
+    // A partly-red cell is shown from its original text runs so only the red part
+    // is red; fully-red cells fall back to marking the whole parsed value.
+    function cellHtml(ri,col,txt){
+      if(!rv) return txt;
+      var k=cellKey(ri,col), segs=col>=0&&rf.segments&&rf.segments.get(k);
+      if(segs) return segs.map(function(g){return mark(escH(g.t),g.red);}).join('');
+      return mark(txt,fullRed(ri,col));
+    }
     function normS(v){ return String(v).replace(/\s+/g,' ').trim().toLowerCase(); }
     // Subjects: a fully-red cell marks every item; a partly-red cell marks only the items
     // that are absent from the black-only text the real parse saw.
     function subjHtml(cond,txtEmpty){
       if(!cond.subjects.length) return txtEmpty;
-      var col=rv&&rv.colMap.subject, all=fullRed(cond.ri,col), keep=null;
-      if(rv&&!all&&partRed(cond.ri,col)){
-        keep={}; App.parseSubs(rf.cleanText.get(cellKey(cond.ri,col))).forEach(function(x){keep[normS(x)]=1;});
-      }
-      return cond.subjects.map(function(x){return mark(escH(x),all||(keep&&!keep[normS(x)]));}).join(', ');
+      var col=rv&&rv.colMap.subject, all=fullRed(cond.ri,col), redT='', blackT='';
+      var segs=rv&&!all&&col>=0&&rf.segments&&rf.segments.get(cellKey(cond.ri,col));
+      if(segs) segs.forEach(function(g){ if(g.red) redT+=' '+g.t; else blackT+=' '+g.t; });
+      redT=normS(redT); blackT=normS(blackT);
+      return cond.subjects.map(function(x){
+        var n=normS(x);
+        return mark(escH(x),all||(segs&&redT.indexOf(n)>=0&&blackT.indexOf(n)<0));
+      }).join(', ');
     }
     if(sectionLabel){
       var secRow=tbody.insertRow(); secRow.className='r-section';
@@ -338,14 +349,16 @@ function renderS1(){
           var grpWe=post.orGroups[gi].workExp;
           if(cond.type==='edu'){
             var subTxt=subjHtml(cond,cond.anyStream?'<em>Any</em>':'<em>—</em>');
-            var cm=rv&&rv.colMap, lvRed=rv&&anyRed(cond.ri,cm.field);
+            var cm=rv?rv.colMap:{}, lvRed=rv&&anyRed(cond.ri,cm.field);
             if(lvRed) tr.className+=' r-red';
-            tr.innerHTML='<td>'+escH(post.postName)+'</td><td class="mono">'+post.postcode+'</td><td>'+(gi+1)+'</td><td><span class="bd bd-grey">EDU</span></td><td>'+mark(escH(cond.level),lvRed)+'</td>'+degCell(cond,rv&&anyRed(cond.ri,cm.degree))+'<td class="dim" style="font-size:12px">'+subTxt+'</td><td class="mono">'+mark(cond.markRaw||'—',rv&&anyRed(cond.ri,cm.marks))+'</td><td>'+mark(escH(cond.gradeRaw||'—'),rv&&anyRed(cond.ri,cm.grade))+'</td><td>'+(grpWe?grpWe/12+'yr':'—')+'</td><td>'+sb+'</td>';
+            tr.innerHTML='<td>'+escH(post.postName)+'</td><td class="mono">'+post.postcode+'</td><td>'+(gi+1)+'</td><td><span class="bd bd-grey">EDU</span></td><td>'+cellHtml(cond.ri,cm.field,escH(cond.level))+'</td>'+degCell(cond,rv&&anyRed(cond.ri,cm.degree))+'<td class="dim" style="font-size:12px">'+subTxt+'</td><td class="mono">'+cellHtml(cond.ri,cm.marks,cond.markRaw||'—')+'</td><td>'+cellHtml(cond.ri,cm.grade,escH(cond.gradeRaw||'—'))+'</td><td>'+(grpWe?grpWe/12+'yr':'—')+'</td><td>'+sb+'</td>';
           }
           else {
             var qRed=rv&&(anyRed(cond.ri,rv.colMap.field)||anyRed(cond.ri,rv.colMap.subject)||anyRed(cond.ri,rv.colMap.degree));
             if(qRed) tr.className+=' r-red';
-            tr.innerHTML='<td>'+escH(post.postName)+'</td><td class="mono">'+post.postcode+'</td><td>'+(gi+1)+'</td><td><span class="bd bd-o">RADIO</span></td><td colspan="'+colSpanQ+'" class="dim" style="font-size:12px">'+mark(escH(cond.question),qRed)+'</td><td>'+(grpWe?grpWe/12+'yr':'—')+'</td><td>'+sb+'</td>';
+            var qHtml=escH(cond.question);
+            if(rv){ var qc=[rv.colMap.field,rv.colMap.subject,rv.colMap.degree].filter(function(c){return c>=0&&anyRed(cond.ri,c);})[0]; if(qc!==undefined) qHtml=cellHtml(cond.ri,qc,qHtml); }
+            tr.innerHTML='<td>'+escH(post.postName)+'</td><td class="mono">'+post.postcode+'</td><td>'+(gi+1)+'</td><td><span class="bd bd-o">RADIO</span></td><td colspan="'+colSpanQ+'" class="dim" style="font-size:12px">'+qHtml+'</td><td>'+(grpWe?grpWe/12+'yr':'—')+'</td><td>'+sb+'</td>';
           }
         }
       }
