@@ -10,6 +10,7 @@ const files = [
   'js/core/state.js',
   'js/core/dimensions.js',
   'js/parsing/helpers.js',
+  'js/parsing/keyOverrides.js',
   'js/parsing/buildPosts.js',
   'js/parsing/streams.js',
   'js/parsing/validate.js',

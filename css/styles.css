@@ -274,3 +274,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     transition-duration:.001ms!important;scroll-behavior:auto!important;
   }
 }
+
+/* ── Use Own Keys (Step 2) ───────────────────────────────────────────────── */
+.keys-toggle{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text-strong);cursor:pointer;margin-bottom:6px}
+.keys-toggle input{accent-color:var(--accent);width:16px;height:16px;cursor:pointer}
+.keys-help{font-size:13px;line-height:1.6;color:var(--text-muted);margin-bottom:14px;max-width:760px}
+.keys-count{max-width:200px;margin-bottom:12px}
+.f-grp input[type=number]{width:100%}
+.keys-box{display:flex;flex-direction:column;gap:6px}
+.keys-box label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+.keys-box label b{color:var(--text-strong);font-weight:600}
+.keys-box textarea{width:100%;min-height:120px;resize:vertical;background:var(--bg-inset);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:5px;font-size:12px;line-height:1.5;font-family:Consolas,Monaco,monospace;tab-size:4;white-space:pre;overflow:auto;transition:border-color .15s}
+.keys-box textarea::placeholder{color:var(--text-muted);opacity:.6}
+.keys-box textarea:hover{border-color:var(--text-muted)}
+.keys-box textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(31,111,235,.2)}
+.keys-status{font-size:12px;color:var(--text-muted)}
+.keys-status.ok{color:#3fb950}
+.keys-status.warn{color:#e3b341}
+.keys-map{width:100%;border-collapse:collapse;font-size:12px;margin:10px 0 4px}
+.keys-map th{text-align:left;font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;padding:6px 10px;border-bottom:1px solid var(--border)}
+.keys-map td{padding:6px 10px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+.keys-map tr:last-child td{border-bottom:none}
+.keys-map code{font-family:Consolas,Monaco,monospace;color:var(--text-strong)}
+.keys-map select{background:var(--bg-inset);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:5px;font-size:12px;max-width:100%}
+.keys-map select:focus{outline:none;border-color:var(--accent)}
+.keys-warn{margin-top:8px;margin-bottom:0;max-height:140px;overflow:auto;word-break:break-word}
+.keys-actions{display:flex;justify-content:flex-end;margin-top:4px}

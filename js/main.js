@@ -31,6 +31,8 @@ window.toggleRedView=App.toggleRedView;window.goStep=goStep;window.updOv=updOv;w
 window.updApEnable=updApEnable;window.updApLevel=updApLevel;window.updApField=updApField;
 window.updSowEnable=App.updSowEnable;window.updSowField=App.updSowField;
 window.updIntEnable=updIntEnable;window.updIntField=updIntField;
+window.updKeysEnable=App.updKeysEnable;window.updKeysDimCount=App.updKeysDimCount;window.updKeysDimText=App.updKeysDimText;
+window.updKeysStreamText=App.updKeysStreamText;window.updKeysMap=App.updKeysMap;window.applyKeys=App.applyKeys;
 window.copyCode=copyCode;window.copyClarificationText=copyClarificationText;window.dlFile=dlFile;window.dlZip=dlZip;
 window.openPostCompare=openPostCompare;window.closePostCompare=closePostCompare;window.runPostCompare=runPostCompare;window.filterPostCompare=filterPostCompare;
 window.openExamAliasRef=openExamAliasRef;window.closeExamAliasRef=closeExamAliasRef;

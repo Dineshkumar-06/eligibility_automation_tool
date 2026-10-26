@@ -32,7 +32,14 @@
   // Ordered value codes for a post, aligned with S.dimensions.
   // Falls back to [post.postcode] so code paths that run before dimensions are
   // assigned (or on legacy posts) still work.
-  function dimVals(post){
+  // Readable label for a post: its dimension values joined, e.g. "Manager - Civil" (display
+// only). Single-dimension / no dimNames => the plain post name, unchanged.
+function postLabel(post){
+  var n=post.dimNames;
+  if(!n||n.length<2) return post.postName;
+  return n.filter(Boolean).join(' - ')||post.postName;
+}
+function dimVals(post){
     if(post && post.dimensions && post.dimensions.length) return post.dimensions;
     return [post && post.postcode!=null ? post.postcode : ''];
   }
@@ -162,6 +169,7 @@
   App.dimCount = dimCount;
   App.isLegacyDims = isLegacy;
   App.dimVals = dimVals;
+  App.postLabel = postLabel;
   App.comboKey = comboKey;
   App.assignDeclares = assignDeclares;
   App.dimCond = dimCond;

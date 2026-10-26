@@ -54,13 +54,18 @@ function getStreamData(posts, axis){
     // "... / Equivalent React JS certification"), silently colliding it with
     // every other such value onto the same key and dropping all but the last.
     var sl=subjValue.trim().toLowerCase();
-    if(sl==='others'||sl==='other')   return '01';
-    if(sl==='equivalent')             return '99';
-    if(!globalKeyReg[level])   globalKeyReg[level]={map:{},nextSeq:2};
+    var ov=App.KO.axisLookup(level, AX.key);   // user-pasted config.php array (null = off)
+    if(sl==='others'||sl==='other')   return (ov&&(ov.map.others||ov.map.other))||'01';
+    if(sl==='equivalent')             return (ov&&ov.map.equivalent)||'99';
+    if(!globalKeyReg[level])   globalKeyReg[level]={map:{},nextSeq:ov?Math.max(2,ov.max+1):2};
     var reg=globalKeyReg[level];
     if(reg.map[subjValue]===undefined){
-      reg.map[subjValue]=String(reg.nextSeq).padStart(2,'0');
-      reg.nextSeq++;
+      var hit=ov?ov.map[App.KO.norm(subjValue)]:undefined;
+      if(hit!==undefined) reg.map[subjValue]=hit;
+      else{
+        reg.map[subjValue]=String(reg.nextSeq).padStart(2,'0');
+        reg.nextSeq++;
+      }
     }
     return reg.map[subjValue];
   }

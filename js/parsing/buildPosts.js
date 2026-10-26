@@ -79,7 +79,19 @@ function buildPostsRange(rows){
   var dimReg=DIMS.map(function(){return {map:{},next:1};});  // per-dim value->code
   function dimCode(di,value){
     var reg=dimReg[di];
-    if(reg.map[value]===undefined){reg.map[value]=String(reg.next).padStart(2,'0');reg.next++;}
+    if(reg.map[value]===undefined){
+      var ov=App.KO.dimLookup(di);   // user-pasted config.php array for this dimension (null = off)
+      if(ov){
+        var isBlank=/^__blank/.test(value), hit=isBlank?undefined:ov.map[App.KO.norm(value)];
+        if(hit!==undefined) reg.map[value]=hit;
+        else{
+          // not in the pasted array: next free key above every pasted key
+          if(reg.next<=ov.max) reg.next=ov.max+1;
+          reg.map[value]=String(reg.next).padStart(2,'0');reg.next++;
+          if(!isBlank) App.KO.noteUnmatchedDim(di,value);
+        }
+      } else {reg.map[value]=String(reg.next).padStart(2,'0');reg.next++;}
+    }
     return reg.map[value];
   }
   // Raw dimension cell values for a row (post col is dim 0).
@@ -123,6 +135,7 @@ function buildPostsRange(rows){
   }
 
   var curWeMonths=0;
+  var lastDimNames=[];   // display only: a blank (merged) dimension cell shows the value above it
   var hasGradeCol=CI.grade>=0;
   var hasMarksCol=CI.marks>=0;
   for(var ri=CI._hdrRow+1;ri<rows.length;ri++){
@@ -157,7 +170,7 @@ function buildPostsRange(rows){
       var dimValues=[];
       for(var dvi=0;dvi<DIMS.length;dvi++){
         var raw=dimCells[dvi];
-        if(dvi===0 && DIMS.length===1 && isNumSrno){
+        if(dvi===0 && DIMS.length===1 && isNumSrno && !App.KO.dimLookup(0)){
           // legacy: single dimension and a numeric Sr.No. — post code == Sr.No.
           dimValues.push(String(Math.round(+A)).padStart(2,'0'));
         } else {
@@ -173,8 +186,11 @@ function buildPostsRange(rows){
       // back to the first non-blank dimension cell so the row still has a label.
       var postNameVal=(isNumSrno&&CI.post!==CI.srno)?(B||''):dimCells[0];
       if(!postNameVal){ for(var dni=0;dni<dimCells.length;dni++){ if(dimCells[dni]){ postNameVal=dimCells[dni]; break; } } }
+      var dimNames=dimCells.map(function(v,i){ return v||lastDimNames[i]||''; });
+      lastDimNames=dimNames;
       cur={
         dimensions:dimValues,
+        dimNames:dimNames,
         postcode:dimValues[0],
         postName:postNameVal,
         workExp:curWeMonths,workExpRaw:G,postQuali:postQualiOf(G),orGroups:[grp],ri:ri

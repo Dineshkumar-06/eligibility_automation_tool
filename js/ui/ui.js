@@ -9,6 +9,7 @@
   var apRank = App.apRank;
   var defaultAcadRank = App.defaultAcadRank;
   var escA = App.escA;
+  var postLabel = App.postLabel;
   var escH = App.escH;
   var genEduConfig = App.genEduConfig;
   var genEduValidations = App.genEduValidations;
@@ -104,6 +105,7 @@ function onFileChange(e){
 // Does NOT wipe S.radioOv so user overrides are preserved across re-parses.
 function parseRows(rows){
   S._redView=null;
+  App.KO.resetUnmatched();
   var sepIdx=(intEnabled())?findInternalSeparator(rows):-1;
   if(intEnabled() && sepIdx>=0){
     // Split at separator. Normal section = rows before sepIdx; internal = rows
@@ -338,7 +340,7 @@ function renderS1(){
     for(var pi=0;pi<posts.length;pi++){
       var post=posts[pi];
       var hr=tbody.insertRow(); hr.className='r-hdr';
-      hr.innerHTML='<td colspan="'+colSpanAll+'">Post <strong>'+post.postcode+'</strong>: '+mark(escH(post.postName),rv&&anyRed(post.ri,rv.colMap.post))+(post.workExp?' <span class="bd bd-b">Work Exp: '+post.workExp/12+'yr</span>':'')+'</td>';
+      hr.innerHTML='<td colspan="'+colSpanAll+'">Post <strong>'+post.postcode+'</strong>: '+mark(escH(postLabel(post)),rv&&anyRed(post.ri,rv.colMap.post))+(post.workExp?' <span class="bd bd-b">Work Exp: '+post.workExp/12+'yr</span>':'')+'</td>';
       for(var gi=0;gi<post.orGroups.length;gi++){
         if(gi>0){var sr=tbody.insertRow();sr.className='r-sep';sr.innerHTML='<td colspan="'+colSpanAll+'">── OR ──</td>';}
         var conds=post.orGroups[gi].conditions;
@@ -351,14 +353,14 @@ function renderS1(){
             var subTxt=subjHtml(cond,cond.anyStream?'<em>Any</em>':'<em>—</em>');
             var cm=rv?rv.colMap:{}, lvRed=rv&&anyRed(cond.ri,cm.field);
             if(lvRed) tr.className+=' r-red';
-            tr.innerHTML='<td>'+escH(post.postName)+'</td><td class="mono">'+post.postcode+'</td><td>'+(gi+1)+'</td><td><span class="bd bd-grey">EDU</span></td><td>'+cellHtml(cond.ri,cm.field,escH(cond.level))+'</td>'+degCell(cond,rv&&anyRed(cond.ri,cm.degree))+'<td class="dim" style="font-size:12px">'+subTxt+'</td><td class="mono">'+cellHtml(cond.ri,cm.marks,cond.markRaw||'—')+'</td><td>'+cellHtml(cond.ri,cm.grade,escH(cond.gradeRaw||'—'))+'</td><td>'+(grpWe?grpWe/12+'yr':'—')+'</td><td>'+sb+'</td>';
+            tr.innerHTML='<td>'+escH(postLabel(post))+'</td><td class="mono">'+post.postcode+'</td><td>'+(gi+1)+'</td><td><span class="bd bd-grey">EDU</span></td><td>'+cellHtml(cond.ri,cm.field,escH(cond.level))+'</td>'+degCell(cond,rv&&anyRed(cond.ri,cm.degree))+'<td class="dim" style="font-size:12px">'+subTxt+'</td><td class="mono">'+cellHtml(cond.ri,cm.marks,cond.markRaw||'—')+'</td><td>'+cellHtml(cond.ri,cm.grade,escH(cond.gradeRaw||'—'))+'</td><td>'+(grpWe?grpWe/12+'yr':'—')+'</td><td>'+sb+'</td>';
           }
           else {
             var qRed=rv&&(anyRed(cond.ri,rv.colMap.field)||anyRed(cond.ri,rv.colMap.subject)||anyRed(cond.ri,rv.colMap.degree));
             if(qRed) tr.className+=' r-red';
             var qHtml=escH(cond.question);
             if(rv){ var qc=[rv.colMap.field,rv.colMap.subject,rv.colMap.degree].filter(function(c){return c>=0&&anyRed(cond.ri,c);})[0]; if(qc!==undefined) qHtml=cellHtml(cond.ri,qc,qHtml); }
-            tr.innerHTML='<td>'+escH(post.postName)+'</td><td class="mono">'+post.postcode+'</td><td>'+(gi+1)+'</td><td><span class="bd bd-o">RADIO</span></td><td colspan="'+colSpanQ+'" class="dim" style="font-size:12px">'+qHtml+'</td><td>'+(grpWe?grpWe/12+'yr':'—')+'</td><td>'+sb+'</td>';
+            tr.innerHTML='<td>'+escH(postLabel(post))+'</td><td class="mono">'+post.postcode+'</td><td>'+(gi+1)+'</td><td><span class="bd bd-o">RADIO</span></td><td colspan="'+colSpanQ+'" class="dim" style="font-size:12px">'+qHtml+'</td><td>'+(grpWe?grpWe/12+'yr':'—')+'</td><td>'+sb+'</td>';
           }
         }
       }
@@ -449,7 +451,7 @@ function renderS2(){
     con.innerHTML='<div class="sec-title">Radio Question Field Names</div><p class="dim" style="font-size:13px;margin-bottom:14px">Review auto-derived field names below.</p>';
     for(var pi=0;pi<rPosts.length;pi++){
       var post=rPosts[pi],sec=document.createElement('div');sec.className='radio-sec';
-      sec.innerHTML='<h4>Post '+escH(post.postcode)+': '+escH(post.postName)+'</h4>';
+      sec.innerHTML='<h4>Post '+escH(post.postcode)+': '+escH(postLabel(post))+'</h4>';
       var radios=getAllRadios(post);
       for(var ri=0;ri<radios.length;ri++){
         var r=radios[ri],ov=getOv(post.postcode,r.question);
@@ -473,6 +475,7 @@ function renderS2(){
   renderApCfg();
   renderSowCfg();
   renderIntCfg();
+  renderKeysCfg();
   updatePreview();
 }
 // Lang Key mirrors the PHP field name ("edu_<field>") until the user edits it by
@@ -870,6 +873,77 @@ function updIntField(el){
   updatePreview();  // field name change is generation-time only
 }
 
+// ── OWN KEYS FROM config.php (Step 2) ───────────────────────────────────────
+// Toggle -> N dimension array boxes (+ one box for stream/degree arrays). Pasted keys
+// replace the sequential ones; see parsing/keyOverrides.js. Typing only stores text and
+// refreshes the per-box counter in place; "Apply" re-parses (so textareas keep focus).
+function renderKeysCfg(){
+  var con=document.getElementById('keys-cfg'); if(!con) return;
+  var KO=S.keyOverrides, on=KO.enabled;
+  var h='<div class="sec-title" style="margin-top:18px">Use Own Keys (from config.php)</div>'
+    +'<label class="keys-toggle">'
+    +'<input type="checkbox" '+(on?'checked':'')+' onchange="updKeysEnable(this)">'
+    +'Post / dimension order in the sheet differs from my config.php</label>'
+    +'<p class="keys-help">Paste the arrays already declared in your config.php. Sheet values are matched to the pasted labels (case / spacing ignored) and the pasted keys are used. Values not found get the next free key and are listed below.</p>';
+  if(!on){ con.innerHTML=h; return; }
+  h+='<div class="f-grp keys-count"><label>No. of dimensions (array inputs)</label>'
+    +'<input type="number" min="1" max="10" value="'+KO.dimCount+'" onchange="updKeysDimCount(this)"></div>';
+  for(var i=0;i<KO.dimCount;i++){
+    var nm=(S.dimensions[i]&&S.dimensions[i].columnName)||('Dimension '+(i+1));
+    var um=(KO.unmatchedDims[i]||[]);
+    h+='<div class="radio-sec"><div class="keys-box"><label>'+(i===0?'Posts — <b>'+escH(nm)+'</b>':'<b>'+escH(nm)+'</b>')+' array</label>'
+      +'<textarea rows="6" spellcheck="false" data-i="'+i+'" placeholder="$arrPosts = array(\n\t\'01\' => \'Junior Engineer\',\n\t\'02\' => \'Manager\',\n);" oninput="updKeysDimText(this)">'+escH(KO.dimText[i]||'')+'</textarea>'
+      +'<span id="keys-st-'+i+'" class="keys-status'+keysStatusCls(KO.dimText[i])+'">'+keysStatus(KO.dimText[i])+'</span></div>'
+      +(um.length?'<div class="alert alert-warn keys-warn">Not in pasted array (given new keys): '+um.map(escH).join('; ')+'</div>':'')
+      +'</div>';
+  }
+  h+='<div class="radio-sec"><div class="keys-box"><label>Subject / Degree arrays <span style="text-transform:none">(optional — paste all of them)</span></label>'
+    +'<textarea rows="8" spellcheck="false" placeholder="$arrGraduation_Stream = array(...);\n$arrGraduation_Degree = array(...);" oninput="updKeysStreamText(this)">'+escH(KO.streamText||'')+'</textarea></div>';
+  var tg=App.KO.streamTargets();
+  if(tg.length){
+    var opts=['<option value="-">(ignore)</option>'];
+    for(var lv in EDU){ opts.push('<option value="'+escA(lv)+'|stream">'+escH(lv)+' — Stream</option>','<option value="'+escA(lv)+'|degree">'+escH(lv)+' — Degree</option>'); }
+    h+='<table class="keys-map"><tr><th>Array</th><th>Entries</th><th>Used for</th></tr>';
+    for(var t=0;t<tg.length;t++){
+      var sel=opts.join('').replace('value="'+escA(tg[t].target||'-')+'"','value="'+escA(tg[t].target||'-')+'" selected');
+      h+='<tr><td><code>$'+escH(tg[t].base)+'</code></td><td>'+tg[t].count+'</td><td><select data-b="'+escA(tg[t].base)+'" onchange="updKeysMap(this)">'+sel+'</select></td></tr>';
+    }
+    h+='</table>';
+  }
+  var su=App.KO.streamUnmatched(S.posts.concat(S.internalCandidate&&S.internalCandidate.posts||[]));
+  if(su.length) h+='<div class="alert alert-warn keys-warn">Not in pasted arrays (given new keys): '+su.map(function(u){return escH(u.level+' '+u.axis+': '+u.value);}).join('; ')+'</div>';
+  h+='</div><div class="keys-actions"><button class="btn btn-p" onclick="applyKeys()">Apply keys</button></div>';
+  con.innerHTML=h;
+}
+function keysStatusCls(txt){
+  if(!txt||!txt.trim()) return '';
+  var ix=App.KO.dimIndex(txt);
+  return (!Object.keys(ix.map).length||ix.dup.length)?' warn':' ok';
+}
+function keysStatus(txt){
+  if(!txt||!txt.trim()) return 'Empty — sequential keys used for this dimension.';
+  var ix=App.KO.dimIndex(txt), n=Object.keys(ix.map).length;
+  return n+' label(s) parsed'+(ix.dup.length?' — ⚠ same label under several keys: '+ix.dup.map(escH).join(', '):'')+(n?'':' — ⚠ no array found');
+}
+function updKeysEnable(el){
+  var KO=S.keyOverrides; KO.enabled=el.checked;
+  if(KO.enabled&&!KO.dimCount) KO.dimCount=Math.max(1,S.dimensions.length);
+  reparse();
+}
+function updKeysDimCount(el){
+  var KO=S.keyOverrides, n=Math.max(1,Math.min(10,parseInt(el.value,10)||1));
+  KO.dimCount=n; KO.dimText.length=Math.min(KO.dimText.length,n);
+  reparse();
+}
+function updKeysDimText(el){
+  var i=+el.dataset.i; S.keyOverrides.dimText[i]=el.value;
+  var st=document.getElementById('keys-st-'+i);
+  if(st){ st.innerHTML=keysStatus(el.value); st.className='keys-status'+keysStatusCls(el.value); }
+}
+function updKeysStreamText(el){ S.keyOverrides.streamText=el.value; }
+function updKeysMap(el){ S.keyOverrides.streamMap[el.dataset.b]=el.value; }
+function applyKeys(){ reparse(); }
+
 function weNone(){
   var h=S.weHeader?(' (header: "'+S.weHeader+'")'):'';
   return '// work_exp_details_validations.php is NOT generated.\n'+
@@ -1049,4 +1123,11 @@ function goStep(n,fromTab){
   App.reparse = reparse;
   App.updIntEnable = updIntEnable;
   App.updIntField = updIntField;
+  App.renderKeysCfg = renderKeysCfg;
+  App.updKeysEnable = updKeysEnable;
+  App.updKeysDimCount = updKeysDimCount;
+  App.updKeysDimText = updKeysDimText;
+  App.updKeysStreamText = updKeysStreamText;
+  App.updKeysMap = updKeysMap;
+  App.applyKeys = applyKeys;
 })(window.App = window.App || {});
