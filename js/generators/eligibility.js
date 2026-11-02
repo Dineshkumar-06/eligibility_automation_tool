@@ -91,7 +91,7 @@ function emitPostChain(posts, single, arrSuffix){
         // after (alert or clear), so this only matters for the "all No" case.
         o+=ind(d)+"$errmsgarr[]='totexp_popup|';\n";
         for(var ti=0;ti<tiers.length;ti++){
-          o+=ind(d)+(ti===0?'if':'else if')+"($_POST['"+tiers[ti].field+"'] == 'Y') {\n";
+          o+=ind(d)+(ti===0?'if':'else if')+"("+tiers[ti].fields.map(function(f){return "$_POST['"+f+"'] == 'Y'";}).join(' || ')+") {\n";
           o+=buildWE(tiers[ti].months,d+1);
           o+=ind(d)+'}\n';
         }
@@ -437,23 +437,41 @@ function weYears(cond){
   var m=(cond.question||'').match(/(\d+)\s*year/i);
   return m?+m[1]:0;
 }
-// Returns [{field, months}] sorted descending by months, or [] if no WE radios found.
-// months comes from the OR group's workExp (spreadsheet WE column), not the radio text.
+// Returns [{field, fields, months}] sorted descending by months, or [] if no WE radios
+// found. months comes from the OR group's workExp (spreadsheet WE column), not the radio
+// text. Radios are grouped by months so every radio sharing the same requirement lands
+// in ONE tier (fields[]) and is emitted as a single `a=='Y' || b=='Y'` branch.
+// Detection is structural first: in an OR-group that carries a WE requirement, its
+// experience/service-worded radios (or, failing that, every radio in the group) are the
+// gating radios — no digit like "2 years" is needed in the question ("two years" works).
 function weRadioTiers(post,pc){
-  var map={};  // radioField -> workExp months from OR group
+  var byMonths={};  // months -> [radioField]
+  function add(m,f){
+    var l=byMonths[m]||(byMonths[m]=[]);
+    if(l.indexOf(f)<0) l.push(f);
+  }
   for(var gi=0;gi<post.orGroups.length;gi++){
     var grp=post.orGroups[gi];
-    var conds=grp.conditions;
-    for(var ci=0;ci<conds.length;ci++){
-      var c=conds[ci];
-      if(isWorkExpRadio(c)){
-        var f=rFn(c,pc);
-        var m=grp.workExp||post.workExp||0;
-        if(!map[f]||m>map[f]) map[f]=m;
-      }
+    var radios=grp.conditions.filter(function(c){return c.type==='radio';});
+    if(grp.workExp){
+      var wanted=radios.filter(function(c){return /experience|service|years?/i.test(c.question||'');});
+      if(!wanted.length) wanted=radios;
+      wanted.forEach(function(c){add(grp.workExp,rFn(c,pc));});
+    } else {
+      radios.forEach(function(c){
+        if(isWorkExpRadio(c)&&post.workExp) add(post.workExp,rFn(c,pc));
+      });
     }
   }
-  var tiers=Object.keys(map).map(function(f){return{field:f,months:map[f]};});
+  // A radio reused under several requirements keeps only its highest one.
+  var best={};
+  Object.keys(byMonths).forEach(function(m){
+    byMonths[m].forEach(function(f){if(!best[f]||+m>best[f]) best[f]=+m;});
+  });
+  var tiers=Object.keys(byMonths).map(function(m){
+    var fs=byMonths[m].filter(function(f){return best[f]===+m;});
+    return {field:fs[0],fields:fs,months:+m};
+  }).filter(function(t){return t.fields.length;});
   tiers.sort(function(a,b){return b.months-a.months;});
   return tiers;
 }

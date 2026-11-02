@@ -158,7 +158,13 @@ function buildPostsRange(rows){
     // post's work experience. Continuation rows (AND/OR) keep inheriting the
     // post's value, only updating when their own cell carries a duration.
     if(isNewPost) curWeMonths=(G?parseWE(G):null)||0;
-    else if(G){var gv=parseWE(G);if(gv) curWeMonths=gv;}
+    else if(G){
+      var gv=parseWE(G);
+      if(gv) curWeMonths=gv;
+      // An explicit "no requirement" marker (e.g. "-") on an OR row ends the inherited
+      // value for that branch instead of leaving the previous branch's years in force.
+      else if(/^[\s\-–—]+$|^(nil|na|n\/a|none)\b/i.test(G)) curWeMonths=0;
+    }
 
     if(isNewPost){
       if(cur) posts.push(cur);
