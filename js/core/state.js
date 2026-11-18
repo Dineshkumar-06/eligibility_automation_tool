@@ -14,7 +14,7 @@
 //   drop in Step 2: `hierarchy` is a list of EDU level names ordered lowest → highest,
 //   `generic` the levels with no ladder precedence. Both null = not configured ⇒ the
 //   default POSTQUAL_TS ranks are used (see apRank below), so output stays legacy.
-var S = {posts:[], errors:[], warnings:[], rawRows:[], colMap:{}, dimensions:[], radioOv:{}, bilingual:false, redRemovedCount:0, appearedPassed:{enabled:false, fields:{}, hierarchy:null, generic:null},
+var S = {posts:[], errors:[], warnings:[], rawRows:[], colMap:{}, dimensions:[], radioOv:{}, bilingual:false, redRemovedCount:0, appearedPassed:{enabled:false, fields:{}, hierarchy:null, generic:null, scoped:false},
          internalCandidate:{enabled:false, field:'internal_candidate', posts:[], ctx:null},
          sowAbsent:{enabled:false, levels:{}},
          _normalCtx:null, clarifications:{stream:[], degree:[], radio:[]},
@@ -91,6 +91,21 @@ function apField(level){
   return f||null;
 }
 
+// Scoped Appeared/Passed: when on, a condition is AP-active only if it carries
+// cond.apSel === true (set by the sheet-note detector in parsing/buildPosts.js and
+// editable in the Step-2 post / branch tree). Off ⇒ every condition of an AP level
+// is eligible (the original global behaviour).
+function apScoped(){ return !!(apEnabled() && S.appearedPassed.scoped); }
+// The edu conditions of one OR-group that a branch-level "apply AP here" choice should
+// select by default: the highest-ranked academic qualification(s); when the branch has
+// only generic (rank 0) levels, all of its edu conditions.
+function apBranchDefault(conds){
+  var edu=(conds||[]).filter(function(c){return c.type==='edu';});
+  var max=0;
+  for(var i=0;i<edu.length;i++){ var r=apRank(edu[i].level); if(r>max) max=r; }
+  return max>0 ? edu.filter(function(c){return apRank(c.level)===max;}) : edu;
+}
+
 // ── FIELD NOT PRESENT IN SOW ────────────────────────────────────────────────
 // Some Exam Passed levels (e.g. Certification) have no Mark / Grade / Date field on the
 // SOW Education page even though the eligibility sheet carries "-" for them. With the
@@ -144,6 +159,8 @@ function sbNo(){    return S.bilingual?'Should be NO / नाही':'Should be 
   App.apEnabled = apEnabled;
   App.apField = apField;
   App.apRank = apRank;
+  App.apScoped = apScoped;
+  App.apBranchDefault = apBranchDefault;
   App.sowAbsent = sowAbsent;
   App.intEnabled = intEnabled;
   App.intField = intField;

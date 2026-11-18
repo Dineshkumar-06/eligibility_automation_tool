@@ -7,6 +7,7 @@
   var EDU_ORDER = App.EDU_ORDER;
   var S = App.S;
   var apRank = App.apRank;
+  var apBranchDefault = App.apBranchDefault;
   var defaultAcadRank = App.defaultAcadRank;
   var escA = App.escA;
   var postLabel = App.postLabel;
@@ -68,6 +69,12 @@ function onFileChange(e){
         var ws=wb.Sheets[wb.SheetNames[0]];
         var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false});
         S.redRf=null; S.redRange=null; S.rawRowsFull=null; S.showRed=false;
+        // Merged ranges, shifted into rows-array coordinates — the Appeared/Passed
+        // note detector uses them to tell a whole-post note from a single-branch one.
+        var mrg=XLSX.utils.decode_range(ws['!ref']||'A1');
+        S.sheetMerges=(ws['!merges']||[]).map(function(m){
+          return {s:{r:m.s.r-mrg.s.r,c:m.s.c-mrg.s.c},e:{r:m.e.r-mrg.s.r,c:m.e.c-mrg.s.c}};
+        });
         if(rf && rf.count){
           var range=XLSX.utils.decode_range(ws['!ref']||'A1');
           // Keep an unfiltered copy + the colour map so the "show red" toggle can
@@ -79,6 +86,7 @@ function onFileChange(e){
         S.redRemovedCount = rf ? rf.count : 0;
         S.rawRows=rows;
         parseRows(rows);
+        apAutoSetup();
       } finally {
         if(ua) ua.classList.remove('loading');
         if(ov) ov.classList.add('hidden');
@@ -112,9 +120,9 @@ function parseRows(rows){
     // from sepIdx+1 onward (buildPostsRange re-detects the header inside each slice).
     var normalRows=rows.slice(0, sepIdx);
     var internalRows=rows.slice(sepIdx+1);
-    var resN=buildPostsRange(normalRows);
+    var resN=buildPostsRange(normalRows,0);
     var ctxN=snapCtx();
-    var resI=buildPostsRange(internalRows);
+    var resI=buildPostsRange(internalRows,sepIdx+1);
     var ctxI=snapCtx();
     // Restore normal context as the primary schema (for dimension cfg display).
     S.dimensions=ctxN.dimensions; S.colMap=ctxN.colMap; S.weHeader=ctxN.weHeader; S.weMode=ctxN.weMode;
@@ -124,6 +132,7 @@ function parseRows(rows){
     S._normalCtx=ctxN;
     S.internalCandidate.posts=resI.posts;
     S.internalCandidate.ctx=ctxI;
+    S._apIntOff=sepIdx+1;
   } else {
     // Single-section path — byte-identical to before.
     var res=buildPostsRange(rows);
@@ -139,7 +148,9 @@ function parseRows(rows){
 // Preserves S.radioOv so user-edited field names survive the reparse.
 function reparse(){
   if(!S.rawRows||!S.rawRows.length) return;
+  var apSnap=apSnapshotSel();
   parseRows(S.rawRows);
+  apRestoreSel(apSnap);
   renderS1();
   renderS2();
 }
@@ -712,6 +723,7 @@ function renderApCfg(){
   if(!ap.enabled) return;
   if(!levels.length){ con.innerHTML+='<div class="alert alert-info">No Exam Passed levels detected — nothing to configure.</div>'; return; }
 
+  apRenderScope(con);
   apRenderHierarchy(con);
 
   var sec=document.createElement('div'); sec.className='radio-sec';
@@ -735,6 +747,141 @@ function renderApCfg(){
   con.appendChild(sec);
   markApFieldIssues();
 }
+// ── APPEARED / PASSED SCOPE (specific posts / conditions) ───────────────────
+// Selections live on the condition objects themselves (cond.apSel); sheet notes set
+// cond.apNote (+apSel) during parsing. The generators read apSel only while
+// S.appearedPassed.scoped is on (App.apScoped).
+// Every parsed section with its row offset into S.rawRows (normal, then internal).
+function apSections(){
+  var out=[{label:null,posts:S.posts||[],off:0}];
+  var ic=S.internalCandidate;
+  if(ic && ic.posts && ic.posts.length){
+    out[0].label='Normal Candidates';
+    out.push({label:'Internal / Departmental Candidates',posts:ic.posts,off:S._apIntOff||0});
+  }
+  return out;
+}
+function apEachCond(fn){
+  apSections().forEach(function(sec){
+    sec.posts.forEach(function(p){
+      p.orGroups.forEach(function(g){ g.conditions.forEach(function(c){ if(c.type==='edu') fn(c,sec); }); });
+    });
+  });
+}
+// Fresh file load: notes found ⇒ turn AP on in scoped mode and fill a field name for
+// every noted level. No notes ⇒ scoped mode off (global behaviour as before).
+function apAutoSetup(){
+  var ap=S.appearedPassed=S.appearedPassed||{enabled:false,fields:{},hierarchy:null,generic:null};
+  ap.fields=ap.fields||{};
+  var noted=[];
+  apEachCond(function(c){ if(c.apNote) noted.push(c); });
+  S._apNoteCount=noted.length;
+  ap.scoped=noted.length>0;
+  if(!noted.length) return;
+  ap.enabled=true;
+  noted.forEach(function(c){
+    var f=ap.fields[c.level];
+    if(f==null||!String(f).trim()) ap.fields[c.level]=apSuggest(c.level);
+  });
+}
+// Re-parse (e.g. internal-candidate toggle) rebuilds the condition objects; carry the
+// user's selections across, keyed by absolute sheet row + level.
+function apKey(c,sec){ return (c.ri+sec.off)+'|'+c.level; }
+function apSnapshotSel(){
+  var m={}; apEachCond(function(c,sec){ m[apKey(c,sec)]=!!c.apSel; }); return m;
+}
+function apRestoreSel(m){
+  apEachCond(function(c,sec){ var k=apKey(c,sec); if(k in m) c.apSel=m[k]; });
+}
+function apSetSel(conds,on){
+  var ap=S.appearedPassed;
+  conds.forEach(function(c){
+    c.apSel=!!on;
+    if(on && (ap.fields[c.level]==null||!String(ap.fields[c.level]).trim())) ap.fields[c.level]=apSuggest(c.level);
+  });
+  renderApCfg(); updatePreview();
+}
+function apEduOf(conds){ return conds.filter(function(c){return c.type==='edu';}); }
+function updApScoped(el){ S.appearedPassed.scoped=!!el.checked; renderApCfg(); updatePreview(); }
+function apChk(checked,partial,onChange){
+  var cb=document.createElement('input'); cb.type='checkbox';
+  cb.checked=!!checked; cb.indeterminate=!!partial;
+  cb.addEventListener('change',function(e){ e.stopPropagation(); onChange(cb.checked); });
+  cb.addEventListener('click',function(e){ e.stopPropagation(); });
+  return cb;
+}
+function apRenderScope(con){
+  var ap=S.appearedPassed;
+  S._apOpen=S._apOpen||{};
+  var sec=document.createElement('div'); sec.className='radio-sec';
+  var head=document.createElement('div');
+  head.innerHTML='<h4>Scope</h4>'
+    +'<label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;margin:4px 0">'
+    +'<input type="checkbox" '+(ap.scoped?'checked':'')+' onchange="updApScoped(this)">'
+    +'Apply only to specific posts / conditions</label>'
+    +'<p class="dim" style="font-size:12px;margin-bottom:8px">Off: every condition of a selected level is Appeared/Passed-gated. On: only the conditions ticked below are'
+    +(S._apNoteCount?' — <b>'+S._apNoteCount+' condition(s) were auto-selected from Appeared/Passed notes in the sheet</b> (marked 📝).':'.')+'</p>';
+  sec.appendChild(head);
+  if(!ap.scoped){ con.appendChild(sec); return; }
+
+  apSections().forEach(function(s){
+    if(s.label){
+      var h=document.createElement('h5'); h.className='ap-scope-sec'; h.textContent=s.label; sec.appendChild(h);
+    }
+    s.posts.forEach(function(p,pi){
+      var grps=p.orGroups.map(function(g,gi){return {g:g,n:gi+1};})
+        .filter(function(x){return apEduOf(x.g.conditions).length;});
+      if(!grps.length) return;
+      var allEdu=[]; grps.forEach(function(x){ allEdu=allEdu.concat(apEduOf(x.g.conditions)); });
+      var nSel=allEdu.filter(function(c){return c.apSel;}).length;
+      var bSel=grps.filter(function(x){return apEduOf(x.g.conditions).some(function(c){return c.apSel;});}).length;
+      var okey=s.off+':'+pi;
+      var det=document.createElement('details'); det.className='ap-scope-post';
+      det.open=(okey in S._apOpen)?S._apOpen[okey]:nSel>0;
+      det.addEventListener('toggle',function(){ S._apOpen[okey]=det.open; });
+      var sum=document.createElement('summary');
+      sum.appendChild(apChk(nSel>0, nSel>0&&bSel<grps.length, function(on){
+        if(on) grps.forEach(function(x){
+          var e=apEduOf(x.g.conditions);
+          if(!e.some(function(c){return c.apSel;})) apBranchDefault(x.g.conditions).forEach(function(c){c.apSel=true;});
+        });
+        apSetSel(allEdu.filter(function(c){return on?c.apSel:true;}),on);
+      }));
+      var lbl=document.createElement('span');
+      lbl.innerHTML=' <b>'+escH(String(p.postcode))+'</b> – '+escH(postLabel(p)||'')
+        +' <span class="dim" style="font-size:11px">('+bSel+'/'+grps.length+' branch'+(grps.length>1?'es':'')+')</span>';
+      sum.appendChild(lbl);
+      det.appendChild(sum);
+      grps.forEach(function(x){
+        var conds=x.g.conditions, edu=apEduOf(conds);
+        var sel=edu.filter(function(c){return c.apSel;});
+        var row=document.createElement('div'); row.className='ap-scope-branch';
+        var bl=document.createElement('label'); bl.className='ap-scope-blabel';
+        bl.appendChild(apChk(sel.length>0,false,function(on){
+          apSetSel(on?apBranchDefault(conds):edu,on);
+        }));
+        var nRad=conds.length-edu.length;
+        bl.appendChild(document.createTextNode(' Branch '+x.n+': '+edu.map(function(c){return c.level;}).join(' AND ')
+          +(nRad?' + '+nRad+' question'+(nRad>1?'s':''):'')));
+        row.appendChild(bl);
+        var chips=document.createElement('div'); chips.className='ap-scope-chips';
+        edu.forEach(function(c){
+          var ch=document.createElement('label'); ch.className='ap-chip'+(c.apSel?' on':'');
+          var desc=(c.subjects&&c.subjects.length)?c.subjects.slice(0,3).join(', ')+(c.subjects.length>3?'…':''):'';
+          ch.title=(c.apNote?'Sheet note: '+c.apNoteText+'\n':'')+'Row '+(c.ri+s.off+1)+(desc?' — '+desc:'');
+          ch.appendChild(apChk(c.apSel,false,function(on){ apSetSel([c],on); }));
+          ch.appendChild(document.createTextNode(' '+c.level+(c.apNote?' 📝':'')));
+          chips.appendChild(ch);
+        });
+        row.appendChild(chips);
+        det.appendChild(row);
+      });
+      sec.appendChild(det);
+    });
+  });
+  con.appendChild(sec);
+}
+
 // Suggest a sane default field name from the level (purely a placeholder hint).
 function apSuggest(level){
   var def=EDU[level];
@@ -1104,6 +1251,8 @@ function goStep(n,fromTab){
   App.updBilingual = updBilingual;
   App.renderApCfg = renderApCfg;
   App.updApEnable = updApEnable;
+  App.updApScoped = updApScoped;
+  App.apAutoSetup = apAutoSetup;
   App.renderSowCfg = renderSowCfg;
   App.updSowEnable = updSowEnable;
   App.updSowField = updSowField;

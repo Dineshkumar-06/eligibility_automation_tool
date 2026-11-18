@@ -67,11 +67,10 @@ function collectGlobalVars(posts, suffixes){
 // `arrSuffix` (optional) — forwarded to buildCondGroupLine so array references use
 // the suffixed name (e.g. '_internal') in the internal-candidate branch.
 function emitValChain(posts, single, arrSuffix){
-  // checkDOPassing picks a branch's date cutoff, not eligibility acceptance — a
-  // candidate who has only Appeared (result pending) must not match here, so AP
-  // conditions are gated on Passed only (apPassedOnly), never Appeared-OR-Passed.
-  var sfxOpts={apPassedOnly:true};
-  if(arrSuffix) sfxOpts.arrSuffix=arrSuffix;
+  // checkDOPassing uses exactly the same per-branch conditions as the eligibility
+  // check (including the Appeared/Passed gating), so a branch matches here whenever
+  // it matched in eligibility_conditions.
+  var sfxOpts=arrSuffix?{arrSuffix:arrSuffix}:undefined;
   var sortedPosts=posts.slice().sort(function(a,b){return +a.postcode - +b.postcode;});
   var o='';
   var anyPostBlock=false;

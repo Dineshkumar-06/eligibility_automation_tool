@@ -28,7 +28,7 @@
   var S = App.S;
 
 window.toggleRedView=App.toggleRedView;window.goStep=goStep;window.updOv=updOv;window.updDimVar=updDimVar;window.updBilingual=updBilingual;window.switchTab=switchTab;
-window.updApEnable=updApEnable;window.updApLevel=updApLevel;window.updApField=updApField;
+window.updApEnable=updApEnable;window.updApScoped=App.updApScoped;window.updApLevel=updApLevel;window.updApField=updApField;
 window.updSowEnable=App.updSowEnable;window.updSowField=App.updSowField;
 window.updIntEnable=updIntEnable;window.updIntField=updIntField;
 window.updKeysEnable=App.updKeysEnable;window.updKeysDimCount=App.updKeysDimCount;window.updKeysDimText=App.updKeysDimText;

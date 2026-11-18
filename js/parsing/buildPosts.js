@@ -37,7 +37,7 @@ function buildPosts(rows){
 // and returns {posts, errors, warnings, rawRows}. Also updates S.colMap,
 // S.dimensions, S.weHeader, S.weMode as side effects (callers needing context
 // isolation must snapshot/restore via snapCtx/withCtx).
-function buildPostsRange(rows){
+function buildPostsRange(rows,rowOff){
   var posts=[],errors=[],warnings=[],cur=null,grp=null;
   var CI=detectCols(rows); S.colMap=CI;
   function get(r,ci){return ci>=0&&ci<r.length?String(r[ci]==null?'':r[ci]).trim():'';}
@@ -286,11 +286,132 @@ function buildPostsRange(rows){
   }
   if(cur) posts.push(cur);
   disambiguateRadioNames(posts);
+  attachApNotes(rows,posts,CI,rowOff||0,warnings);
   return{posts:posts,errors:errors,warnings:warnings,rawRows:rows};
+}
+
+// ── APPEARED / PASSED SHEET NOTES ───────────────────────────────────────────
+// Some sheets carry a free-text remark in an (often header-less) column AFTER the
+// Work Experience column, e.g. "Appearing candidates are eligible to apply" or
+// "Diploma appearing candidates are eligible. For Appear candidates, Month & Year of
+// passing should be disabled". Such a note scopes Appeared/Passed to specific
+// conditions instead of every condition of a level. For each note this tags the
+// target edu conditions with apNote/apSel (+ apNoteText); the generators honour
+// apSel only when S.appearedPassed.scoped is on (see App.apScoped).
+//
+// Targeting:
+//   • Note cell merged over several rows (S.sheetMerges) ⇒ every OR-branch whose rows
+//     overlap the merged range — a merge over the whole post covers the whole post.
+//   • Not merged ⇒ only the OR-branch containing the note's row.
+//   • Within a targeted branch: the levels the note names (e.g. "Diploma appearing…");
+//     else, when the note sits on an edu row of a single-row note, that condition;
+//     else the branch's highest qualification (App.apBranchDefault).
+var AP_NOTE_RE=/\bappear\w*|\bpassed\b/i;
+function apNoteCols(rows,CI){
+  var mapped={};
+  ['srno','post','field','subject','marks','grade','workexp','degree'].forEach(function(k){
+    if(CI[k]!==undefined&&CI[k]>=0) mapped[CI[k]]=true;
+  });
+  (CI.dims||[]).forEach(function(d){ mapped[d.col]=true; });
+  var start=0;
+  if(CI.workexp!==undefined&&CI.workexp>=0) start=CI.workexp+1;
+  else for(var k in mapped) if(+k+1>start) start=+k+1;
+  var width=0;
+  for(var i=0;i<rows.length;i++) if(rows[i]&&rows[i].length>width) width=rows[i].length;
+  var cols=[];
+  for(var c=start;c<width;c++) if(!mapped[c]) cols.push(c);
+  return cols;
+}
+// Does `text` name the edu level `level`? Whole-word match on its name / keywords,
+// ignoring a hit that lies inside a LONGER keyword hit of another level — so
+// "Post-Graduation appearing…" names Post Graduation but not Graduation, and
+// "Post-Graduation Diploma appearing…" names only Post Graduation Diploma.
+function kwSpans(t,kw){
+  var k=kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  var re=new RegExp('(^|[^a-z])('+k+')(?=[^a-z]|$)','g'), out=[], m;
+  while((m=re.exec(t))){ var st=m.index+m[1].length; out.push({s:st,e:st+m[2].length}); re.lastIndex=st+1; }
+  return out;
+}
+function noteNamesLevel(text,level){
+  var t=String(text).toLowerCase().replace(/-/g,' ').replace(/\s+/g,' ');
+  var own=[], other=[];
+  var rules=(App.EDU_KW||[]).slice();
+  if(!rules.some(function(r){return r.level===level;})) rules.push({level:level,kw:[]});
+  rules.forEach(function(r){
+    // 'degree' is too generic in free text ("Post Graduation Degree appearing…").
+    var kws=r.kw.concat([r.level.toLowerCase()]).filter(function(k){ return k!=='degree'; });
+    kws.forEach(function(kw){
+      kwSpans(t,kw).forEach(function(sp){ (r.level===level?own:other).push(sp); });
+    });
+  });
+  return own.some(function(o){
+    return !other.some(function(x){ return x.s<=o.s && o.e<=x.e && (x.e-x.s)>(o.e-o.s); });
+  });
+}
+function attachApNotes(rows,posts,CI,rowOff,warnings){
+  if(!posts.length) return;
+  var cols=apNoteCols(rows,CI), hdr=CI._hdrRow||0;
+  if(!cols.length) return;
+  var merges=S.sheetMerges||[];
+  // Row span of each OR-branch (min/max row of its conditions).
+  function grpSpan(g){
+    var lo=Infinity,hi=-Infinity;
+    g.conditions.forEach(function(c){ if(c.ri<lo) lo=c.ri; if(c.ri>hi) hi=c.ri; });
+    return {lo:lo,hi:hi};
+  }
+  for(var ri=hdr+1;ri<rows.length;ri++){
+    for(var ci=0;ci<cols.length;ci++){
+      var c=cols[ci], r=rows[ri]||[];
+      var text=String(r[c]==null?'':r[c]).trim();
+      if(!text||!AP_NOTE_RE.test(text)) continue;
+      // Merged extent (merges are in rows-array coordinates of the full sheet).
+      var r0=ri,r1=ri;
+      for(var mi=0;mi<merges.length;mi++){
+        var m=merges[mi], abs=ri+rowOff;
+        if(m.s.c<=c&&c<=m.e.c&&m.s.r<=abs&&abs<=m.e.r){ r0=m.s.r-rowOff; r1=m.e.r-rowOff; break; }
+      }
+      var merged=r1>r0;
+      // Owning post of the note's top row (the last post starting at or before it).
+      var owner=null;
+      for(var pi=0;pi<posts.length;pi++) if(posts[pi].ri<=r0) owner=posts[pi];
+      if(!owner) continue;
+      // Targets as [post, branch] pairs. A merged note may span several posts
+      // (e.g. one "Graduation appearing…" cell merged down posts 1–7): every branch
+      // of every post overlapping the merged range is covered.
+      var targets=[];
+      if(merged){
+        posts.forEach(function(p){
+          var gs=p.orGroups.filter(function(g){ if(!g.conditions.length) return false; var sp=grpSpan(g); return sp.hi>=r0&&sp.lo<=r1; });
+          if(!gs.length&&p===owner) gs=p.orGroups.filter(function(g){ return g.conditions.length; });
+          gs.forEach(function(g){ targets.push({p:p,g:g}); });
+        });
+      } else {
+        var hit=null,prev=null;
+        owner.orGroups.forEach(function(g){
+          if(!g.conditions.length) return;
+          var sp=grpSpan(g);
+          if(sp.lo<=ri&&ri<=sp.hi) hit=g;
+          if(sp.lo<=ri) prev=g;
+        });
+        hit=hit||prev; if(hit) targets=[{p:owner,g:hit}];
+      }
+      var tagged=0;
+      targets.forEach(function(tg){
+        var g=tg.g;
+        var edu=g.conditions.filter(function(x){ return x.type==='edu'; });
+        var pick=edu.filter(function(x){ return noteNamesLevel(text,x.level); });
+        if(!pick.length&&!merged) pick=edu.filter(function(x){ return x.ri===ri; });
+        if(!pick.length) pick=App.apBranchDefault?App.apBranchDefault(g.conditions):edu;
+        pick.forEach(function(x){ x.apNote=true; x.apSel=true; x.apNoteText=text; tagged++; });
+      });
+      if(!tagged) warnings.push({ri:ri,pc:owner.postcode,msg:'Appeared/Passed note found but no education condition to attach it to: "'+text+'"'});
+    }
+  }
 }
 
   // ── exports to App ──
   App.buildPosts = buildPosts;
   App.buildPostsRange = buildPostsRange;
+  App.attachApNotes = attachApNotes;
   App.parseFile = parseFile;
 })(window.App = window.App || {});
