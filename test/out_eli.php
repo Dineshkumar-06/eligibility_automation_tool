@@ -4,6 +4,7 @@
 	$postcode = $_POST['postcode'];
 	$recrtmnt_mode = $_POST['recrtmnt_mode'];
 
+	// Post 01 : Regional Officer/प्रादेशिक अधिकारी - Promotion
 	if($postcode == '01' && $recrtmnt_mode == '01') {
 		if(! 
 			(
@@ -83,6 +84,8 @@
 				}
 			}
 		}
+
+	// Post 01 : Regional Officer/प्रादेशिक अधिकारी - Nomination
 	} else if($postcode == '01' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -128,6 +131,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 02 : Sub-Regional Officer/उप-प्रादेशिक अधिकारी - Promotion
 	} else if($postcode == '02' && $recrtmnt_mode == '01') {
 		if(! 
 			(
@@ -207,6 +212,8 @@
 				}
 			}
 		}
+
+	// Post 02 : Sub-Regional Officer/उप-प्रादेशिक अधिकारी - Nomination
 	} else if($postcode == '02' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -252,6 +259,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 03 : Field Officer/क्षेत्र अधिकारी - Nomination
 	} else if($postcode == '03' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -281,6 +290,8 @@
 		{
 			$errmsgarr[]='eligibility|';
 		}
+
+	// Post 04 : Deputy Engineer/उप अभियंता - Nomination
 	} else if($postcode == '04' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -302,6 +313,8 @@
 		{
 			$errmsgarr[]='eligibility|';
 		}
+
+	// Post 05 : System Officer/यंत्रणा अधिकारी - Promotion
 	} else if($postcode == '05' && $recrtmnt_mode == '01') {
 		if(! 
 			(
@@ -336,6 +349,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 05 : System Officer/यंत्रणा अधिकारी - Nomination
 	} else if($postcode == '05' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -370,6 +385,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 06 : Statistical Assistant/सांख्यिकी सहाय्यक - Nomination
 	} else if($postcode == '06' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -394,6 +411,8 @@
 		{
 			$errmsgarr[]='eligibility|';
 		}
+
+	// Post 07 : Assistant System Officer/सहाय्यक यंत्रणा अधिकारी - Nomination
 	} else if($postcode == '07' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -415,6 +434,8 @@
 		{
 			$errmsgarr[]='eligibility|';
 		}
+
+	// Post 08 : Assistant Public Relation Officer/सहाय्यक जनसंपर्क अधिकारी - Nomination
 	} else if($postcode == '08' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -436,6 +457,8 @@
 		{
 			$errmsgarr[]='eligibility|';
 		}
+
+	// Post 09 : Senior Scientific Officer/वरिष्ठ वैज्ञानिक अधिकारी - Promotion
 	} else if($postcode == '09' && $recrtmnt_mode == '01') {
 		if(! 
 			(
@@ -535,6 +558,8 @@
 				}
 			}
 		}
+
+	// Post 09 : Senior Scientific Officer/वरिष्ठ वैज्ञानिक अधिकारी - Nomination
 	} else if($postcode == '09' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -580,6 +605,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 10 : Scientific Officer/वैज्ञानिक अधिकारी - Promotion
 	} else if($postcode == '10' && $recrtmnt_mode == '01') {
 		if(! 
 			(
@@ -679,6 +706,8 @@
 				}
 			}
 		}
+
+	// Post 10 : Scientific Officer/वैज्ञानिक अधिकारी - Nomination
 	} else if($postcode == '10' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -716,6 +745,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 11 : Junior Scientific Officer/कनिष्ठ वैज्ञानिक अधिकारी - Promotion
 	} else if($postcode == '11' && $recrtmnt_mode == '01') {
 		if(! 
 			(
@@ -747,6 +778,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 11 : Junior Scientific Officer/कनिष्ठ वैज्ञानिक अधिकारी - Nomination
 	} else if($postcode == '11' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -784,6 +817,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 12 : Junior Scientific Assistant/कनिष्ठ वैज्ञानिक सहाय्यक - Promotion
 	} else if($postcode == '12' && $recrtmnt_mode == '01') {
 		if(! 
 			(
@@ -815,6 +850,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 12 : Junior Scientific Assistant/कनिष्ठ वैज्ञानिक सहाय्यक - Nomination
 	} else if($postcode == '12' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -836,6 +873,8 @@
 		{
 			$errmsgarr[]='eligibility|';
 		}
+
+	// Post 13 : Laboratory Assistant/प्रयोगशाळा सहाय्यक - Nomination
 	} else if($postcode == '13' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -857,6 +896,8 @@
 		{
 			$errmsgarr[]='eligibility|';
 		}
+
+	// Post 14 : Law Officer/विधी अधिकारी - Promotion
 	} else if($postcode == '14' && $recrtmnt_mode == '01') {
 		if(! 
 			(
@@ -888,6 +929,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 14 : Law Officer/विधी अधिकारी - Nomination
 	} else if($postcode == '14' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -922,6 +965,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 15 : Assistant Law Officer/सहाय्यक विधी अधिकारी - Promotion
 	} else if($postcode == '15' && $recrtmnt_mode == '01') {
 		if(! 
 			(
@@ -953,6 +998,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 15 : Assistant Law Officer/सहाय्यक विधी अधिकारी - Nomination
 	} else if($postcode == '15' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -987,6 +1034,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 16 : Legal Assistant/विधी सहाय्यक - Nomination
 	} else if($postcode == '16' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -1008,6 +1057,8 @@
 		{
 			$errmsgarr[]='eligibility|';
 		}
+
+	// Post 17 : Senior Stenographer/वरिष्ठ लघुलेखक - Promotion
 	} else if($postcode == '17' && $recrtmnt_mode == '01') {
 		if(! 
 			(
@@ -1039,6 +1090,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 17 : Senior Stenographer/वरिष्ठ लघुलेखक - Nomination
 	} else if($postcode == '17' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -1076,6 +1129,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 18 : Junior Stenographer/कनिष्ठ लघुलेखक - Nomination
 	} else if($postcode == '18' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -1100,6 +1155,8 @@
 		{
 			$errmsgarr[]='eligibility|';
 		}
+
+	// Post 19 : Accounts Officer/लेखा अधिकारी - Promotion
 	} else if($postcode == '19' && $recrtmnt_mode == '01') {
 		if(! 
 			(
@@ -1160,6 +1217,8 @@
 				}
 			}
 		}
+
+	// Post 19 : Accounts Officer/लेखा अधिकारी - Nomination
 	} else if($postcode == '19' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -1197,6 +1256,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 20 : Assistant Accounts Officer/सहाय्यक लेखा अधिकारी - Promotion
 	} else if($postcode == '20' && $recrtmnt_mode == '01') {
 		if(! 
 			(
@@ -1231,6 +1292,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 21 : Assistant Accounts Officer/सहाय्यक लेखा अधिकारी - Nomination
 	} else if($postcode == '21' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -1265,6 +1328,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 22 : Head Accountant / Office Superintendent / Store Superintendent/प्रमुख लेखापाल / कार्यालय अधीक्षक / भांडार अधीक्षक - Promotion
 	} else if($postcode == '22' && $recrtmnt_mode == '01') {
 		if(! 
 			(
@@ -1302,6 +1367,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 23 : Head Accountant / Office Superintendent / Store Superintendent/प्रमुख लेखापाल / कार्यालय अधीक्षक / भांडार अधीक्षक - Nomination
 	} else if($postcode == '23' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -1339,6 +1406,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 24 : Library Assistance/ग्रंथालय सहाय्यक - Promotion
 	} else if($postcode == '24' && $recrtmnt_mode == '01') {
 		if(! 
 			(
@@ -1376,6 +1445,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 24 : Library Assistance/ग्रंथालय सहाय्यक - Nomination
 	} else if($postcode == '24' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -1413,6 +1484,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 25 : Senior Clerk/वरिष्ठ लिपिक - Promotion
 	} else if($postcode == '25' && $recrtmnt_mode == '01') {
 		if(! 
 			(
@@ -1473,6 +1546,8 @@
 				}
 			}
 		}
+
+	// Post 25 : Senior Clerk/वरिष्ठ लिपिक - Nomination
 	} else if($postcode == '25' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -1513,6 +1588,8 @@
 				$errmsgarr[]='totexp_popup|';
 			}
 		}
+
+	// Post 26 : Junior Clerk/Typist / कनिष्ठ लिपिक/टंकलेखक - Nomination
 	} else if($postcode == '26' && $recrtmnt_mode == '02') {
 		if(! 
 			(
@@ -1540,6 +1617,8 @@
 		{
 			$errmsgarr[]='eligibility|';
 		}
+
+	// Post 27 : Daftari/दफ्तरी - Nomination
 	} else if($postcode == '27' && $recrtmnt_mode == '02') {
 		if(! 
 			(

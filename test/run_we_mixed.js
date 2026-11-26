@@ -76,5 +76,50 @@ console.log('\n===================== Uniform work-exp requirement stays uncondit
   }
 }
 
+console.log('\n===================== Varying work-exp, no radios: gate on distinguishing exam passed =====================');
+{
+  // HCL reference: MBBS + PG Degree → 2 years, MBBS + PG Diploma → 5 years.
+  const rows = [
+    ['Post', 'Exam Passed', 'Degree/Subject /Stream', 'Percentage', 'Class / Grade', 'Post Qualification Work Experience'],
+    ['Manager (M&HS)', 'Graduation/Equivalent', 'MBBS', '> 0%', 'Any Class', 'Minimum 02 years experirence '],
+    ['', 'AND', '', '', '', ''],
+    ['', 'Post Graduation Degree', 'MS / MD / DNB', '> 0%', 'Any Class', ''],
+    ['', 'OR', '', '', '', ''],
+    ['', 'Graduation/Equivalent', 'MBBS', '> 0%', 'Any Class', 'Minimum 05 years experirence '],
+    ['', 'AND', '', '', '', ''],
+    ['', 'Post Graduation Diploma', 'Any Value', '> 0%', 'Any Class', ''],
+  ];
+  reset();
+  const posts = App.buildPosts(rows).posts;
+  App.S.posts = posts;
+  ok('groups carry 24 / 60 months',
+    posts[0].orGroups[0].workExp === 24 && posts[0].orGroups[1].workExp === 60);
+  const eli = App.genEligibility(posts);
+  const iDip = eli.indexOf("if($_POST['selstream6']!='') {");
+  const iPg = eli.indexOf("else if($_POST['selstream4']!='') {");
+  ok('PG Diploma tier (60) gated on selstream6, checked first', iDip > 0 && iPg > iDip);
+  ok('PG Diploma tier requires 60', /selstream6'\]!=''\) \{\s*if\(WORK_EXP_ROW_COUNT > 0\)\{\s*if\(!\(\$_POST\['totexp'\]>=60\)/.test(eli));
+  ok('PG Degree tier requires 24', /selstream4'\]!=''\) \{\s*if\(WORK_EXP_ROW_COUNT > 0\)\{\s*if\(!\(\$_POST\['totexp'\]>=24\)/.test(eli));
+  ok('default totexp clear emitted before chain', /\$errmsgarr\[\]='totexp_popup\|';\s*\n\s*if\(\$_POST\['selstream6'\]/.test(eli));
+  ok('no unconditional totexp check', !/\n\t?if\(WORK_EXP_ROW_COUNT/.test(eli));
+}
+
+console.log('\n===================== Varying work-exp, same levels: fall back to branch condition =====================');
+{
+  const rows = [
+    ['POST', 'Exam Passed', 'Degree /Subject / Stream', 'Percentage', 'Post Qualification Experience'],
+    ['Officer', 'Graduation Degree', 'Engineering', '>0%', '3 Years'],
+    ['', 'OR', '', '', ''],
+    ['', 'Graduation Degree', 'Arts', '>0%', '5 Years'],
+  ];
+  reset();
+  const posts = App.buildPosts(rows).posts;
+  App.S.posts = posts;
+  const eli = App.genEligibility(posts);
+  ok('5-year tier gated on its full Graduation condition',
+    /if\(\(\(\$_POST\['selstream3'\]!='' && array_key_exists[^\n]*\) \{\s*if\(WORK_EXP_ROW_COUNT > 0\)\{\s*if\(!\(\$_POST\['totexp'\]>=60\)/.test(eli));
+  ok('3-year tier follows as else-if', /else if\(\(\(\$_POST\['selstream3'\][^\n]*\) \{\s*if\(WORK_EXP_ROW_COUNT > 0\)\{\s*if\(!\(\$_POST\['totexp'\]>=36\)/.test(eli));
+}
+
 console.log('\nMIXED WORK-EXP: ' + (fail === 0 ? 'ALL PASS' : fail + ' FAILED') + ' (' + pass + ' passed)');
 process.exit(fail === 0 ? 0 : 1);

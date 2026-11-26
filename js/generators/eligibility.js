@@ -35,6 +35,16 @@
 //   N dimensions: $_POST['postcode'] == '01' && $_POST['recrtmnt_mode'] == '02'
 function postMatch(post){ return dimCond(post,{useVar:true,inline:true}); }
 
+// One-line `// Post 01 : <name>` navigation comment emitted above each post's block.
+// N-D posts show the full combination ("Manager - Civil" via postLabel). Line breaks
+// are collapsed and `?>` is broken up — PHP ends a code block at `?>` even inside a
+// `//` comment, so a name containing it would otherwise break the file.
+function postComment(post,d){
+  var lbl=(App.postLabel?App.postLabel(post):post.postName)||'';
+  lbl=String(lbl).replace(/\s+/g,' ').replace(/\?>/g,'? >').trim();
+  return ind(d)+'// Post '+post.postcode+(lbl?' : '+lbl:'')+'\n';
+}
+
 // Emit the per-post if/else-if chain body (no file head/tail, no assignDeclares).
 // `single` is passed explicitly so the branched caller can force single=false
 // when combining normal + internal posts.
@@ -49,6 +59,9 @@ function emitPostChain(posts, single, arrSuffix){
     if(!grps.length) continue;
     var d=single?1:2;
 
+    // Blank line before each post's comment to separate blocks; the first post
+    // already follows a blank line in the file head.
+    o+=(pi===0?'':'\n')+postComment(post,1);
     if(!single) o+=ind(1)+(pi===0?'if':'} else if')+'('+postMatch(post)+') {\n';
 
     // category mark block
@@ -94,6 +107,18 @@ function emitPostChain(posts, single, arrSuffix){
         for(var ti=0;ti<tiers.length;ti++){
           o+=ind(d)+(ti===0?'if':'else if')+"("+tiers[ti].fields.map(function(f){return "$_POST['"+f+"'] == 'Y'";}).join(' || ')+") {\n";
           o+=buildWE(tiers[ti].months,d+1);
+          o+=ind(d)+'}\n';
+        }
+      } else if(!tiers.length&&!uniform){
+        // No experience radio to gate on, yet the branches differ in WE (e.g. PG
+        // Degree → 2 years vs PG Diploma → 5 years). Gate each requirement on the
+        // qualification that tells its branch apart (see eduWETiers). Same
+        // default-clear line as the radio chain above, for the same reason.
+        var etiers=eduWETiers(grps,post,single,sfxOpts);
+        o+=ind(d)+"$errmsgarr[]='totexp_popup|';\n";
+        for(var ei=0;ei<etiers.length;ei++){
+          o+=ind(d)+(ei===0?'if':'else if')+'('+etiers[ei].gate+') {\n';
+          o+=buildWE(etiers[ei].months,d+1);
           o+=ind(d)+'}\n';
         }
       } else {
@@ -477,7 +502,46 @@ function weRadioTiers(post,pc){
   return tiers;
 }
 
+// Work-exp tiers for a post whose OR-groups carry DIFFERENT WE requirements with no
+// experience radio to gate on — the branches differ only by the exam passed (e.g.
+// MBBS + PG Degree → 2 years vs MBBS + PG Diploma → 5 years). Each group is gated on
+// an education level present in it but absent from every group with a different
+// requirement: `$_POST['selstream6']!=''` (PG Diploma). A group with no such level
+// (same levels, different subjects) falls back to its full eligibility condition.
+// Groups requiring no experience emit nothing. Returns [{months, gate}] sorted
+// descending by months, so a candidate holding both qualifications meets the
+// stricter one (matches the reference output: PG Diploma tier checked first).
+function eduWETiers(grps,post,single,sfxOpts){
+  function levels(g){
+    var l=[];
+    g.conditions.forEach(function(c){if(c.type==='edu'&&EDU[c.level]&&l.indexOf(c.level)<0) l.push(c.level);});
+    return l;
+  }
+  var byMonths={}, order=[];
+  grps.forEach(function(g){
+    var m=g.workExp||0;
+    if(!m) return;
+    var others=[];
+    grps.forEach(function(o){if((o.workExp||0)!==m) others=others.concat(levels(o));});
+    var uniq=levels(g).filter(function(L){return others.indexOf(L)<0;});
+    var gate;
+    if(uniq.length){
+      var def=EDU[uniq[0]];
+      gate="$_POST['"+(def.hasStream?def.ss:def.sm)+"']!=''";
+    } else {
+      gate='('+g.conditions.map(function(c){
+        return buildCondGroupLine(c,post,single,g.conditions,sfxOpts);
+      }).join(' && ')+')';
+    }
+    if(!byMonths[m]){byMonths[m]=[];order.push(m);}
+    if(byMonths[m].indexOf(gate)<0) byMonths[m].push(gate);
+  });
+  order.sort(function(a,b){return b-a;});
+  return order.map(function(m){return {months:m,gate:byMonths[m].join(' || ')};});
+}
+
   // ── exports to App ──
+  App.eduWETiers = eduWETiers;
   App.emitPostChain = emitPostChain;
   App.buildCondLine = buildCondLine;
   App.buildCondGroupLine = buildCondGroupLine;

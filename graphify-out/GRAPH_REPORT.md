@@ -1,16 +1,16 @@
-# Graph Report - eligibility_automation_tool  (2026-11-18)
+# Graph Report - eligibility_automation_tool  (2026-11-26)
 
 ## Corpus Check
-- 50 files · ~66,850 words
+- 50 files · ~67,864 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 604 nodes · 1026 edges · 37 communities (34 shown, 3 thin omitted)
+- 607 nodes · 1032 edges · 43 communities (39 shown, 4 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 2 edges (avg confidence: 0.68)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c36f13d1`
+- Built from commit: `f2ea3fff`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -40,14 +40,20 @@
 - validate.js
 - harness.js
 - examAliasRef.js
+- index.html — App Shell, Step UI & Module Load Order
 - run_issues.js
 - run_we_mixed.js
 - run_subject_other_equivalent.js
 - keyOverrides.js
 - run_ap_scope.js
 - run_keyoverride.js
+- workExp.js
 - run_sow_absent.js
+- eduValidations.js
 - renderPostsIntoTbody
+- emit.js
+- eduQryArrays.js
+- run_clarify.js
 
 ## God Nodes (most connected - your core abstractions)
 1. `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` - 49 edges
@@ -68,9 +74,9 @@
   DEBUGGING.md → js/core/state.js
 - `context.md — Dev Context Notes (legacy single-file version)` --references--> `genEduConfig()`  [EXTRACTED]
   context.md → js/generators/eduConfig.js
+- `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` --references--> `emitValChain()`  [EXTRACTED]
+  DEBUGGING.md → js/generators/eduValidations.js
 - `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` --references--> `emitPostChain()`  [EXTRACTED]
-  DEBUGGING.md → js/generators/eligibility.js
-- `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` --references--> `buildCondLine()`  [EXTRACTED]
   DEBUGGING.md → js/generators/eligibility.js
 
 ## Import Cycles
@@ -81,11 +87,11 @@
 - **Internal Candidate branched-output family: 6 gen*Branched functions implementing the split normal/internal PHP emission pattern via withCtx** — js_generators_internalbranch_geneligibilitybranched, js_generators_internalbranch_geneduvalidationsbranched, js_generators_internalbranch_genworkexpbranched, js_generators_internalbranch_geneduconfigbranched, js_generators_internalbranch_genlangfilebranched, js_generators_internalbranch_geneduqrysqlbranched, debugging_context_snapshot_withctx, debugging_internal_candidate_feature [EXTRACTED 1.00]
 - **The 3-step pipeline folders (core/parsing/generators/ui) that jointly implement Excel -> posts[] -> PHP -> UI** — js_core_state, js_parsing_buildposts, js_generators_eligibility, js_ui_ui, debugging_three_step_pipeline [EXTRACTED 1.00]
 
-## Communities (37 total, 3 thin omitted)
+## Communities (43 total, 4 thin omitted)
 
 ### Community 0 - "DEBUGGING.md — Debugging Guide (Eligibility Code Generator)"
-Cohesion: 0.06
-Nodes (46): css/styles.css — stylesheet (was the inline <style> block of the original test.html), Context snapshot (ctx = {dimensions,colMap,weHeader,weMode}) + withCtx(ctx,fn) — rationale: buildPostsRange is called twice for the internal-candidate split and each call overwrites shared S fields, so snapCtx must capture the schema right after each call and withCtx must wrap every branched-generator emission to apply/restore the correct schema, preventing a singleton leak across branches, detectCols Degree-as-field fix — some internal sections use a 'Degree' column as the education-level column rather than a Degree axis; when field==workexp (both matched by "qualif") and a standalone degree column exists, detectCols promotes degree->field and clears the degree axis. Load-bearing: if reverted, internal sections yield 40+ junk posts, DEBUGGING.md — Debugging Guide (Eligibility Code Generator), Internal / Departmental Candidate Support — splits one sheet into two parallel posts[] arrays (normal + internal) when enabled and a separator row is found, 3-Step Pipeline: Excel -> posts[] (parsing/) -> 5 PHP strings (generators/) -> rendered UI (ui/); core/ is shared vocabulary, main.js is the ignition switch, window.App shared-global module pattern — each file is an IIFE that pulls needed names into locals and exports its own functions back onto App, loaded by index.html in dependency order, Work-exp modes (S.weMode), decided in buildPosts: Case 1 all posts participate (header says Post Qualification only), Case 2 none participate (plain Work Experience header), Case 3 per-post opt-in (header offers both) (+38 more)
+Cohesion: 0.20
+Nodes (17): Context snapshot (ctx = {dimensions,colMap,weHeader,weMode}) + withCtx(ctx,fn) — rationale: buildPostsRange is called twice for the internal-candidate split and each call overwrites shared S fields, so snapCtx must capture the schema right after each call and withCtx must wrap every branched-generator emission to apply/restore the correct schema, preventing a singleton leak across branches, detectCols Degree-as-field fix — some internal sections use a 'Degree' column as the education-level column rather than a Degree axis; when field==workexp (both matched by "qualif") and a standalone degree column exists, detectCols promotes degree->field and clears the degree axis. Load-bearing: if reverted, internal sections yield 40+ junk posts, DEBUGGING.md — Debugging Guide (Eligibility Code Generator), Internal / Departmental Candidate Support — splits one sheet into two parallel posts[] arrays (normal + internal) when enabled and a separator row is found, 3-Step Pipeline: Excel -> posts[] (parsing/) -> 5 PHP strings (generators/) -> rendered UI (ui/); core/ is shared vocabulary, main.js is the ignition switch, Work-exp modes (S.weMode), decided in buildPosts: Case 1 all posts participate (header says Post Qualification only), Case 2 none participate (plain Work Experience header), Case 3 per-post opt-in (header offers both), snapCtx(), withCtx() (+9 more)
 
 ### Community 1 - "app.legacy.js"
 Cohesion: 0.08
@@ -100,8 +106,8 @@ Cohesion: 0.06
 Nodes (67): apAutoSetup(), apChk(), apDefaultGroups(), apDistinctLevels(), apDndCol(), apDndItem(), apEachCond(), apEduOf() (+59 more)
 
 ### Community 4 - "eligibility.js"
-Cohesion: 0.15
-Nodes (22): Fix 2 (DONE): 'Any value' in subjects column means any stream accepted — no edu_config array, just a not-empty $_POST check in validation, and "Please enter" instead of "Please select" in the error text, context.md — Dev Context Notes (legacy single-file version), Fix 1 (NOT DONE / reverted): posts with empty subjects for a level where sibling posts DO have subjects should default to array('01'=>'Others'); getStreamData currently skips empty-subject conditions so no slot/array is ever emitted — blocked pending clarification of the exact Excel layout, Fix 3 (DONE): subjects are '/'-delimited, not comma-delimited (commas can appear inside one subject value); quoted "..." subject values must have their quotes stripped, posts[] condition tree — posts -> orGroups -> conditions (edu | radio); the single most useful debugging inspection target (App.S.posts), acadRank(), axisClause(), buildCondGroupLine() (+14 more)
+Cohesion: 0.10
+Nodes (28): Fix 2 (DONE): 'Any value' in subjects column means any stream accepted — no edu_config array, just a not-empty $_POST check in validation, and "Please enter" instead of "Please select" in the error text, context.md — Dev Context Notes (legacy single-file version), Fix 1 (NOT DONE / reverted): posts with empty subjects for a level where sibling posts DO have subjects should default to array('01'=>'Others'); getStreamData currently skips empty-subject conditions so no slot/array is ever emitted — blocked pending clarification of the exact Excel layout, Fix 3 (DONE): subjects are '/'-delimited, not comma-delimited (commas can appear inside one subject value); quoted "..." subject values must have their quotes stripped, posts[] condition tree — posts -> orGroups -> conditions (edu | radio); the single most useful debugging inspection target (App.S.posts), acadRank(), axisClause(), buildCondGroupLine() (+20 more)
 
 ### Community 5 - "run_internal.js"
 Cohesion: 0.07
@@ -176,12 +182,16 @@ Cohesion: 0.29
 Nodes (10): buildClarificationMailText(), collectAxisValues(), collectRadioConds(), detectClarifications(), findDupGroups(), findDupGroupsByLevel(), findRadioDupGroups(), fmtMailValue() (+2 more)
 
 ### Community 27 - "harness.js"
-Cohesion: 0.18
-Nodes (7): files, fs, path, root, sandbox, vm, App
+Cohesion: 0.29
+Nodes (6): files, fs, path, root, sandbox, vm
 
 ### Community 28 - "examAliasRef.js"
 Cohesion: 0.53
 Nodes (4): buildExamAliasGroups(), openExamAliasRef(), prettifyAlias(), renderExamAliasRef()
+
+### Community 29 - "index.html — App Shell, Step UI & Module Load Order"
+Cohesion: 0.24
+Nodes (6): css/styles.css — stylesheet (was the inline <style> block of the original test.html), window.App shared-global module pattern — each file is an IIFE that pulls needed names into locals and exports its own functions back onto App, loaded by index.html in dependency order, index.html — App Shell, Step UI & Module Load Order, Light/Dark theme toggle — applied pre-paint via inline <head> script to avoid FOUC, persisted to localStorage key 'ecg-theme', swaps highlight.js stylesheet to match, README.md — Project Overview & Structure, Modular split verified byte-identical — original single test.html was reorganized into functional modules with no logic changes; an equivalence test confirmed both versions produce identical output for all five generated files, including the base64-embedded work_exp template
 
 ### Community 33 - "keyOverrides.js"
 Cohesion: 0.20
@@ -195,33 +205,49 @@ Nodes (7): App, fs, fx, fx2, HDR, path, XLSX
 Cohesion: 0.40
 Nodes (4): App, parse(), reset(), rows
 
+### Community 36 - "workExp.js"
+Cohesion: 0.50
+Nodes (7): eduIdxsOf(), emitWEChain(), record(), genQualSel(), genWorkExpDetails(), qualTimestamps(), tsIdxOf()
+
 ### Community 37 - "run_sow_absent.js"
 Cohesion: 0.40
 Nodes (4): App, d, gen(), mk()
+
+### Community 38 - "eduValidations.js"
+Cohesion: 0.53
+Nodes (5): collectGlobalVars(), addAxisGlobals(), addGlobal(), emitValChain(), genEduValidations()
 
 ### Community 39 - "renderPostsIntoTbody"
 Cohesion: 0.53
 Nodes (9): renderPostsIntoTbody(), anyRed(), cellHtml(), cellKey(), fullRed(), mark(), normS(), partRed() (+1 more)
 
+### Community 40 - "emit.js"
+Cohesion: 0.40
+Nodes (3): emitArr(), genLangFile(), sortEnts()
+
+### Community 41 - "eduQryArrays.js"
+Cohesion: 0.70
+Nodes (4): alterStmt(), arrAdditionSection(), collectRadioFields(), genEduQrySql()
+
 ## Knowledge Gaps
 - **132 isolated node(s):** `App`, `Legacy`, `fs`, `path`, `rows` (+127 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **3 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` connect `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` to `app.legacy.js`, `ui.js`, `eligibility.js`, `helpers.js`, `state.js`, `colorFilter.js`, `eduConfig.js`, `buildPosts.js`?**
-  _High betweenness centrality (0.144) - this node is a cross-community bridge._
-- **Why does `README.md — Project Overview & Structure` connect `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` to `app.legacy.js`, `ui.js`, `eligibility.js`, `helpers.js`, `state.js`, `colorFilter.js`, `dimensions.js`, `eduConfig.js`, `buildPosts.js`?**
+- **Why does `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` connect `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` to `app.legacy.js`, `ui.js`, `eligibility.js`, `workExp.js`, `eduValidations.js`, `helpers.js`, `state.js`, `colorFilter.js`, `emit.js`, `eduConfig.js`, `buildPosts.js`, `index.html — App Shell, Step UI & Module Load Order`?**
+  _High betweenness centrality (0.145) - this node is a cross-community bridge._
+- **Why does `README.md — Project Overview & Structure` connect `index.html — App Shell, Step UI & Module Load Order` to `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)`, `app.legacy.js`, `ui.js`, `eligibility.js`, `workExp.js`, `eduValidations.js`, `helpers.js`, `state.js`, `eduQryArrays.js`, `emit.js`, `dimensions.js`, `colorFilter.js`, `eduConfig.js`, `buildPosts.js`?**
   _High betweenness centrality (0.088) - this node is a cross-community bridge._
-- **Why does `index.html — App Shell, Step UI & Module Load Order` connect `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` to `ui.js`, `eligibility.js`, `helpers.js`, `state.js`, `colorFilter.js`, `dimensions.js`, `eduConfig.js`, `buildPosts.js`?**
+- **Why does `index.html — App Shell, Step UI & Module Load Order` connect `index.html — App Shell, Step UI & Module Load Order` to `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)`, `ui.js`, `eligibility.js`, `workExp.js`, `eduValidations.js`, `helpers.js`, `state.js`, `eduQryArrays.js`, `emit.js`, `dimensions.js`, `colorFilter.js`, `eduConfig.js`, `buildPosts.js`?**
   _High betweenness centrality (0.048) - this node is a cross-community bridge._
 - **What connects `App`, `Legacy`, `fs` to the rest of the system?**
   _132 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `DEBUGGING.md — Debugging Guide (Eligibility Code Generator)` be split into smaller, more focused modules?**
-  _Cohesion score 0.058699101004759384 - nodes in this community are weakly interconnected._
 - **Should `app.legacy.js` be split into smaller, more focused modules?**
   _Cohesion score 0.075990675990676 - nodes in this community are weakly interconnected._
 - **Should `run_qry.js` be split into smaller, more focused modules?**
   _Cohesion score 0.125 - nodes in this community are weakly interconnected._
+- **Should `ui.js` be split into smaller, more focused modules?**
+  _Cohesion score 0.0640503517215846 - nodes in this community are weakly interconnected._
