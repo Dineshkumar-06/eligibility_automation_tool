@@ -1,11 +1,11 @@
 # Graph Report - eligibility_automation_tool  (2026-11-26)
 
 ## Corpus Check
-- 50 files · ~67,380 words
+- 50 files · ~67,864 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 606 nodes · 1030 edges · 43 communities (39 shown, 4 thin omitted)
+- 607 nodes · 1032 edges · 43 communities (39 shown, 4 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 2 edges (avg confidence: 0.68)
 - Token cost: 0 input · 0 output
 
@@ -107,7 +107,7 @@ Nodes (67): apAutoSetup(), apChk(), apDefaultGroups(), apDistinctLevels(), apDnd
 
 ### Community 4 - "eligibility.js"
 Cohesion: 0.10
-Nodes (27): Fix 2 (DONE): 'Any value' in subjects column means any stream accepted — no edu_config array, just a not-empty $_POST check in validation, and "Please enter" instead of "Please select" in the error text, context.md — Dev Context Notes (legacy single-file version), Fix 1 (NOT DONE / reverted): posts with empty subjects for a level where sibling posts DO have subjects should default to array('01'=>'Others'); getStreamData currently skips empty-subject conditions so no slot/array is ever emitted — blocked pending clarification of the exact Excel layout, Fix 3 (DONE): subjects are '/'-delimited, not comma-delimited (commas can appear inside one subject value); quoted "..." subject values must have their quotes stripped, posts[] condition tree — posts -> orGroups -> conditions (edu | radio); the single most useful debugging inspection target (App.S.posts), acadRank(), axisClause(), buildCondGroupLine() (+19 more)
+Nodes (28): Fix 2 (DONE): 'Any value' in subjects column means any stream accepted — no edu_config array, just a not-empty $_POST check in validation, and "Please enter" instead of "Please select" in the error text, context.md — Dev Context Notes (legacy single-file version), Fix 1 (NOT DONE / reverted): posts with empty subjects for a level where sibling posts DO have subjects should default to array('01'=>'Others'); getStreamData currently skips empty-subject conditions so no slot/array is ever emitted — blocked pending clarification of the exact Excel layout, Fix 3 (DONE): subjects are '/'-delimited, not comma-delimited (commas can appear inside one subject value); quoted "..." subject values must have their quotes stripped, posts[] condition tree — posts -> orGroups -> conditions (edu | radio); the single most useful debugging inspection target (App.S.posts), acadRank(), axisClause(), buildCondGroupLine() (+20 more)
 
 ### Community 5 - "run_internal.js"
 Cohesion: 0.07

@@ -61,10 +61,95 @@ function qualTimestamps(idxs){
 }
 
 
+// ── Appeared/Passed-aware qualification-date selection ──────────────────────
+// An AP-active qualification answered "Appeared" has no date of passing, so its
+// timestamp must not feed $eligibilityPostQualidtArr[]. Plan per OR-group:
+//   chain    — academic levels present, highest first (PG/PGD tie → lower idx first,
+//              matching qualTimestamps). The top is the base date; when it is
+//              AP-active and Appeared, fall back to the next lower academic.
+//   specials — non-ladder levels (Professional, Diploma, …) compared against the base;
+//              an AP-active special is skipped when Appeared.
+// ap is false when no involved level is AP-active → caller keeps the legacy output.
+function apFieldForIdx(idx,gconds){
+  if(!gconds||!App.apEnabled||!App.apEnabled()||!App.effectiveApField) return null;
+  for(var i=0;i<gconds.length;i++){
+    var c=gconds[i];
+    if(c.type!=='edu'||!EDU[c.level]||EDU[c.level].idx!==idx) continue;
+    var f=App.effectiveApField(c,gconds);
+    if(f) return f;
+  }
+  return null;
+}
+function planQual(idxs,gconds){
+  var acad=[],specials=[],ap=false;
+  for(var i=0;i<idxs.length;i++){
+    var info=POSTQUAL_TS[idxs[i]];
+    if(!info) continue;
+    var f=apFieldForIdx(idxs[i],gconds);
+    if(f) ap=true;
+    var e={idx:idxs[i],v:info.v,f:f,acad:info.acad};
+    if(info.acad>0) acad.push(e); else specials.push(e);
+  }
+  acad.sort(function(a,b){return (b.acad-a.acad)||(a.idx-b.idx);});
+  specials.sort(function(a,b){return a.idx-b.idx;});
+  // The chain only needs to reach the first academic that is not AP-gated.
+  var chain=[];
+  for(var i=0;i<acad.length;i++){ chain.push(acad[i]); if(!acad[i].f) break; }
+  if(chain.length && !chain[0].f) ap=specials.some(function(s){return !!s.f;});
+  return {chain:chain,specials:specials,ap:ap};
+}
+// Timestamp variables a plan references (for strtotime declarations).
+function planTimestamps(plan){
+  return plan.chain.concat(plan.specials).map(function(e){return e.v;});
+}
+function appeared(f){return "($_POST['"+f+"']=='A')";}
+// Emit the AP-aware selection. Base expression: nested ternary over the chain,
+//   ($_POST['pg_appeared']=='A') ? $graduationtimeStr : $pggraduationtimeStr
+// If every chain level is AP-gated the base may be absent (all Appeared) → guarded.
+function genQualSelAP(plan,d){
+  var ARR='$eligibilityPostQualidtArr[]  = ', D2='$eligibility_postquali_date2';
+  var chain=plan.chain, sp=plan.specials;
+  var base=null, baseGuard=null;
+  if(chain.length){
+    base=chain[chain.length-1].v;
+    for(var i=chain.length-2;i>=0;i--) base=appeared(chain[i].f)+' ? '+base+' : '+chain[i].v;
+    if(chain[chain.length-1].f)
+      baseGuard=chain.map(function(e){return "$_POST['"+e.f+"']!='A'";}).join(' || ');
+  }
+  var o='';
+  if(!sp.length){
+    if(baseGuard) return ind(d)+'if('+baseGuard+'){\n'+ind(d+1)+ARR+base+';\n'+ind(d)+'}\n';
+    return ind(d)+ARR+base+';\n';
+  }
+  // One special against a certain base → single ternary:
+  //   (($_POST['proff_appeared']=='A') || ($graduationtimeStr >= $proftimeStr)) ? $graduationtimeStr : $proftimeStr
+  if(sp.length===1 && base!==null && !baseGuard){
+    var s=sp[0], b=base;
+    if(chain.length>1){ o+=ind(d)+D2+' = '+base+';\n'; b=D2; }
+    var cmp='('+b+' >= '+s.v+')';
+    return o+ind(d)+ARR+(s.f?'('+appeared(s.f)+' || '+cmp+')':cmp)+' ? '+b+' : '+s.v+';\n';
+  }
+  // General: running max, skipping Appeared levels; push only when a date exists.
+  var maybeEmpty=(base===null||!!baseGuard);
+  o+=ind(d)+D2+' = '+(base===null?"''":(baseGuard?'('+baseGuard+') ? ('+base+") : ''":base))+';\n';
+  for(var i=0;i<sp.length;i++){
+    var c=[];
+    if(sp[i].f) c.push("$_POST['"+sp[i].f+"']!='A'");
+    c.push(maybeEmpty?'('+D2+"=='' || "+sp[i].v+' > '+D2+')':sp[i].v+' > '+D2);
+    o+=ind(d)+'if('+c.join(' && ')+'){\n'+ind(d+1)+D2+' = '+sp[i].v+';\n'+ind(d)+'}\n';
+  }
+  if(maybeEmpty) o+=ind(d)+'if('+D2+"!=''){\n"+ind(d+1)+ARR+D2+';\n'+ind(d)+'}\n';
+  else o+=ind(d)+ARR+D2+';\n';
+  return o;
+}
+
 // Emit the qualification-date selection for one eligibility condition block.
-function genQualSel(idxs,d){
+// `gconds` (optional) — the OR-group's conditions; enables Appeared/Passed handling.
+function genQualSel(idxs,d,gconds){
   var ts=qualTimestamps(idxs);
   if(!ts.length) return '';
+  var plan=planQual(idxs,gconds);
+  if(plan.ap) return genQualSelAP(plan,d);
   if(ts.length===1)                                          // single relevant qualification
     return ind(d)+'$eligibilityPostQualidtArr[]  = '+ts[0]+';\n';
   // 2+ timestamps -> deterministically pick the latest date.
@@ -92,7 +177,11 @@ function emitWEChain(posts, single, arrSuffix){
 
   var neededTs={};
   var blocks='', anyBlock=false;
-  function record(idxs){var ts=qualTimestamps(idxs);for(var t=0;t<ts.length;t++)neededTs[ts[t]]=tsIdxOf(ts[t]);}
+  function record(idxs,gconds){
+    var ts=qualTimestamps(idxs), plan=planQual(idxs,gconds);
+    if(plan.ap) ts=planTimestamps(plan);
+    for(var t=0;t<ts.length;t++)neededTs[ts[t]]=tsIdxOf(ts[t]);
+  }
 
   for(var pi=0;pi<parts.length;pi++){
     var post=parts[pi];
@@ -113,10 +202,10 @@ function emitWEChain(posts, single, arrSuffix){
       for(var ci=0;ci<gconds.length;ci++)
         s+=ind(d+1)+buildCondGroupLine(gconds[ci],post,single,gconds,sfxOpts)+(ci<gconds.length-1?' &&':'')+'\n';
       s+=ind(d)+') {\n';
-      s+=genQualSel(gidxs,d+1);
+      s+=genQualSel(gidxs,d+1,gconds);
       s+=ind(d)+'}\n';
       postBlocks+=s;
-      record(gidxs);
+      record(gidxs,gconds);
     }
     if(!postBlocks) continue;
     if(!single) blocks+=ind(1)+(anyBlock?'else if':'if')+'('+dimCond(post,{useVar:true,inline:true})+') {\n';

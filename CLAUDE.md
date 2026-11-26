@@ -49,6 +49,7 @@ Other targeted suites — run individually as needed:
 - `node test/run_degree.js` — separate Degree-column axis handling
 - `node test/run_marks.js` — mark/grade/category condition parsing
 - `node test/run_radio.js` — Yes/No radio-question detection robustness
+- `node test/run_ap_we.js` — Appeared/Passed-aware post-qualification date in work_exp_details_validations.php (Appeared PG falls back to Graduation date; Appeared special skipped in date comparison)
 - `node test/run_we_mixed.js` — per-OR-group work-exp requirement gated on its own radio when it differs from other branches (vs. staying unconditional when uniform)
 - `node test/run_subject_other_equivalent.js` — the `01`/`99` sentinel keys in the global subject/degree registry (`streams.js` `getGlobalKey`) only match a cell whose ENTIRE value is "Others"/"Equivalent", not any longer value that merely contains that word
 
